@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "registry": {
+    "repository": "hara-lang/hara-specs-registry",
+    "ref": "main",
+    "index": "registry-index.json"
+  },
+  "migration": {
+    "sourceRepository": "hara-lang/hara-specs",
+    "sourceCommit": "dc269add5de05d06ddf215ca9f1d2d2b0c49f135",
+    "startedOn": "2026-08-04",
+    "materializedSpecifications": 3,
+    "pinnedSourceSpecifications": 1
+  },
+  "files": [
+    {
+      "path": "01-lang/000-metaspec/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/000-metaspec/draft/metaspec-metaspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang",
+      "sourceBlob": "830346d1e3598bebde7c6305cd3c482e6072f96d"
+    },
+    {
+      "path": "01-lang/001-language/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/001-language/draft/hal-langspec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang",
+      "sourceBlob": "8da1ed2afd5c6464a8fb11eac9fec52809ae2d40"
+    },
+    {
+      "path": "01-lang/002-protocol/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/002-protocol/draft/protocol-spec.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang",
+      "sourceBlob": "9d1e77b14e86c496dfd3b7772cdb2fd483140aa9"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "02-platform/000001-cli/draft/MIGRATION.edn",
+      "kind": "pinned-source",
+      "classification": "hara",
+      "owner": "hara-lang",
+      "sourceRepository": "hara-lang/hara-specs",
+      "sourceCommit": "dc269add5de05d06ddf215ca9f1d2d2b0c49f135",
+      "sourcePath": "02-platform/000001-cli/draft/hara-cli.edn",
+      "sourceBlob": "f7a405a81ad168019891c440989b33c4e85898ff"
+    }
+  ]
+}
