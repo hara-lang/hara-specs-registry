@@ -1,0 +1,131 @@
+{:document/id :hal/language
+ :document/type :language-spec
+ :document/version "1.0.0-draft"
+ :document/status :draft
+ :document/title "HAL data language specification"
+ :document/summary
+ "Portable contract for the immutable data forms shared by HAL source and the Hara EDN profile."
+
+ :spec/conforms-to
+ {:spec/id :hal/metaspec
+  :spec/version "0.1.0"}
+
+ :spec/scope
+ {:scope/language "HAL data"
+  :scope/data-notation
+  {:notation/name "EDN"
+   :notation/extension ".edn"
+   :notation/profile :hara
+   :notation/encoding :utf-8}
+  :scope/includes
+  #{:reader :scalar-values :collection-values :metadata :canonical-reading}
+  :scope/excludes
+  #{:evaluation :functions :bindings :iteration :protocols :modules
+    :standard-libraries :host-capabilities :runtime-implementation}}
+
+ :spec/invariants
+ [{:requirement/id :data/host-neutral
+   :requirement/level :must
+   :requirement/text
+   "The meaning of readable data is independent of evaluator, compiler, runtime, and host representation."}
+  {:requirement/id :data/immutable
+   :requirement/level :must
+   :requirement/text
+   "Literal collection values are immutable and persistent."}
+  {:requirement/id :data/canonical-reading
+   :requirement/level :must
+   :requirement/text
+   "Every readable data value has a canonical representation accepted by the shared reader."
+   :requirement/evidence
+   [{:conformance/suite :hal/reader
+     :conformance/cases
+     [:nil :booleans :numbers :collections :empty-collections]}]}]
+
+ :spec/section-order
+ [:hal.data/reader
+  :hal.data/scalars
+  :hal.data/collections
+  :hal.data/metadata]
+
+ :spec/sections
+ [{:section/id :hal.data/reader
+   :section/title "Reader"
+   :section/summary
+   "Hara EDN is UTF-8 text read into immutable host-neutral values."
+   :section/requirements
+   [{:requirement/id :reader/edn-profile
+     :requirement/level :must
+     :requirement/text
+     "The reader accepts nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, binary64 floating-point numbers, lists, vectors, maps, and sets."
+     :requirement/evidence
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:nil :booleans :escaped-string :named-characters
+        :symbols-and-keywords :numbers :collections]}]}
+    {:requirement/id :reader/restricted-numbers
+     :requirement/level :must-not
+     :requirement/text
+     "The Hara EDN profile does not accept ratios, N-suffixed arbitrary-precision integers, M-suffixed exact decimals, or unsuffixed integers outside the signed 64-bit range."
+     :requirement/evidence
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:unsupported-ratio :positive-integer-overflow
+        :negative-integer-overflow]}]}
+    {:requirement/id :reader/delimiters
+     :requirement/level :must
+     :requirement/text
+     "Collections require matching delimiters and maps require an even number of forms."
+     :requirement/evidence
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:odd-map :unterminated-list :mismatched-vector]}]}]}
+
+  {:section/id :hal.data/scalars
+   :section/title "Scalar values"
+   :section/summary
+   "Scalar values are nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, and binary64 floating-point numbers."
+   :section/requirements
+   [{:requirement/id :value/scalar-identity
+     :requirement/level :must
+     :requirement/text
+     "Scalar equality and hashing depend on value and data category rather than host object identity."}]}
+
+  {:section/id :hal.data/collections
+   :section/title "Collection values"
+   :section/summary
+   "Lists, vectors, maps, and sets are immutable persistent values."
+   :section/requirements
+   [{:requirement/id :value/collection-identity
+     :requirement/level :must
+     :requirement/text
+     "Collection equality and hashing are structural and independent of runtime storage layout."}
+    {:requirement/id :value/unique-map-set-members
+     :requirement/level :must
+     :requirement/text
+     "Map keys and set members are unique."
+     :requirement/evidence
+     [{:conformance/suite :hal/reader
+       :conformance/cases [:duplicate-map-key :duplicate-set-item]}]}]}
+
+  {:section/id :hal.data/metadata
+   :section/title "Metadata"
+   :section/summary
+   "Metadata is descriptive data attached to supported values."
+   :section/requirements
+   [{:requirement/id :value/metadata-identity
+     :requirement/level :must
+     :requirement/text
+     "Metadata does not alter value equality or hashing."}
+    {:requirement/id :reader/metadata-target
+     :requirement/level :must
+     :requirement/text
+     "Metadata may only be attached to values that support metadata."
+     :requirement/evidence
+     [{:conformance/suite :hal/reader
+       :conformance/cases
+       [:metadata :invalid-metadata-value :invalid-metadata-target]}]}]}]
+
+ :spec/forms []
+ :spec/references []
+ :spec/conformance []
+ :spec/provenance []}
