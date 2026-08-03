@@ -3,12 +3,16 @@ set -euo pipefail
 
 SOURCE_REPOSITORY="${SOURCE_REPOSITORY:-hara-lang/hara-specs}"
 SOURCE_REF="${SOURCE_REF:-dc269add5de05d06ddf215ca9f1d2d2b0c49f135}"
-TRIGGER_SHA="${GITHUB_SHA:?GITHUB_SHA is required for the force-with-lease guard}"
 ROOT="$(git rev-parse --show-toplevel)"
 OVERLAY="$(mktemp -d)"
 trap 'rm -rf "$OVERLAY"' EXIT
 
 cd "$ROOT"
+EXPECTED_MAIN_SHA="$(git ls-remote origin refs/heads/main | cut -f1)"
+if [[ -z "$EXPECTED_MAIN_SHA" ]]; then
+  echo "Unable to resolve the current registry main branch." >&2
+  exit 1
+fi
 cp -a migration/overlay/. "$OVERLAY/"
 
 git config user.name "github-actions[bot]"
@@ -46,4 +50,4 @@ node --test test/*.test.mjs
 
 git add -A
 git commit -m "Complete specifications registry split"
-git push --force-with-lease="refs/heads/main:${TRIGGER_SHA}" origin HEAD:refs/heads/main
+git push --force-with-lease="refs/heads/main:${EXPECTED_MAIN_SHA}" origin HEAD:refs/heads/main
