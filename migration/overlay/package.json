@@ -1,0 +1,15 @@
+{
+  "name": "@hara-lang/hara-specs-registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Git-authoritative Hara specification corpus and package registry.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build-registry-index.mjs",
+    "check": "node scripts/validate-registry.mjs && node scripts/build-registry-index.mjs --check",
+    "test": "node --test test/*.test.mjs"
+  }
+}
