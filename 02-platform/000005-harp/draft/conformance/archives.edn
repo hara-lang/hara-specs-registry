@@ -1,0 +1,14 @@
+[{:case/id :hara.harp.case/empty-package
+  :case/type :harp-archive
+  :case/input {:entries ["package.edn"]
+               :timestamps :fixed
+               :ordering :lexical}
+  :case/expected :pass}
+ {:case/id :hara.harp.case/parent-traversal
+  :case/type :harp-archive
+  :case/input {:entries ["package.edn" "../escape.hal"]}
+  :case/expected :reject}
+ {:case/id :hara.harp.case/duplicate-path
+  :case/type :harp-archive
+  :case/input {:entries ["package.edn" "src/main.hal" "src/main.hal"]}
+  :case/expected :reject}]

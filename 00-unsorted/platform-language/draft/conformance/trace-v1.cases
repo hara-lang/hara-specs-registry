@@ -1,0 +1,5 @@
+# id|source|outcome|required event kinds
+arithmetic|(+ 19 23)|42|evaluation-start,value-resolved
+branch|((fn [flag] (if flag 42 0)) true)|42|evaluation-start,operation-enter,branch-selected,operation-return
+macro|(do (defmacro identity-m [x] x) (identity-m 42))|42|evaluation-start,macro-expand
+failure|(/ 1 0)|ERROR|evaluation-start,error

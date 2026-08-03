@@ -1,0 +1,200 @@
+{:document/id :hara/native
+ :document/type :native-spec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "Hara native runtime boundary"
+ :document/summary
+ "Portable guest-visible contract for std.native descriptors and their implementation-provided methods."
+
+ :spec/conforms-to
+ {:spec/id :hara/native-metaspec
+  :spec/version "0.1.0"}
+
+ :native/scope
+ {:scope/namespace "std.native"
+  :scope/namespace-family "std.native.*"
+  :scope/includes
+  #{:native-type-descriptors :native-method-vars :runtime-profiles
+    :capability-checks :portable-argument-shapes :portable-result-shapes}
+  :scope/excludes
+  #{:general-host-interop :host-class-lookup :reflection :foundation-wrappers
+    :implementation-helper-types :implicit-authority}}
+
+ :native/invariants
+ [{:requirement/id :native/explicit-boundary
+   :requirement/level :must
+   :requirement/text
+   "Only declared std.native.* descriptors and methods cross the implementation boundary."}
+  {:requirement/id :native/no-ambient-authority
+   :requirement/level :must
+   :requirement/text
+   "Loading or aliasing a native namespace grants no file, network, process, host-call, reflection, or compilation authority."}
+  {:requirement/id :native/portable-values
+   :requirement/level :must
+   :requirement/text
+   "Native methods accept and return portable Hara values or explicitly declared opaque Hara runtime values."}
+  {:requirement/id :native/profile-explicit
+   :requirement/level :must
+   :requirement/text
+   "A method unavailable in a runtime profile is declared unavailable rather than silently omitted or emulated with different semantics."}]
+
+ :native/naming
+ {:naming/type-symbol "Type"
+  :naming/type-namespace "std.native.Type"
+  :naming/type-var "std.native/Type"
+  :naming/method-var "std.native.Type/method"
+  :naming/foundation-alias
+  "Ordinary non-blank namespaces may resolve Type as an alias for std.native.Type."
+  :naming/no-host-name-semantics true}
+
+ :native/types
+ [{:native/id :std.native/maths
+   :native/symbol Maths :native/namespace std.native.Maths
+   :native/availability :portable
+   :native/methods [abs acos acosh asin asinh atan atan2 atanh ceil cos cosh
+                    exp floor pow sin sinh sqrt tan tanh]}
+  {:native/id :std.native/numbers
+   :native/symbol Numbers :native/namespace std.native.Numbers
+   :native/availability :portable :native/methods [long double]}
+  {:native/id :std.native/bits
+   :native/symbol Bits :native/namespace std.native.Bits
+   :native/availability :portable
+   :native/methods [and or xor not shift-left shift-right]}
+  {:native/id :std.native/kernel
+   :native/symbol Kernel :native/namespace std.native.Kernel
+   :native/availability :capability-gated :native/capability :kernel
+   :native/methods
+   [session-create session-close session-list session-info session-eval
+    session-namespace session-complete resource-register resource-remove
+    resource-list filesystem-create filesystem-attach filesystem-detach
+    filesystem-info filesystem-close capabilities]}
+  {:native/id :std.native/string
+   :native/symbol String :native/namespace std.native.String
+   :native/availability :portable
+   :native/methods
+   [length blank? includes? starts-with? ends-with? char-at slice index-of
+    last-index-of join split split-lines repeat replace replace-first trim
+    trim-left trim-right upper lower capitalize decapitalize pad-left
+    pad-right reverse encode-utf8 decode-utf8 to-fixed]}
+  {:native/id :std.native/bytes
+   :native/symbol Bytes :native/namespace std.native.Bytes
+   :native/availability :portable
+   :native/methods [new instance? count get set copy slice u8 s8]}
+  {:native/id :std.native/file
+   :native/symbol File :native/namespace std.native.File
+   :native/availability :capability-gated :native/capability :file
+   :native/methods [resolve read write exists? list mkdir delete]}
+  {:native/id :std.native/socket
+   :native/symbol Socket :native/namespace std.native.Socket
+   :native/availability :capability-gated :native/capability :network
+   :native/methods [connect listen endpoint events next send close]}
+  {:native/id :std.native/promise
+   :native/symbol Promise :native/namespace std.native.Promise
+   :native/availability :portable
+   :native/methods [run new from all delay instance?]}
+  {:native/id :std.native/coroutine
+   :native/symbol Coroutine :native/namespace std.native.Coroutine
+   :native/availability :portable
+   :native/methods [create yield await instance?]}
+  {:native/id :std.native/arr
+   :native/symbol Arr :native/namespace std.native.Arr
+   :native/availability :portable
+   :native/methods [new instance? get-index set-index]}
+  {:native/id :std.native/obj
+   :native/symbol Obj :native/namespace std.native.Obj
+   :native/availability :portable
+   :native/methods [new instance? get-key set-key has-key? delete-key]}
+  {:native/id :std.native/runtime
+   :native/symbol Runtime :native/namespace std.native.Runtime
+   :native/availability :portable
+   :native/methods [load-string macroexpand-1 gensym var-sym]}
+  {:native/id :std.native/printer
+   :native/symbol Printer :native/namespace std.native.Printer
+   :native/availability :portable :native/methods [p println]}
+  {:native/id :std.native/edn
+   :native/symbol Edn :native/namespace std.native.Edn
+   :native/availability :portable :native/methods [read]}
+  {:native/id :std.native/json
+   :native/symbol Json :native/namespace std.native.Json
+   :native/availability :portable :native/methods [read write pretty]}
+  {:native/id :std.native/host
+   :native/symbol Host :native/namespace std.native.Host
+   :native/availability :capability-gated :native/capability :host-call
+   :native/methods [call describe capabilities capability?]}
+  {:native/id :std.native/regex
+   :native/symbol Regex :native/namespace std.native.Regex
+   :native/availability :portable :native/methods [instance?]}
+  {:native/id :std.native/uuid
+   :native/symbol UUID :native/namespace std.native.UUID
+   :native/availability :portable :native/methods [instance?]}
+  {:native/id :std.native/error
+   :native/symbol Error :native/namespace std.native.Error
+   :native/availability :portable :native/methods [new message class]}
+  {:native/id :std.native/iter
+   :native/symbol Iter :native/namespace std.native.Iter
+   :native/availability :portable
+   :native/methods
+   [iter iter? iter-finite? iter-materialize iter-has? iter-next iter-close
+    iter-map iter-filter iter-take-while iter-drop-while iter-mapcat iter-keep
+    iter-interpose iter-interleave iter-every? iter-any? iter-take iter-drop
+    iter-zip iter-cycle iter-partition-pair iter-partition-all iter-partition
+    iter-range iter-constantly iter-repeatedly iter-iterate]}]
+
+ :native/capabilities
+ {:capability/catalog
+  [{:capability/id :file
+    :capability/grants #{:filesystem-read :filesystem-write}}
+   {:capability/id :network
+    :capability/grants #{:network-connect :network-listen}}
+   {:capability/id :kernel
+    :capability/grants #{:session-control :resource-control :filesystem-handles}}
+   {:capability/id :host-call
+    :capability/grants #{:embedding-declared-services}}]
+  :capability/check-time :method-invocation
+  :capability/namespace-load-effect :none
+  :capability/denial :native/capability-denied}
+
+ :native/profiles
+ {:profile/jvm-truffle
+  {:profile/required-types :all
+   :profile/host-language :java}
+  :profile/rust-native
+  {:profile/required-types :all
+   :profile/host-language :rust}
+  :profile/rust-wasm
+  {:profile/required-types :all
+   :profile/host-language :rust
+   :profile/host-services :embedding-provided}
+  :profile/parity-rule
+  "Portable methods have equal observable results; capability-backed methods may differ only in granted authority and declared host availability."}
+
+ :native/errors
+ [{:error/id :native/unknown-type}
+  {:error/id :native/unknown-method}
+  {:error/id :native/invalid-arity}
+  {:error/id :native/invalid-argument}
+  {:error/id :native/capability-denied}
+  {:error/id :native/unavailable-profile}
+  {:error/id :native/type-not-transportable}]
+
+ :native/references
+ [{:reference/id :native/legacy-catalog
+   :reference/path
+   "../../../00-unsorted/platform-language/draft/conformance/native.edn"
+   :reference/authority :historical}
+  {:reference/id :native/rust-catalog
+   :reference/path "../../../../rust/src/core.rs"
+   :reference/authority :implementation}
+  {:reference/id :native/java-catalog
+   :reference/path "../../../../java/src/main/java/hara/truffle/HaraContext.java"
+   :reference/authority :implementation}]
+
+ :native/conformance
+ [{:conformance/id :native/legacy-inventory
+   :conformance/path
+   "../../../00-unsorted/platform-language/draft/conformance/native.edn"
+   :conformance/authority :migration-evidence}
+  {:conformance/id :native/legacy-runtime-cases
+   :conformance/path
+   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
+   :conformance/authority :migration-evidence}]}

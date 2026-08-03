@@ -1,0 +1,203 @@
+{:document/id :hara/foundation
+ :document/type :foundation-spec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "Hara Foundation bootstrap namespace"
+ :document/summary
+ "Portable contract for std.foundation, its automatically referred public surface, and the boundary between HAL definitions, protocols, and native primitives."
+
+ :spec/conforms-to
+ {:spec/id :hara/foundation-metaspec
+  :spec/version "0.1.0"}
+
+ :foundation/scope
+ {:scope/namespace std.foundation
+  :scope/includes
+  #{:bootstrap-referral :namespace-configuration :root-public-vars
+    :root-macros :protocol-aliases :native-type-aliases
+    :portable-function-wrappers :public-metadata}
+  :scope/excludes
+  #{:core-form-semantics :protocol-dispatch-semantics :native-method-semantics
+    :qualified-foundation-libraries :general-host-interop}}
+
+ :foundation/invariants
+ [{:requirement/id :foundation/bootstrap-portable
+   :requirement/level :must
+   :requirement/text
+   "The same root public names, kinds, arglists, metadata, and observable results are available in each conforming runtime profile."}
+  {:requirement/id :foundation/ownership
+   :requirement/level :must
+   :requirement/text
+   "Every public root name is classified as portable HAL, protocol alias, native alias, narrow runtime primitive, macro, or constant."}
+  {:requirement/id :foundation/no-host-values
+   :requirement/level :must-not
+   :requirement/text
+   "A public function leaks mutable Java, Rust, JavaScript, or implementation collection values unless the return type is an explicitly declared Hara runtime value."}
+  {:requirement/id :foundation/metadata
+   :requirement/level :must
+   :requirement/text
+   "Public functions preserve their documented name, namespace, docstring, arglists, and schema metadata."}
+  {:requirement/id :foundation/no-clojure-assumption
+   :requirement/level :must
+   :requirement/text
+   "A similarly named Clojure function does not define Foundation semantics unless this specification says so."}]
+
+ :foundation/bootstrap
+ {:bootstrap/automatic-referral
+  "An ordinary namespace refers the public std.foundation surface unless its single :config map sets :blank true."
+  :bootstrap/blank
+  {:blank/foundation-referral false
+   :blank/special-forms true
+   :blank/native-and-protocol-aliases true}
+  :bootstrap/config
+  {:config/cardinality :zero-or-one
+   :config/keys #{:blank :builtins :intrinsics}
+   :config/unknown-key :error}
+  :bootstrap/builtins
+  {:builtins/selection :exact
+   :builtins/source :registered-runtime-export-catalog
+   :builtins/missing :error
+   :builtins/repeated-identical-activation :idempotent}
+  :bootstrap/intrinsics
+  {:intrinsics/default :all
+   :intrinsics/options #{:exclude :alias}
+   :intrinsics/annex :hara/foundation-annex}
+  :bootstrap/protocol-aliases
+  {:aliases/spec :hara/protocol
+   :aliases/selection :all}
+  :bootstrap/native-aliases
+  {:aliases/spec :hara/native
+   :aliases/selection :all}}
+
+ :foundation/surface
+ [{:surface/id :foundation/protocol-aliases
+   :surface/domain :protocol
+   :surface/symbols
+   {:symbols/spec :hara/protocol
+    :symbols/selection :all-protocol-symbols}
+   :surface/classification :protocol-alias
+   :surface/protocol-spec :hara/protocol}
+  {:surface/id :foundation/native-aliases
+   :surface/domain :native-type
+   :surface/symbols
+   {:symbols/spec :hara/native
+    :symbols/selection :all-native-type-symbols}
+   :surface/classification :native-alias
+   :surface/native-spec :hara/native}
+  {:surface/id :foundation/composition
+   :surface/domain :function
+   :surface/symbols
+   [identity inc dec constantly comp complement partial juxt]
+   :surface/classification :portable-hal}
+  {:surface/id :foundation/predicates
+   :surface/domain :function
+   :surface/symbols
+   [zero? pos? neg? even? odd? nil? false? true? has? empty?
+    distinct?]
+   :surface/classification :portable-hal}
+  {:surface/id :foundation/references
+   :surface/domain :function
+   :surface/symbols
+   [reset! cas! swap! watch-add watch-remove watch-list]
+   :surface/classification :protocol-wrapper}
+  {:surface/id :foundation/metadata
+   :surface/domain :function
+   :surface/symbols [meta with-meta]
+   :surface/classification :protocol-wrapper
+   :surface/protocol-spec :hara/protocol}
+  {:surface/id :foundation/collections
+   :surface/domain :function
+   :surface/symbols
+   [first second rest not-empty last reverse get-in assoc-in update update-in
+    key val keys vals min max sort sort-by drop-last butlast take-last
+    split-at split-with partition-by take-nth into distinct zipmap map-keys
+    map-vals merge-with group-by frequencies]
+   :surface/classification :portable-hal}
+  {:surface/id :foundation/iteration
+   :surface/domain :function
+   :surface/symbols
+   [range repeat repeatedly iterate take-while drop-while partition-all
+    partition interpose interleave map filter take drop mapcat keep cycle zip
+    partition-pair every? any?]
+   :surface/classification :native-wrapper
+   :surface/native-spec :hara/native}
+  {:surface/id :foundation/numeric-native
+   :surface/domain :function
+   :surface/symbols
+   [long double bit-and bit-or bit-xor bit-not bit-shift-left bit-shift-right
+    abs acos acosh asin asinh atan atan2 atanh ceil cos cosh exp floor pow sin
+    sinh sqrt tan tanh]
+   :surface/classification :native-wrapper
+   :surface/native-spec :hara/native}
+  {:surface/id :foundation/runtime-introspection
+   :surface/domain :function
+   :surface/symbols
+   [eval read-forms load-string macroexpand macroexpand-all apply-in apply-as
+    invoke-as current-namespace current-symbols ns-state ns-loaded?
+    ns-alias-state ns-name ns-publics ns-aliases resolve requiring-resolve
+    var-sym]
+   :surface/classification :narrow-runtime-primitive}
+  {:surface/id :foundation/macros
+   :surface/domain :macro
+   :surface/symbols
+   [doto if-not when if-let when-let cond-> cond->> with-ns intern-in intern-all
+    with:template-meta template-vars template-entries code-line code-column]
+   :surface/classification :portable-hal}
+  {:surface/id :foundation/templates
+   :surface/domain :function
+   :surface/symbols [template-meta template-ensure intern-var]
+   :surface/classification :mixed}
+  {:surface/id :foundation/constants
+   :surface/domain :constant
+   :surface/symbols [E PI *template-meta*]
+   :surface/classification :portable-value}]
+
+ :foundation/classification
+ {:classification/portable-hal
+  "Defined in lib/src/std/foundation.hal and executable without host interop."
+  :classification/protocol-wrapper
+  "Delegates to a method owned by :hara/protocol."
+  :classification/native-wrapper
+  "Delegates to a method owned by :hara/native while preserving portable Hara values."
+  :classification/narrow-runtime-primitive
+  "Implemented by the runtime because it operates on evaluator or namespace state."
+  :classification/protocol-alias
+  "Names a canonical std.protocol.* namespace."
+  :classification/native-alias
+  "Names a canonical std.native.* namespace."
+  :classification/candidate-gate
+  "Before candidate status, a fresh-context ns-publics inventory must exactly match the union of declared surface groups; draft omissions are specification findings."}
+
+ :foundation/errors
+ [{:error/id :foundation/invalid-arity}
+  {:error/id :foundation/invalid-argument}
+  {:error/id :foundation/invalid-namespace-config}
+  {:error/id :foundation/missing-builtin}
+  {:error/id :foundation/alias-conflict}
+  {:error/id :foundation/unsupported-operation}]
+
+ :foundation/references
+ [{:reference/id :foundation/source
+   :reference/path "../../../../lib/src/std/foundation.hal"
+   :reference/authority :implementation}
+  {:reference/id :foundation/legacy-boundary
+   :reference/path
+   "../../../99-archive/planning/foundation/foundation.edn"
+   :reference/authority :historical}
+  {:reference/id :foundation/legacy-surface
+   :reference/path
+   "../../../00-unsorted/platform-language/draft/conformance/foundation.edn"
+   :reference/authority :historical}
+  {:reference/id :foundation/legacy-functions
+   :reference/path
+   "../../../00-unsorted/platform-language/draft/conformance/functions.edn"
+   :reference/authority :historical}]
+
+ :foundation/conformance
+ [{:conformance/id :foundation/root-hal-tests
+   :conformance/path "../../../../lib/test/std/foundation_test.hal"
+   :conformance/authority :implementation-evidence}
+  {:conformance/id :foundation/legacy-runtime-cases
+   :conformance/path
+   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
+   :conformance/authority :migration-evidence}]}

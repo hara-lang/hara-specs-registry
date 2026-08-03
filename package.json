@@ -8,8 +8,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "node scripts/check-index.mjs",
-    "check": "node scripts/validate-registry.mjs && node scripts/check-index.mjs",
+    "build": "node scripts/generate-index.mjs",
+    "check": "node scripts/validate-registry.mjs && node scripts/generate-index.mjs --check && node scripts/check-index.mjs",
     "test": "node --test test/*.test.mjs",
     "registry:generate": "node scripts/generate-index.mjs",
     "registry:generate:check": "node scripts/generate-index.mjs --check"

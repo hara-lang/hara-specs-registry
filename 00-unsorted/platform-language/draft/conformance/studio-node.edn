@@ -1,0 +1,39 @@
+{:spec/version "1.1.0-draft"
+ :language "hara"
+ :runtimes [:rust :truffle :browser]
+ :substrate/conformance
+ {:spec :xt/substrate-runtime-profiles
+  :path "../../../../02-platform/000069-substrate-runtime-profiles/draft/conformance/runtime-profiles.edn"
+  :authority :related-evidence
+  :conformance-claim false}
+ :cases
+ [{:id :anonymous/first-form
+   :operation :eval-document
+   :document "document/a"
+   :source "(ns+) 42"
+   :expect {:value 42 :generation 1 :private true}}
+  {:id :anonymous/no-name
+   :operation :eval-document
+   :document "document/a"
+   :source "(ns+ public.name) 42"
+   :expect {:error :ns+/named-clause}}
+  {:id :anonymous/isolation
+   :steps
+   [{:operation :eval-document :document "document/a" :source "(ns+) (def value 1)"}
+    {:operation :eval-document :document "document/b" :source "(ns+) (def value 2)"}
+    {:operation :eval-form :document "document/a" :source "value" :expect 1}
+    {:operation :eval-form :document "document/b" :source "value" :expect 2}]}
+  {:id :anonymous/rollback
+   :steps
+   [{:operation :eval-document :document "document/a" :source "(ns+) (def value 42)"}
+    {:operation :eval-document
+     :document "document/a"
+     :source "(ns+) (def value 0) (throw \"bad\")"
+     :expect {:error :eval/error}}
+    {:operation :eval-form :document "document/a" :source "value" :expect 42}]}
+  {:id :anonymous/node-binding
+   :operation :eval-document
+   :node "node/visualizer"
+   :document "document/visualizer"
+   :source "(ns+) (node/info)"
+   :expect {:node/id "node/visualizer" :private-module true}}]}

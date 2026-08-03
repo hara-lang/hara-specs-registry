@@ -1,0 +1,141 @@
+{:document/id :hara/foundation-annex-metaspec
+ :document/type :hara/metaspec
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara Foundation annex specification meta-spec"
+ :document/summary
+ "Defines the machine-readable contract for public std.foundation.* library namespaces."
+
+ :spec/conforms-to
+ {:spec/id :hara/metaspec-metaspec
+  :spec/version "0.1.0"}
+ :spec/artifact-kind :hara/foundation-annex-spec
+
+ :meta/document-schema
+ {:schema/id :hara.foundation-annex.metaspec/document
+  :schema/type :map
+  :schema/closed false
+  :schema/required
+  [:document/id :document/type :document/version :document/status
+   :document/title :document/summary :spec/conforms-to
+   :annex/scope :annex/invariants :annex/libraries :annex/aliases
+   :annex/capabilities :annex/errors :annex/references :annex/conformance]
+  :schema/properties
+  {:document/id {:schema/ref :hara.foundation-annex.metaspec/qualified-keyword}
+   :document/type {:schema/value :foundation-annex-spec}
+   :document/version {:schema/ref :hara.foundation-annex.metaspec/version-string}
+   :document/status {:schema/ref :hara.foundation-annex.metaspec/status}
+   :document/title {:schema/ref :hara.foundation-annex.metaspec/non-empty-string}
+   :document/summary {:schema/ref :hara.foundation-annex.metaspec/non-empty-string}
+   :spec/conforms-to {:schema/ref :hara.foundation-annex.metaspec/spec-reference}
+   :annex/scope {:schema/type :map}
+   :annex/invariants {:schema/type :vector
+                      :schema/items :hara.foundation-annex.metaspec/requirement}
+   :annex/libraries {:schema/type :vector
+                     :schema/items :hara.foundation-annex.metaspec/library}
+   :annex/aliases {:schema/type :map}
+   :annex/capabilities {:schema/type :map}
+   :annex/errors {:schema/type :vector}
+   :annex/references {:schema/type :vector
+                      :schema/items :hara.foundation-annex.metaspec/reference}
+   :annex/conformance {:schema/type :vector
+                       :schema/items :hara.foundation-annex.metaspec/conformance}}}
+
+ :meta/schemas
+ [{:schema/id :hara.foundation-annex.metaspec/qualified-keyword
+   :schema/type :keyword
+   :schema/constraint :qualified}
+  {:schema/id :hara.foundation-annex.metaspec/non-empty-string
+   :schema/type :string
+   :schema/min-length 1}
+  {:schema/id :hara.foundation-annex.metaspec/version-string
+   :schema/type :string
+   :schema/pattern "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"}
+  {:schema/id :hara.foundation-annex.metaspec/status
+   :schema/type :enum
+   :schema/values [:draft :candidate :stable :deprecated :retired]}
+  {:schema/id :hara.foundation-annex.metaspec/spec-reference
+   :schema/type :map
+   :schema/required [:spec/id :spec/version]}
+  {:schema/id :hara.foundation-annex.metaspec/requirement
+   :schema/type :map
+   :schema/required
+   [:requirement/id :requirement/level :requirement/text]}
+  {:schema/id :hara.foundation-annex.metaspec/library
+   :schema/type :map
+   :schema/required
+   [:library/id :library/namespace :library/classification
+    :library/public-vars]}
+  {:schema/id :hara.foundation-annex.metaspec/reference
+   :schema/type :map
+   :schema/required
+   [:reference/id :reference/path :reference/authority]}
+  {:schema/id :hara.foundation-annex.metaspec/conformance
+   :schema/type :map
+   :schema/required
+   [:conformance/id :conformance/path :conformance/authority]}]
+
+ :meta/cross-references
+ [{:reference/id :hara.foundation-annex.metaspec/native-reference
+   :reference/from :var/native
+   :reference/to :hara/native}
+  {:reference/id :hara.foundation-annex.metaspec/capability-reference
+   :reference/from :library/capability
+   :reference/to :capability/id}
+  {:reference/id :hara.foundation-annex.metaspec/conformance-path
+   :reference/from :conformance/path
+   :reference/to :document-relative-path}]
+
+ :meta/requirements
+ [{:requirement/id :hara.foundation-annex.metaspec/public-libraries
+   :requirement/level :must
+   :requirement/text
+   "Every public std.foundation.* namespace declares its public Vars, classification, aliases, and dependencies."}
+  {:requirement/id :hara.foundation-annex.metaspec/implementation-private
+   :requirement/level :must-not
+   :requirement/text
+   "Implementation-only helper namespaces become public API without an explicit public classification."}
+  {:requirement/id :hara.foundation-annex.metaspec/capability-boundary
+   :requirement/level :must
+   :requirement/text
+   "Host-backed libraries declare authority requirements and deterministic denial behavior."}
+  {:requirement/id :hara.foundation-annex.metaspec/qualified-keys
+   :requirement/level :must
+   :requirement/text "Unknown extension keys are qualified keywords."}]
+
+ :meta/checkers
+ [{:checker/id :hara.foundation-annex.metaspec.rule/qualified-key
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/qualified-map-keys
+   :checker/requirement :hara.foundation-annex.metaspec/qualified-keys}
+  {:checker/id :hara.foundation-annex.metaspec.rule/duplicate-id
+   :checker/type :builtin
+   :checker/op :hara.metaspec.check/unique-field-values
+   :checker/requirement :hara.foundation-annex.metaspec/public-libraries
+   :checker/fields
+   [:document/id :library/id :var/id :requirement/id
+    :reference/id :conformance/id]}]
+
+ :metaspec/generation
+ {:generation/input
+  {:input/type :hara.foundation-annex.metaspec/request
+   :input/required
+   [:request/title :request/libraries :request/aliases
+    :request/capabilities]}
+  :generation/output
+  {:output/type :hara/foundation-annex-spec
+   :output/format :edn
+   :output/required
+   [:document/id :document/type :document/version :document/status
+    :document/title :document/summary :spec/conforms-to
+    :annex/scope :annex/invariants :annex/libraries :annex/aliases
+    :annex/capabilities :annex/errors :annex/references
+    :annex/conformance]}
+  :generation/process
+  [:inventory-hal-sources :inventory-runtime-exports
+   :classify-public-libraries :generate-draft :lint
+   :repair-findings :emit-canonical-edn]
+  :generation/acceptance
+  {:acceptance/status :pass
+   :acceptance/required-summary
+   {:summary/fail 0 :summary/unknown 0 :summary/blocked 0}}}}

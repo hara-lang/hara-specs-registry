@@ -1,0 +1,742 @@
+{:document/id :hal/language
+ :document/type :language-spec
+ :document/version "1.0.0-draft"
+ :document/status :draft
+ :document/title "HAL language specification"
+ :document/summary
+ "Portable language contract for HAL (Hara Lisp), whose shared reader uses a restricted, host-neutral EDN profile with signed 64-bit integers and binary64 floating-point numbers."
+
+ :spec/conforms-to
+ {:document "../../../01-lang/001-language/metaspec/language-metaspec.edn"
+  :version "0.1.0-draft"}
+
+ :spec/scope
+ {:language "HAL"
+  :source-extension ".hal"
+  :data-notation
+  {:name "EDN"
+   :extension ".edn"
+   :profile :hara
+   :unsupported-number-forms #{:ratio}}
+  :profile :portable-core
+  :includes
+  #{:reader
+    :values
+    :evaluation
+    :functions-and-bindings
+    :collections-and-iteration
+    :numbers
+    :errors
+    :protocols-and-structs
+    :namespaces-and-modules
+    :standard-libraries
+    :host-boundary}
+  :excludes
+  #{:backend-storage-layout
+    :compiler-implementation
+    :host-reflection
+    :target-emission-syntax
+    :editor-and-repl-ux
+    :extension-packaging}}
+
+ :spec/invariants
+ [{:requirement/id :hal/portable-semantics
+   :requirement/level :must
+   :requirement/text
+   "Observable HAL behaviour is defined before and independently of a target runtime or host language."
+   :requirement/evidence
+   [{:suite :hal/parity
+     :cases [:value/nil :control/let :function/fixed-arity]}]}
+
+  {:requirement/id :hal/persistent-values
+   :requirement/level :must
+   :requirement/text
+   "Literal collections remain persistent values unless an explicit mutable value constructor is used."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:collection/core-functions
+             :collection/ordinary-dissoc-navigation]}]}
+
+  {:requirement/id :hal/iterator-first
+   :requirement/level :must
+   :requirement/text
+   "Sequence operations are specified over the HAL iterator boundary and do not require a host sequence abstraction."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:iterator/core :iterator/combinators]}]}
+
+  {:requirement/id :hal/context-local
+   :requirement/level :must
+   :requirement/text
+   "Namespace, Var, macro, protocol, module, and capability state is local to a HAL runtime context."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:runtime/dynamic-binding :runtime/metadata]}]}
+
+  {:requirement/id :hal/no-ambient-authority
+   :requirement/level :must-not
+   :requirement/text
+   "Loading source, a library, or an extension must not implicitly grant filesystem, network, process, reflection, or compilation authority."}]
+
+ :spec/section-order
+ [:hal/source-reader
+  :hal/values
+  :hal/evaluation
+  :hal/functions-bindings
+  :hal/collections-iteration
+  :hal/numbers
+  :hal/errors
+  :hal/protocols-structs
+  :hal/namespaces-modules
+  :hal/standard-libraries
+  :hal/host-boundary]
+
+ :spec/sections
+ [{:section/id :hal/source-reader
+   :section/title "Source and reader"
+   :section/summary
+   "HAL source and EDN data are UTF-8 text read by the shared HAL reader into immutable forms, with source locations retained as diagnostic metadata."
+   :section/requirements
+   [{:requirement/id :reader/edn-profile
+     :requirement/level :must
+     :requirement/text
+     "The Hara EDN profile retains the core EDN data forms, accepts signed 64-bit integers and binary64 floating-point values by default, accepts arbitrary-precision integers and exact decimals with explicit N and M suffixes, and rejects ratios and unsuffixed integer overflow."
+     :requirement/evidence
+     [{:suite :hal/reader
+       :cases [:numbers
+               :integer-boundaries
+               :positive-integer-overflow
+               :negative-integer-overflow
+               :explicit-bigint
+               :big-decimal]}]}
+    {:requirement/id :reader/forms
+     :requirement/level :must
+     :requirement/text
+     "For HAL source, the shared reader accepts the Hara EDN profile plus the program-reader extensions metadata, regular expressions, symbolic floating-point values, extended-radix integers, and the quote, syntax-quote, unquote, unquote-splicing, deref, and var prefixes."
+     :requirement/evidence
+     [{:suite :hal/reader
+       :cases [:nil
+               :booleans
+               :collections
+               :reader-prefixes
+               :metadata
+               :discard
+               :regex
+               :symbolic-values
+               :hex-integers
+               :octal-integers
+               :radix-integers]}]}
+    {:requirement/id :reader/delimiters
+     :requirement/level :must
+     :requirement/text
+     "Collections require matching delimiters; incomplete and mismatched forms are reader errors."
+     :requirement/evidence
+     [{:suite :hal/reader
+       :cases [:unmatched-delimiter :unterminated-list :mismatched-vector]}]}
+    {:requirement/id :reader/round-trip
+     :requirement/level :must
+     :requirement/text
+     "Readable immutable values have a canonical representation that round-trips through the reader."}]
+   :section/forms
+   [:hal.form/quote
+    :hal.form/var
+    :hal.form/deref]}
+
+  {:section/id :hal/values
+   :section/title "Values and truth"
+   :section/summary
+   "HAL defines host-neutral scalar, persistent collection, function, Var, protocol, struct, iterator, and explicit mutable value categories."
+   :section/requirements
+   [{:requirement/id :value/truth
+     :requirement/level :must
+     :requirement/text
+     "Only nil and false are falsey; every other value is truthy."
+     :requirement/evidence
+     [{:suite :hal/parity
+       :cases [:value/nil :value/boolean]}]}
+    {:requirement/id :value/equality
+     :requirement/level :must
+     :requirement/text
+     "Value equality and hashing are defined by HAL value category rather than host object identity."}
+    {:requirement/id :value/metadata
+     :requirement/level :must
+     :requirement/text
+     "Metadata does not alter the equality or hash of immutable values."}]}
+
+  {:section/id :hal/evaluation
+   :section/title "Evaluation"
+   :section/summary
+   "Expressions evaluate left-to-right except where a declared special form or macro specifies different evaluation."
+   :section/requirements
+   [{:requirement/id :eval/order
+     :requirement/level :must
+     :requirement/text
+     "Ordinary invocation evaluates the callee and arguments from left to right."}
+    {:requirement/id :eval/do
+     :requirement/level :must
+     :requirement/text
+     "A do form and a source containing multiple top-level forms return the value of the final form."}
+    {:requirement/id :eval/recur-tail
+     :requirement/level :must
+     :requirement/text
+     "recur is valid only in tail position and must match the arity of its enclosing function or loop."}]
+   :section/forms
+   [:hal.form/if
+    :hal.form/do
+    :hal.form/let
+    :hal.form/loop
+    :hal.form/recur
+    :hal.form/throw
+    :hal.form/try]}
+
+  {:section/id :hal/functions-bindings
+   :section/title "Functions and bindings"
+   :section/summary
+   "Functions are lexical closures with fixed, variadic, and multiple arities; binding forms define explicit scope and evaluation rules."
+   :section/requirements
+   [{:requirement/id :fn/closure
+     :requirement/level :must
+     :requirement/text
+     "A function captures referenced lexical bindings from its definition environment."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:function/closure-capture]}]}
+    {:requirement/id :fn/arity
+     :requirement/level :must
+     :requirement/text
+     "Functions support fixed arities, a final variadic binding introduced by &, and multiple arity clauses. Calling a function with no matching arity is a deterministic HAL error."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:function/fixed-arity
+               :function/variadic-arity
+               :function/multiple-arities
+               :function/arity-error]}]}
+    {:requirement/id :binding/let-sequential
+     :requirement/level :must
+     :requirement/text
+     "let bindings are established from left to right. Each initializer evaluates after the preceding bindings in the same vector have entered scope, so it may refer to those earlier bindings."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:binding/let-sequential]}]}
+    {:requirement/id :binding/destructuring
+     :requirement/level :must
+     :requirement/text
+     "Function, let, and loop bindings accept nested sequential and map destructuring. Sequential patterns support &, :as, and missing positions; map patterns support :keys, :strs, :syms, :as, and :or. Missing values bind nil, and :or supplies defaults when the selected map value is missing or nil."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:binding/sequential-destructuring
+               :binding/map-destructuring
+               :binding/missing-destructuring
+               :binding/nil-map-default]}]}
+    {:requirement/id :definition/metadata
+     :requirement/level :must
+     :requirement/text
+     "Definitions preserve declared metadata and expose descriptive :doc, :schema, and :arglists values through their Vars."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:definition/doc-metadata
+               :definition/schema-metadata
+               :definition/arglists-metadata]}]}]
+   :section/forms
+   [:hal.form/fn
+    :hal.form/let
+    :hal.form/loop
+    :hal.form/recur
+    :hal.form/binding]}
+
+  {:section/id :hal/collections-iteration
+   :section/title "Collections and iteration"
+   :section/summary
+   "Persistent collection families preserve their identity and updates, while lazy traversal is expressed through closeable iterators."
+   :section/requirements
+   [{:requirement/id :collection/persistent-update
+     :requirement/level :must
+     :requirement/text
+     "Persistent updates return a new value and do not mutate the input collection."}
+    {:requirement/id :collection/family
+     :requirement/level :must
+     :requirement/text
+     "Collection operations preserve the concrete family where that family declares the operation."}
+    {:requirement/id :sequence/optional-non-empty
+     :requirement/level :must
+     :requirement/text
+     "A HAL Seq is a non-empty lazy sequence cell and a one-shot iterator. Every Seq satisfies both seq? and iter?, and every value satisfying seq? has a first element. seq and rest return nil when no cell exists; there is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct empty representations; iter converts nil to an exhausted iterator and vec materializes each as an empty vector."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:sequence/empty-is-nil
+               :sequence/non-empty-rest
+               :sequence/is-iterator]}]}
+    {:requirement/id :sequence/prepend
+     :requirement/level :must
+     :requirement/text
+     "cons may prepend a value to a Seq without materializing its tail. conj is not defined for Seq values."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:sequence/lazy-cons
+               :sequence/reject-conj]}]}
+    {:requirement/id :iterator/exact-observation
+     :requirement/level :must
+     :requirement/text
+     "iter-next? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/exact-lookahead
+               :iterator/generated-exhaustion
+               :iterator/nil-requires-conversion]}]}
+    {:requirement/id :iterator/public-surface
+     :requirement/level :must
+     :requirement/text
+     "std.foundation exports exactly iter, iter?, iter-next?, and iter-next from the iterator family. Every other iter-* operation is a host-native operation of Iter and must be invoked through the startup type alias as Iter/iter-* (or an explicit namespace alias); it is not a root Foundation binding."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/root-surface
+               :iterator/native-combinator-qualified
+               :iterator/root-combinator-unbound]}]}
+    {:requirement/id :iterator/cycle-non-empty
+     :requirement/level :must
+     :requirement/text
+     "cycle requires a non-empty source, proves and buffers the first item without losing it, and rejects an empty source."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/empty-cycle-rejected]}]}
+    {:requirement/id :iterator/shortest-source-finite
+     :requirement/level :must
+     :requirement/text
+     "Iterator combinators that stop at the shortest source, including iter-zip and iter-interleave, are finite when any source is finite and may be materialized without consuming an unbounded source."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:iterator/shortest-source-finite]}]}
+    {:requirement/id :iterator/lazy
+     :requirement/level :must
+     :requirement/text
+     "Lazy iterator combinators acquire and advance sources only as demanded."}
+    {:requirement/id :iterator/close
+     :requirement/level :must
+     :requirement/text
+     "Closing a wrapper iterator closes each source it has acquired."}]}
+
+  {:section/id :hal/numbers
+   :section/title "Numbers"
+   :section/summary
+   "HAL has fixed-width integers, arbitrary-precision integers, floating values, and arbitrary-precision decimals without a mandatory ratio type."
+   :section/requirements
+   [{:requirement/id :number/promotion
+     :requirement/level :must
+     :requirement/text
+     "Arithmetic promotes to a numeric representation capable of preserving the operation result."}
+    {:requirement/id :number/ratio-free
+     :requirement/level :must-not
+     :requirement/text
+     "Division creates no implicit ratio value."}
+    {:requirement/id :number/divide-zero
+     :requirement/level :must
+     :requirement/text
+     "Division and remainder by zero report a HAL error."}]}
+
+  {:section/id :hal/errors
+   :section/title "Errors and cleanup"
+   :section/summary
+   "HAL errors preserve guest values and source information, and cleanup executes during normal completion and unwinding."
+   :section/requirements
+   [{:requirement/id :error/finally
+     :requirement/level :must
+     :requirement/text
+     "A finally clause executes exactly once during normal completion and error unwinding. If cleanup fails, the cleanup error becomes the observable result."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:error/finally-normal
+               :error/finally-unwind]}]}
+    {:requirement/id :error/guest-value
+     :requirement/level :must
+     :requirement/text
+     "throw raises the evaluated HAL value without converting it to host text. Catch clauses are tested in source order, bind the original value, and unmatched values continue unwinding."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:error/catch-guest-value
+               :error/catch-order
+               :error/unmatched-catch]}]}
+    {:requirement/id :error/source
+     :requirement/level :must
+     :requirement/text
+     "Reader, analysis, arity, destructuring, recur, protocol, and runtime errors retain available source location information."}]
+   :section/forms
+   [:hal.form/throw :hal.form/try]}
+
+  {:section/id :hal/protocols-structs
+   :section/title "Protocols, structs, and multimethods"
+   :section/summary
+   "Protocols are context-local language descriptors; structs are immutable domain values; multimethods dispatch using HAL equality."
+   :section/requirements
+   [{:requirement/id :protocol/context
+     :requirement/level :must
+     :requirement/text
+     "Protocol declarations and extensions are installed in the current HAL context."}
+    {:requirement/id :protocol/host-neutral
+     :requirement/level :must-not
+     :requirement/text
+     "A host interface or class relationship alone must not define HAL protocol semantics."}
+    {:requirement/id :struct/immutable
+     :requirement/level :must
+     :requirement/text
+     "Struct field values are immutable and struct metadata is separate from fields."}]
+   :section/forms
+   [:hal.form/defstruct
+    :hal.form/defprotocol
+    :hal.form/extend-type
+    :hal.form/defmulti
+    :hal.form/defmethod]}
+
+  {:section/id :hal/namespaces-modules
+   :section/title "Vars, namespaces, macros, and modules"
+   :section/summary
+   "Definitions live in namespace Vars; aliases and referrals preserve Var identity; modules load transactionally."
+   :section/requirements
+   [{:requirement/id :namespace/var-identity
+     :requirement/level :must
+     :requirement/text
+     "Aliases and referred symbols preserve the identity and current value of their source Var."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/alias-var-identity
+               :namespace/refer-var-identity]}]}
+    {:requirement/id :namespace/callable-vars
+     :requirement/level :must
+     :requirement/text
+     "Every ordinary callable is resolved as a value: lexical binding first, then a visible namespace Var. Host implementations are Var roots, not privileged symbol dispatch, so Var identity, lexical shadowing, and late redefinition are preserved across runtimes and compilation backends."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/callable-var-precedence
+               :namespace/callable-var-lexical-shadow
+               :namespace/callable-var-late-binding]}]}
+    {:requirement/id :namespace/current-alias
+     :requirement/level :must
+     :requirement/text
+     "Every namespace, including a blank namespace, has the reserved virtual namespace alias -. During name resolution, an unquoted symbol -/name resolves exactly as the fully qualified symbol <current-namespace>/name, and (var -/name), including the #' reader form, resolves to that namespace-owned Var. The alias is contextual rather than an interned namespace or alias-table entry: it cannot be rebound, removed, or used as a module-loading target. Quoting suppresses resolution, so (quote -/name) retains the literal symbol -/name. Compiled artifacts must store the resolved fully qualified name rather than -."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/current-alias-value
+               :namespace/current-alias-var
+               :namespace/current-alias-quoted
+               :namespace/current-alias-missing
+               :namespace/current-alias-reserved]}]}
+    {:requirement/id :namespace/referred-var-ownership
+     :requirement/level :must
+     :requirement/text
+     "A referred Var belongs to its defining namespace and cannot be replaced by def, defn, set!, or declare in the receiving namespace. A namespace must omit the name, including through :require :exclude, before defining a local replacement. declare supplies forward visibility only."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/referred-var-protected
+               :namespace/callable-var-precedence]}]}
+    {:requirement/id :namespace/facade-vars
+     :requirement/level :must
+     :requirement/text
+     "intern-var, intern-in, and intern-all create receiving-namespace façade Vars by copying the source Var's current root and metadata; they do not create aliases or referrals."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/facade-var-copy]}]}
+    {:requirement/id :module/transactional
+     :requirement/level :must
+     :requirement/text
+     "A module is identified by its canonical resolved resource. Dependencies initialize before their dependants in source order; cycles are errors. A failed load publishes no partial namespace, Var, macro, dependency, or revision changes."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:module/canonical-cache
+               :module/dependency-order
+               :module/cycle-rollback
+               :module/failure-rollback]}]}
+    {:requirement/id :module/reload
+     :requirement/level :must
+     :requirement/text
+     "A successful initial load establishes revision 1. Explicit reload evaluates transactionally and increments the revision only after success. The semantics are identical for standalone require and :reload true inside an ns :require clause: the target reload completes before aliases, referred Vars, or referred macros are published. A failed reload preserves the previous roots, revision, namespace bindings, and caller namespace. Existing compiled call targets remain immutable; subsequent compilation resolves the new Var and macro roots."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:module/reload-revision
+               :module/reload-rollback
+               :module/ns-require-reload
+               :macro/reload-new-compilation]}]}
+    {:requirement/id :module/lazy-alias
+     :requirement/level :must
+     :requirement/text
+     "A require spec may declare (:lazy true) only with (:as alias). It records a non-forcing alias, loads its target on first qualified lookup, Var lookup, or resolve, and rejects :refer and :refer-macros in the same spec. A failed force publishes no partial bindings, records :failed, and is retried only by explicit reload."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:lazy/non-forcing
+               :lazy/qualified-force
+               :lazy/failure-state
+               :lazy/explicit-retry]}]}
+    {:requirement/id :module/loading-state
+     :requirement/level :must
+     :requirement/text
+     "ns-state, ns-loaded?, and ns-alias-state are non-forcing inspection operations. ns-state returns one of :unknown, :unloaded, :loading, :loaded, or :failed; alias state is local to the querying namespace and may be inspected from another namespace."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/loading-state
+               :namespace/cross-namespace-alias-state]}]}
+    {:requirement/id :namespace/with-ns
+     :requirement/level :must
+     :requirement/text
+     "with-ns evaluates its quoted body forms in an existing loaded target namespace, returns the final value, and restores the caller namespace on success or failure. It neither creates nor loads namespaces and does not capture caller lexical locals."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:namespace/with-ns-success
+               :namespace/with-ns-failure
+               :namespace/with-ns-lexical-isolation]}]}
+    {:requirement/id :namespace/session-isolation
+     :requirement/level :must
+     :requirement/text
+     "Namespace, Var root, dynamic binding, macro, module, loading-state, and REPL history changes are isolated by session. Native facilities, including Host, are exposed as session-local façade objects even when their immutable descriptors or underlying host service registries are shared. Resources may be shared as immutable package locks, source bytes, or HIR bytes, but live Vars, namespace objects, closures, mutable references, streams, sockets, native façade objects, and host handles do not cross sessions."
+     :requirement/evidence
+     [{:suite :hal/modules
+       :cases [:session/namespace-isolation
+               :session/dynamic-unwind
+               :session/immutable-transfer
+               :session/reject-live-transfer
+               :repl/retained-state
+               :repl/error-recovery]}]}
+    {:requirement/id :foundation/templates
+     :requirement/level :must
+     :requirement/text
+     "with:template-meta, template-meta, template-vars, template-entries, and template-ensure comprise the portable template surface. template-bulk is not part of HAL."}
+    {:requirement/id :macro/compile-time
+     :requirement/level :must
+     :requirement/text
+     "Macros expand in the context-local compile-time registry before ordinary evaluation."}]
+   :section/forms
+   [:hal.form/def
+    :hal.form/ns
+    :hal.form/require
+    :hal.macro/with-ns]}
+
+  {:section/id :hal/standard-libraries
+   :section/title "Standard libraries"
+   :section/summary
+   "Portable source libraries extend HAL without exposing host objects or ambient authority."
+   :section/requirements
+   [{:requirement/id :std.foundation.edn/api
+     :requirement/level :must
+     :requirement/text
+     "The std.foundation.edn namespace provides one-argument read and write functions plus the two-argument (pretty value opts) function. read accepts exactly one value using the Hara EDN profile and does not evaluate it; ratios, unsuffixed integer overflow, empty input, and multiple top-level values are errors. Explicit arbitrary-precision N integers and exact-decimal M values are accepted. write and pretty return canonical readable text that round-trips through read. pretty requires opts to be a map; its option keys are reserved."}
+    {:requirement/id :std.foundation/ex-info
+     :requirement/level :must
+     :requirement/text
+     "ex-info constructs a structured exception from a string message, a data map, and an optional cause. ex-message returns its message, ex-data and IExInfo/data return its data map, and throw/catch preserve the structured exception value."}
+    {:requirement/id :std.foundation/startup-defaults
+     :requirement/level :must
+     :requirement/text
+     "Every namespace, including a blank namespace, provides native-type objects and method aliases such as Maths, Edn, Json, and Iter. Each native-type object is identical to its canonical dot-qualified std.native.<Type> object; for example, (= Maths std.native.Maths) is true, and methods are called through aliases such as Maths/sin. Non-blank startup namespaces additionally provide Foundation Vars, the edn alias, and global protocol aliases such as ICount."}
+    {:requirement/id :std.foundation.json/api
+     :requirement/level :must
+     :requirement/text
+     "The std.foundation.json namespace is available in every Foundation runtime and provides one-argument read and write functions plus the two-argument (pretty value opts) function. JSON null maps to nil; booleans and strings retain their values; signed 64-bit integer literals map to HAL integers; arrays map to vectors; and objects map to insertion-ordered HAL maps with string keys. read accepts only strict JSON: duplicate keys, trailing content, malformed or incomplete escapes, fractional or exponent numbers, and integers outside the signed 64-bit range are errors. write and pretty accept exactly those HAL values, reject every other value and non-string map key, preserve map iteration order, and emit no trailing newline. write is compact; pretty requires opts to be a map, reserves its option keys, and uses two spaces per indentation level."}
+    {:requirement/id :std.pretty/api
+     :requirement/level :must
+     :requirement/text
+     "The std.pretty namespace provides pprint-str. It accepts one HAL value and returns its canonical readable representation."}
+    {:requirement/id :std.foundation.kernel/api
+     :requirement/level :must
+     :requirement/text
+     "std.foundation.kernel exposes local process-kernel lifecycle through flat session-*, resource-*, filesystem-*, and capabilities functions. Sessions are isolated; session-eval transfers only immutable HAL data and rejects functions, Vars, mutable references, streams, sockets, and host handles. ROOT cannot be closed. Resources are executable .hal sources. Every runtime exposes the same API shape; unavailable host operations fail explicitly according to capabilities."}]}
+
+  {:section/id :hal/host-boundary
+   :section/title "Host boundary"
+   :section/summary
+   "HAL implementations may expose explicit adapters and capabilities without making host objects or authority ambient."
+   :section/requirements
+   [{:requirement/id :host/explicit
+     :requirement/level :must
+     :requirement/text
+     "Host values participate in HAL operations only through an explicit adapter, protocol extension, or capability."}
+    {:requirement/id :host/runtime-parity
+     :requirement/level :must
+     :requirement/text
+     "Native, embedded, and WebAssembly implementations preserve portable observable behaviour."}]}]
+
+ :spec/forms
+ [{:form/id :hal.form/quote
+   :form/symbol quote
+   :form/class :special-form
+   :form/shape (quote (quote form))
+   :form/semantics "Returns form without evaluating it."
+   :form/evaluation :special
+   :form/arity 1}
+  {:form/id :hal.form/if
+   :form/symbol if
+   :form/class :special-form
+   :form/shape (quote (if test then else?))
+   :form/semantics "Evaluates test, then exactly one result branch."
+   :form/evaluation :special
+   :form/arity [2 3]}
+  {:form/id :hal.form/do
+   :form/symbol do
+   :form/class :special-form
+   :form/shape (quote (do form*))
+   :form/semantics "Evaluates forms from left to right and returns the final value."
+   :form/evaluation :special}
+  {:form/id :hal.form/let
+   :form/symbol let
+   :form/class :special-form
+   :form/shape (quote (let [binding init*] body+))
+   :form/semantics "Creates lexical bindings whose initializers use the enclosing environment."
+   :form/evaluation :special}
+  {:form/id :hal.form/loop
+   :form/symbol loop
+   :form/class :special-form
+   :form/shape (quote (loop [binding init*] body+))
+   :form/semantics "Creates lexical loop bindings and a tail-recur target."
+   :form/evaluation :special}
+  {:form/id :hal.form/recur
+   :form/symbol recur
+   :form/class :special-form
+   :form/shape (quote (recur value*))
+   :form/semantics "Rebinds the nearest function or loop target from tail position."
+   :form/evaluation :special
+   :form/tail-position true}
+  {:form/id :hal.form/fn
+   :form/symbol fn
+   :form/class :special-form
+   :form/shape (quote (fn name? [parameter*] body+))
+   :form/semantics "Creates a lexical HAL function."
+   :form/evaluation :special}
+  {:form/id :hal.form/def
+   :form/symbol def
+   :form/class :special-form
+   :form/shape (quote (def symbol value?))
+   :form/semantics "Creates or updates a Var in the current namespace."
+   :form/evaluation :special
+   :form/arity [1 2]}
+  {:form/id :hal.form/binding
+   :form/symbol binding
+   :form/class :special-form
+   :form/shape (quote (binding [dynamic-var value*] body+))
+   :form/semantics "Installs context-local dynamic values for the extent of body."
+   :form/evaluation :special}
+  {:form/id :hal.form/throw
+   :form/symbol throw
+   :form/class :special-form
+   :form/shape (quote (throw value))
+   :form/semantics "Raises a guest value."
+   :form/evaluation :special
+   :form/arity 1}
+  {:form/id :hal.form/try
+   :form/symbol try
+   :form/class :special-form
+   :form/shape (quote (try body* catch-clause* finally-clause?))
+   :form/semantics "Evaluates protected forms with ordered catches and optional cleanup."
+   :form/evaluation :special}
+  {:form/id :hal.form/var
+   :form/symbol var
+   :form/class :special-form
+   :form/shape (quote (var symbol))
+   :form/semantics "Returns the resolved Var rather than its current value."
+   :form/evaluation :special
+   :form/arity 1}
+  {:form/id :hal.form/deref
+   :form/symbol deref
+   :form/class :function
+   :form/shape (quote (deref reference))
+   :form/semantics "Returns the current value of a dereferenceable reference."
+   :form/evaluation :eager
+   :form/arity 1}
+  {:form/id :hal.form/defstruct
+   :form/symbol defstruct
+   :form/class :special-form
+   :form/shape (quote (defstruct name [field*] protocol-implementation*))
+   :form/semantics "Defines the sole immutable, user-extensible HAL receiver descriptor and constructor; trailing protocol clauses install its initial implementations, while extend-type may add or replace implementations later. defrecord and deftype are unsupported."
+   :form/evaluation :special}
+  {:form/id :hal.form/defprotocol
+   :form/symbol defprotocol
+   :form/class :special-form
+   :form/shape (quote (defprotocol name method-declaration*))
+   :form/semantics "Defines a context-local protocol descriptor."
+   :form/evaluation :special}
+  {:form/id :hal.form/extend-type
+   :form/symbol extend-type
+   :form/class :special-form
+   :form/shape (quote (extend-type type protocol method-implementation*))
+   :form/semantics "Installs protocol implementations only for a defstruct descriptor."
+   :form/evaluation :special}
+  {:form/id :hal.form/defmulti
+   :form/symbol defmulti
+   :form/class :special-form
+   :form/shape (quote (defmulti name dispatch-function))
+   :form/semantics "Defines a context-local multifunction whose dispatch function receives the invocation arguments."
+   :form/evaluation :special}
+  {:form/id :hal.form/defmethod
+   :form/symbol defmethod
+   :form/class :special-form
+   :form/shape (quote (defmethod multifn dispatch-value [parameter*] body+))
+   :form/semantics "Installs or replaces a method keyed by HAL equality; :default is the fallback when no exact key matches."
+   :form/evaluation :special}
+  {:form/id :hal.form/ns
+   :form/symbol ns
+   :form/class :special-form
+   :form/shape (quote (ns name clause*))
+   :form/semantics "Declares the current namespace and its structural configuration."
+   :form/evaluation :special}
+  {:form/id :hal.form/require
+   :form/symbol require
+   :form/class :special-form
+   :form/shape (quote (require module-spec*))
+   :form/semantics "Loads HAL modules transactionally and applies aliases and referrals."
+   :form/evaluation :special}
+  {:form/id :hal.macro/with-ns
+   :form/symbol with-ns
+   :form/class :macro
+   :form/shape (quote (with-ns namespace body+))
+   :form/semantics "Evaluates body forms in an existing namespace and restores the caller namespace on success or failure."
+   :form/evaluation :macroexpand}]
+
+ :spec/references
+ [{:reference/id :hal.ref/l0
+   :reference/kind :conformance
+   :reference/path "conformance/l0.edn"
+   :reference/authority :evidence
+   :reference/description "Portable evaluator and runtime behaviour cases."}
+  {:reference/id :hal.ref/reader
+   :reference/kind :conformance
+   :reference/path "conformance/reader.edn"
+   :reference/authority :evidence
+   :reference/description "Reader acceptance, canonical printing, and error cases."}
+  {:reference/id :hal.ref/modules
+   :reference/kind :conformance
+   :reference/path "conformance/modules.edn"
+   :reference/authority :evidence
+   :reference/description "Namespace, module, lazy-loading, session, and retained-REPL acceptance scenarios."}
+  {:reference/id :hal.ref/jvm-truffle
+   :reference/kind :parity
+   :reference/path "conformance/parity/jvm-truffle.edn"
+   :reference/authority :evidence
+   :reference/description "JVM interpreter and Truffle parity cases."}
+  {:reference/id :hal.ref/wasm-truffle
+   :reference/kind :parity
+   :reference/path "conformance/parity/wasm-truffle.edn"
+   :reference/authority :evidence
+   :reference/description "Rust WebAssembly and Truffle parity cases."}
+  {:reference/id :hal.ref/legacy-language
+   :reference/kind :provenance
+   :reference/path "../../../99-archive/planning/language/l0-language.md"
+   :reference/authority :historical
+   :reference/description "Previous prose L0 contract used as draft source material."}
+  {:reference/id :hal.ref/legacy-foundation
+   :reference/kind :provenance
+   :reference/path "../../../99-archive/planning/foundation/foundation.edn"
+   :reference/authority :historical
+   :reference/description "Previous foundation boundary model used as draft source material."}]
+
+ :spec/conformance
+ [:hal.ref/l0
+  :hal.ref/reader
+  :hal.ref/modules
+  :hal.ref/jvm-truffle
+  :hal.ref/wasm-truffle]
+
+ :spec/coverage
+ {:status :partial
+  :covered
+  #{:reader :values :evaluation :functions-and-bindings :collections-and-iteration}
+  :awaiting-explicit-cases
+  #{:host-authority :module-rollback :numeric-promotion :iterator-close :error-source
+    :standard-libraries}}
+
+ :spec/provenance
+ [:hal.ref/legacy-language :hal.ref/legacy-foundation]}

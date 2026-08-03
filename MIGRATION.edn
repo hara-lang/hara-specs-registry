@@ -1,0 +1,11 @@
+{:migration/id :hara.specs/full-corpus
+ :migration/status :complete
+ :migration/source
+ {:repository "hara-lang/hara-specs"
+  :commit "dc269add5de05d06ddf215ca9f1d2d2b0c49f135"}
+ :migration/target
+ {:repository "hara-lang/hara-specs-registry"
+  :branch "main"}
+ :migration/history :second-parent
+ :migration/content
+ #{:00-unsorted :01-lang :02-platform :99-archive :spec-manifest}}

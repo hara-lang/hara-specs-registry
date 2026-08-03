@@ -1,0 +1,193 @@
+{:document/id :hara/foundation-annex
+ :document/type :foundation-annex-spec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "Hara Foundation library annex"
+ :document/summary
+ "Portable catalog and behavioral boundary for the public std.foundation.* library namespaces."
+
+ :spec/conforms-to
+ {:spec/id :hara/foundation-annex-metaspec
+  :spec/version "0.1.0"}
+
+ :annex/scope
+ {:scope/namespace-family "std.foundation.*"
+  :scope/includes
+  #{:public-library-namespaces :public-vars :portable-hal-libraries
+    :native-facades :capability-facades :automatic-aliases}
+  :scope/excludes
+  #{:std.foundation-root :std.protocol-family :std.native-family
+    :implementation-helper-namespaces :application-libraries}}
+
+ :annex/invariants
+ [{:requirement/id :annex/qualified-boundary
+   :requirement/level :must
+   :requirement/text
+   "Every annex Var is owned by one declared std.foundation.* namespace."}
+  {:requirement/id :annex/portable-results
+   :requirement/level :must
+   :requirement/text
+   "Public functions return persistent Hara values or explicitly declared bytes, array, object, promise, coroutine, socket, process, filesystem, or session values."}
+  {:requirement/id :annex/native-facade
+   :requirement/level :must
+   :requirement/text
+   "A native-backed function documents the canonical std.native.* dependency while keeping the native descriptor out of its public return shape."}
+  {:requirement/id :annex/capability-check
+   :requirement/level :must
+   :requirement/text
+   "Capability-backed operations check authority at invocation; requiring the namespace grants none."}
+  {:requirement/id :annex/private-engine
+   :requirement/level :must-not
+   :requirement/text
+   "std.foundation.pretty.engine or another implementation helper becomes public API merely because it is loadable source."}]
+
+ :annex/libraries
+ [{:library/id :foundation/string
+   :library/namespace std.foundation.string
+   :library/classification :native-facade
+   :library/native std.native.String
+   :library/public-vars
+   [length blank? includes? starts-with? ends-with? char-at slice index-of
+    last-index-of join split split-lines repeat replace replace-first trim
+    trim-left trim-right upper lower capitalize decapitalize pad-left
+    pad-right reverse encode-utf8 decode-utf8 to-fixed]}
+  {:library/id :foundation/bytes
+   :library/namespace std.foundation.bytes
+   :library/classification :native-facade
+   :library/native std.native.Bytes
+   :library/public-vars [count get set copy slice u8 s8]}
+  {:library/id :foundation/promise
+   :library/namespace std.foundation.promise
+   :library/classification :native-and-protocol-facade
+   :library/native std.native.Promise
+   :library/protocol std.protocol.ipromise/IPromise
+   :library/public-vars
+   [run new from all delay state value then catch finally cancel]}
+  {:library/id :foundation/coroutine
+   :library/namespace std.foundation.coroutine
+   :library/classification :native-and-protocol-facade
+   :library/native std.native.Coroutine
+   :library/protocol std.protocol.icoroutine/ICoroutine
+   :library/public-vars [create coroutine? status resume close yield await]}
+  {:library/id :foundation/edn
+   :library/namespace std.foundation.edn
+   :library/classification :native-facade
+   :library/native std.native.Edn
+   :library/public-vars [read write pretty]}
+  {:library/id :foundation/json
+   :library/namespace std.foundation.json
+   :library/classification :native-facade
+   :library/native std.native.Json
+   :library/public-vars [read write pretty]}
+  {:library/id :foundation/set
+   :library/namespace std.foundation.set
+   :library/classification :portable-hal
+   :library/public-vars
+   [union intersection difference subset? superset? select]}
+  {:library/id :foundation/pretty
+   :library/namespace std.foundation.pretty
+   :library/classification :portable-hal
+   :library/private-namespaces [std.foundation.pretty.engine]
+   :library/public-vars [render write]}
+  {:library/id :foundation/file
+   :library/namespace std.foundation.file
+   :library/classification :capability-facade
+   :library/native std.native.File
+   :library/capability :file
+   :library/public-vars [resolve read write exists? list mkdir delete]}
+  {:library/id :foundation/socket
+   :library/namespace std.foundation.socket
+   :library/classification :capability-facade
+   :library/native std.native.Socket
+   :library/capability :network
+   :library/public-vars [connect listen endpoint events next send close]}
+  {:library/id :foundation/host
+   :library/namespace std.foundation.host
+   :library/classification :capability-facade
+   :library/native std.native.Host
+   :library/capability :host-call
+   :library/public-vars [call describe capabilities capability?]}
+  {:library/id :foundation/kernel
+   :library/namespace std.foundation.kernel
+   :library/classification :capability-facade
+   :library/native std.native.Kernel
+   :library/capability :kernel
+   :library/public-vars
+   [session-create session-close session-list session-info session-eval
+    session-namespace session-complete resource-register resource-remove
+    resource-list filesystem-create filesystem-attach filesystem-detach
+    filesystem-info filesystem-close capabilities]}
+  {:library/id :foundation/os
+   :library/namespace std.foundation.os
+   :library/classification :runtime-export-facade
+   :library/capability :process
+   :library/public-vars
+   [platform arch cwd env getenv spawn process? process-alive? process-write
+    process-close-input process-stdout process-stderr process-wait
+    process-kill]}]
+
+ :annex/aliases
+ {:alias/defaults
+  {string str
+   bytes bytes
+   promise promise
+   coroutine coroutine
+   file file
+   os os}
+  :alias/selection :namespace-config-intrinsics
+  :alias/exclusion-effect :remove-automatic-alias-only
+  :alias/explicit-require-after-exclusion true
+  :alias/non-default
+  [std.foundation.edn std.foundation.json std.foundation.set
+   std.foundation.pretty std.foundation.socket std.foundation.host
+   std.foundation.kernel]}
+
+ :annex/capabilities
+ {:capability/file
+  {:capability/operations #{:filesystem-read :filesystem-write}
+   :capability/denial :annex/capability-denied}
+  :capability/network
+  {:capability/operations #{:network-connect :network-listen}
+   :capability/denial :annex/capability-denied}
+  :capability/process
+  {:capability/operations #{:process-spawn :process-control}
+   :capability/denial :annex/capability-denied}
+  :capability/host-call
+  {:capability/operations #{:embedding-declared-services}
+   :capability/denial :annex/capability-denied}
+  :capability/kernel
+  {:capability/operations #{:session-control :resource-control :filesystem-handles}
+   :capability/denial :annex/capability-denied}}
+
+ :annex/errors
+ [{:error/id :annex/invalid-arity}
+  {:error/id :annex/invalid-argument}
+  {:error/id :annex/capability-denied}
+  {:error/id :annex/unavailable-profile}
+  {:error/id :annex/closed-handle}
+  {:error/id :annex/type-not-transportable}]
+
+ :annex/references
+ [{:reference/id :annex/source-root
+   :reference/path "../../../../lib/src/std/foundation"
+   :reference/authority :implementation}
+  {:reference/id :annex/test-root
+   :reference/path "../../../../lib/test/std/foundation"
+   :reference/authority :implementation-evidence}
+  {:reference/id :annex/legacy-standard-libraries
+   :reference/path
+   "../../../00-unsorted/platform-language/draft/hal-langspec.edn"
+   :reference/authority :historical}
+  {:reference/id :annex/legacy-native-map
+   :reference/path
+   "../../../00-unsorted/platform-language/draft/conformance/native.edn"
+   :reference/authority :historical}]
+
+ :annex/conformance
+ [{:conformance/id :annex/library-hal-tests
+   :conformance/path "../../../../lib/test/std/foundation"
+   :conformance/authority :implementation-evidence}
+  {:conformance/id :annex/legacy-runtime-cases
+   :conformance/path
+   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
+   :conformance/authority :migration-evidence}]}
