@@ -1,0 +1,19 @@
+(ns halc.conformance.complete)
+
+[nil
+ false
+ true
+ 42
+ 2.5
+ 123456789012345678901234567890N
+ 3.14159M
+ "hárà"
+ \x
+ 'my.ns/my-sym
+ :my.ns/kw
+ '(1 "a")
+ [1 "a"]
+ {2 "b" 1 "a"}
+ #{2 1}
+ #"a+b"
+ {:a [1 #{:x :y}] :b '(2 3)}]

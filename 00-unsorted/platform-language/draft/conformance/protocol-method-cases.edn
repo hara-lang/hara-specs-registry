@@ -1,0 +1,366 @@
+{:spec/version "0.1"
+ :spec/status :draft
+ :syntax :edn
+ :purpose :per-method-functional-conformance
+ :platforms [:rust :truffle]
+ :fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
+ :method-count 88
+ :error-contract
+ {:matching :category-prefix
+  :message-text :non-normative
+  :categories
+  {:protocol/arity :method-called-outside-declared-arity
+   :protocol/unsupported-receiver :no-compatible-receiver-implementation}}
+ :cases
+ [{:protocol IApplicable :method apply-default :domain :application
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IApplicable :method apply-in :domain :application
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IApplicable :method transform-in :domain :application
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IApplicable :method transform-out :domain :application
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IAssoc :method assoc :domain :associative-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ICas :method cas :domain :reference-state
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IClose :method close :domain :lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method props :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method status :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method started? :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method stopped? :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method start :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method stop :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method kill :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IComponent :method remote? :domain :component-lifecycle
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IConj :method conj :domain :collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ICons :method cons :domain :sequence
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContext :method call :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ICoroutine :method status :domain :coroutine
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ICoroutine :method resume :domain :coroutine
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContextLifeCycle :method has-module? :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContextLifeCycle :method setup-module :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContextLifeCycle :method teardown-module :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContextLifeCycle :method has-pointer? :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContextLifeCycle :method setup-pointer :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IContextLifeCycle :method teardown-pointer :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ICount :method count :domain :collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDeref :method deref :domain :reference-state
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDerefTimeout :method deref-timeout :domain :reference-state
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDisplay :method display :domain :representation
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDissoc :method dissoc :domain :associative-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEmpty :method empty :domain :collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEquality :method equality :domain :identity
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IExInfo :method data :domain :exception
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IFind :method find :domain :associative-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IFn :method invoke :domain :application
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IHash :method hash :domain :identity
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IHashCached :method hash-current :domain :identity
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IHashCached :method hash-put :domain :identity
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IIndexed :method index-of :domain :indexed-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IIndexedKV :method index-of-key :domain :indexed-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IIndexedKV :method index-of-val :domain :indexed-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IInvokeIn :method invoke-in :domain :execution-context
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IIter :method iter :domain :iteration
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IIterator :method iter-next? :domain :iteration
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IIterator :method iter-next :domain :iteration
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ILookup :method lookup :domain :associative-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol INamespaced :method name :domain :symbolic-name
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol INamespaced :method namespace :domain :symbolic-name
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol INth :method nth :domain :indexed-collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IObjType :method meta :domain :metadata
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IObjType :method with-meta :domain :metadata
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPair :method key :domain :map-entry
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPair :method value :domain :map-entry
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPeekFirst :method peek-first :domain :deque
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPeekLast :method peek-last :domain :deque
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPromise :method state :domain :promise
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPromise :method value :domain :promise
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPromise :method then :domain :promise
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPromise :method catch :domain :promise
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPromise :method finally :domain :promise
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPromise :method cancel :domain :promise
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPointer :method ptr-context :domain :runtime-pointer
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPointer :method ptr-keys :domain :runtime-pointer
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPointer :method ptr-val :domain :runtime-pointer
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPopFirst :method pop-first :domain :deque
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPopLast :method pop-last :domain :deque
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPushFirst :method push-first :domain :deque
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IPushLast :method push-last :domain :deque
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IRealize :method realized? :domain :realization
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IRealize :method realize :domain :realization
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IReduce :method reduce :domain :reduction
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IReset :method reset :domain :reference-state
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method context-set :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method context-unset :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method context-list :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method context-get :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method rt-active :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method rt-get :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method rt-start :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method rt-started? :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method rt-stopped? :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol ISpace :method rt-stop :domain :runtime-space
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IToMutable :method to-mutable :domain :conversion
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IToPersistent :method to-persistent :domain :conversion
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IWatch :method watch-add :domain :reference-watch
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IWatch :method watch-remove :domain :reference-watch
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IWatch :method watch-list :domain :reference-watch
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}]}

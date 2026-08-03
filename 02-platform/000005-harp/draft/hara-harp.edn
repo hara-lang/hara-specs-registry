@@ -1,0 +1,62 @@
+{:document/id :hara/harp
+ :document/type :hara/tap-protocol
+ :document/version "0.1.0"
+ :document/status :draft
+ :document/title "Hara archive package format"
+ :document/summary
+ "Normative deterministic, safe and read-only HARP package archive contract."
+ :spec/conforms-to {:spec/id :hara/tap-protocol-metaspec
+                    :spec/version "0.1.0"}
+
+ :platform/roles
+ [{:role/id :hara.harp.role/builder
+   :role/summary "Builds deterministic HARP bytes from a checked project."}
+  {:role/id :hara.harp.role/verifier
+   :role/summary "Validates archive structure, manifest and tree digest."}
+  {:role/id :hara.harp.role/mounter
+   :role/summary "Exposes a verified archive as a read-only package root."}]
+
+ :platform/entities
+ [{:entity/id :hara.harp/archive
+   :entity/summary "Deterministic ZIP-compatible package container."
+   :entity/fields [:harp/format :harp/files :harp/tree-sha256]}
+  {:entity/id :hara.harp/package-manifest
+   :entity/summary "Canonical package.edn stored at archive root."
+   :entity/fields [:package/coordinate :package/version :package/files
+                   :package/resources :package/extensions]}]
+
+ :platform/operations
+ [{:operation/id :hara.harp.operation/build
+   :operation/role :hara.harp.role/builder
+   :operation/input :hara/project
+   :operation/output :hara.harp/archive
+   :operation/failures [:invalid-project :undeclared-file :nondeterministic-input]}
+  {:operation/id :hara.harp.operation/verify
+   :operation/role :hara.harp.role/verifier
+   :operation/input :hara.harp/archive
+   :operation/output :hara/verification-report
+   :operation/failures [:unsafe-path :duplicate-path :digest-mismatch
+                        :manifest-mismatch]}
+  {:operation/id :hara.harp.operation/mount
+   :operation/role :hara.harp.role/mounter
+   :operation/input :hara.harp/archive
+   :operation/output :hara/read-only-root
+   :operation/failures [:unverified-archive]}]
+
+ :platform/invariants
+ [{:requirement/id :hara.harp/deterministic
+   :requirement/level :must
+   :requirement/text "Entries use normalized UTF-8 relative paths, lexical order, fixed timestamps, defined compression and canonical package.edn bytes."}
+  {:requirement/id :hara.harp/safe-paths
+   :requirement/level :must-not
+   :requirement/text "Archives contain absolute paths, parent traversal, device paths, links, duplicate paths or undeclared executable artifacts."}
+  {:requirement/id :hara.harp/root-manifest
+   :requirement/level :must
+   :requirement/text "Every archive contains canonical package.edn at its root and every declared resource or extension is present in its file table."}
+  {:requirement/id :hara.harp/read-only
+   :requirement/level :must
+   :requirement/text "Verified archives mount read-only and package loading cannot mutate cached archive bytes."}]
+
+ :platform/conformance
+ [{:conformance/id :hara.harp/archive-cases
+   :conformance/path "conformance/archives.edn"}]}

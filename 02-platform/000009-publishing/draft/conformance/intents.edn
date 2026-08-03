@@ -1,0 +1,18 @@
+[{:case/id :hara.publishing.case/package-intent
+  :case/type :publisher-intent
+  :case/input {:intent/format 1
+               :intent/kind :package
+               :intent/tap "hara"
+               :intent/coordinate "hara:alice/graph"
+               :intent/version "1.0.0"
+               :intent/repository-id 1234
+               :intent/tag "v1.0.0"
+               :intent/commit "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+               :intent/recipe-sha256 "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+               :intent/identity-revision "cccccccccccccccccccccccccccccccccccccccc"}
+  :case/expected :pass}
+ {:case/id :hara.publishing.case/url-without-repository-id
+  :case/type :publisher-intent
+  :case/input {:intent/repository "https://github.com/alice/graph"
+               :intent/repository-id nil}
+  :case/expected :reject}]

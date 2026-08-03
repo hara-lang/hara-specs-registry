@@ -1,0 +1,16 @@
+[{:case/id :hara.package.case/canonical-coordinate
+  :case/type :package-coordinate
+  :case/input "hara:alice/graph"
+  :case/expected "hara:alice/graph"}
+ {:case/id :hara.package.case/default-tap
+  :case/type :package-coordinate
+  :case/input "alice/graph"
+  :case/expected "hara:alice/graph"}
+ {:case/id :hara.package.case/deprecated-official
+  :case/type :package-coordinate
+  :case/input "official:alice/graph"
+  :case/expected "hara:alice/graph"}
+ {:case/id :hara.package.case/unqualified-name
+  :case/type :package-coordinate
+  :case/input "graph"
+  :case/expected :reject}]

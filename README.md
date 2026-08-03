@@ -2,28 +2,29 @@
 
 `hara-lang/hara-specs-registry` is the canonical, Git-authoritative home for Hara specification documents and specification packages.
 
-The repository stores normative specification bytes, rendered documentation, package manifests, provenance, and the committed `registry-index.json` consumed by `specs.hara-lang.io`.
+The repository stores normative specification bytes, rendered documentation, conformance fixtures, package manifests, provenance, and the generated `registry-index.json` consumed by `specs.hara-lang.io`.
 
 ## Repository boundary
 
 | Repository | Responsibility |
 | --- | --- |
-| `hara-lang/hara-specs-registry` | Specification source, package versions, fixtures, provenance, validation, and the registry index. |
+| `hara-lang/hara-specs-registry` | Specification source, package versions, fixtures, provenance, validation, and the generated registry index. |
 | `hara-lang/hara-specs` | Netlify UI and API, publishing management, document checking, reports, and Hara kernel adapters. |
 
-The management service does not silently become the authority for specification content. Source links and conformity reports identify a repository, revision, and path.
+The service never owns the canonical specification bytes. Every rendered source link and conformity report identifies this repository and an exact resolved revision.
 
-## Initial cutover
+## Migrated corpus
 
-The first cutover is recorded against `hara-lang/hara-specs@dc269add5de05d06ddf215ca9f1d2d2b0c49f135`.
+The numbered corpus was imported from `hara-lang/hara-specs@dc269add5de05d06ddf215ca9f1d2d2b0c49f135`:
 
-Three specifications are fully materialized here:
+- `00-unsorted/` — specifications awaiting an architectural home;
+- `01-lang/` — language, compiler, VM, data structure, and kernel contracts;
+- `02-platform/` — tooling, identity, package, transport, substrate, and service contracts;
+- `99-archive/` — historical planning and compatibility evidence.
 
-- the Hara metaspecification metaspecification;
-- the HAL data language specification;
-- the built-in protocol specification.
+The full source commit is a second parent of the import commit, preserving its Git history rather than reducing the migration to copied files. [`MIGRATION.edn`](MIGRATION.edn) records the source and method.
 
-The larger Hara CLI document remains an immutable pinned-source entry during this migration step. Its exact source repository, commit, path, and blob identity are recorded in `registry-index.json`, `spec-manifest.json`, and `02-platform/000001-cli/draft/MIGRATION.edn`. It must be materialized byte-for-byte before the provisional record is removed.
+`spec-manifest.json` inventories the imported documents. `registry-index.json` is generated deterministically from the manifest and authoritative EDN sources; duplicate historical identities are retained as alternate source locations while the highest-ranked active source becomes the catalogue entry.
 
 ## Specification packages
 
@@ -40,12 +41,13 @@ packages/<scope>/<name>/<version>/
 
 Published version directories are immutable. Corrections are released as new versions; old versions may be deprecated or yanked through metadata, but their bytes are not replaced.
 
-The bootstrap package schema is in [`schema/hara-spec-package.schema.json`](schema/hara-spec-package.schema.json).
+The package schema is in [`schema/hara-spec-package.schema.json`](schema/hara-spec-package.schema.json).
 
 ## Registry contracts
 
-- `spec-manifest.json` inventories tracked files and migration provenance.
+- `spec-manifest.json` inventories tracked specification files.
 - `registry-index.json` is the public catalogue consumed by the service.
+- `scripts/generate-index.mjs` deterministically derives the catalogue.
 - `scripts/validate-registry.mjs` validates paths, files, and package coordinates.
 - `scripts/check-index.mjs` verifies catalogue identities, source locations, materialization states, and summary totals.
 

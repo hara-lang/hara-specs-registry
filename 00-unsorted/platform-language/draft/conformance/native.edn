@@ -1,0 +1,220 @@
+{:spec/version "0.1"
+ :spec/status :draft
+ :syntax :edn
+ :purpose :native-runtime-boundary
+
+ :naming
+ {:type-object "std.native.<Type>"
+  :method-var "std.native.<Type>/<method>"
+  :global-object "<Type>"
+  :global-method "<Type>/<method>"
+  :example {:type std.native.Maths
+            :method Maths/sin
+            :wrapper std.foundation/sin}
+  :constructor new
+  :predicate instance?
+  :interface-prefix false}
+
+ :descriptor
+ {:kind :native-type
+  :callable false
+  :constructs-structs false
+  :display "#<native-type <qualified-name>>"
+  :identity :canonical-per-runtime
+  :protocols [IDisplay INamespaced IObjType]
+  :metadata {:required true
+             :affects-equality false}
+  :inventory :inspectable}
+
+ :inventory
+ {:status :accepted
+  :closed true
+  :type-count 21
+  :method-count 161
+  :source-of-truth :types
+  :extra-types :forbidden
+  :extra-methods :forbidden}
+
+ :method-conformance
+ {:status :accepted
+  :platforms [:rust :truffle]
+  :invocation :direct-canonical-method
+  :fixture "lib/test-fixtures/std/foundation/native_method_conformance.hal"
+  :classifications [:implemented :capability-gated]
+  :foundation-exposure [:hal-wrapper :foundation-primitive]
+  :raw-rust
+  {:scope :startup-descriptors
+   :method-parity false
+   :reason :source-libraries-and-capability-providers-are-not-bootstrapped}}
+
+ :startup-visibility
+ {:status :accepted
+  :platforms [:rust :raw-rust :truffle]
+  :canonical-object "std.native.<Type>"
+  :canonical-method-namespace "std.native.<Type>"
+  :global-alias "<Type>"
+  :global-aliases
+  [Maths Numbers Bits String Bytes File Socket Promise Coroutine Arr Obj
+   Runtime Printer Edn Json Host Regex UUID Error Iter Kernel]
+  :identity :same-native-type-object
+  :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
+  :blank-namespaces true
+  :installed-with :global-protocol-aliases}
+
+ :ownership
+ {:syntax :runtime-intrinsic
+  :protocol-methods :std.protocol
+  :portable-functions :hal
+  :host-operations :std.native
+  :foundation "Ordinary HAL wrappers over protocol or std.native calls."
+  :duplicate-protocol-methods false
+  :builtin-activation-clause false}
+
+ :types
+ [{:name Maths
+   :availability :implemented
+   :methods [abs acos acosh asin asinh atan atan2 atanh ceil cos cosh exp
+             floor pow sin sinh sqrt tan tanh]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
+  {:name Numbers
+   :availability :implemented
+   :methods [long double]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
+  {:name Bits
+   :availability :implemented
+   :methods [and or xor not shift-left shift-right]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
+  {:name Kernel
+   :availability :capability-gated
+   :methods [session-create session-close session-list session-info session-eval
+             session-namespace session-complete resource-register resource-remove
+             resource-list filesystem-create filesystem-attach filesystem-detach
+             filesystem-info filesystem-close capabilities]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/kernel.hal"}
+  {:name String
+   :availability :implemented
+   :methods [length blank? includes? starts-with? ends-with? char-at slice
+             index-of last-index-of join split split-lines repeat replace
+             replace-first trim trim-left trim-right upper lower capitalize
+             decapitalize pad-left pad-right reverse encode-utf8 decode-utf8
+             to-fixed]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/string.hal"}
+  {:name Bytes
+   :availability :implemented
+   :methods [new instance? count get set copy slice u8 s8]
+   :method-classification
+   {:hal-wrapper [count get set copy slice u8 s8]
+    :foundation-primitive [new instance?]}
+   :wrapper-source "lib/src/std/foundation/bytes.hal"}
+  {:name File
+   :availability :capability-gated
+   :methods [resolve read write exists? list mkdir delete]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/file.hal"}
+  {:name Socket
+   :availability :capability-gated
+   :methods [connect listen endpoint events next send close]
+   :method-classification {:hal-wrapper :all}
+   :server-streaming
+   {:listen {:arguments [host port options callback]
+             :returns :socket-server
+             :port-zero :ephemeral
+             :callback-events [:open :data :close :error]}
+    :endpoint {:returns {:host :string :port :integer}}
+    :events {:handles [:socket-server :socket]
+             :returns :socket-stream
+             :delivery :callback-and-stream
+             :queue {:max-events 256
+                     :max-bytes 1048576
+                     :overflow :close-connection}}
+    :next {:returns :promise
+           :fulfills :socket-event
+           :pending-limit 1}
+    :threading {:host-threads :raw-events-only
+                :hal-callbacks :evaluator-thread}}
+   :wrapper-source "lib/src/std/foundation/socket.hal"}
+  {:name Promise
+   :availability :implemented
+   :methods [run new from all delay instance?]
+   :method-classification
+   {:hal-wrapper [run new from all delay]
+    :foundation-primitive [instance?]}
+   :wrapper-source "lib/src/std/foundation/promise.hal"}
+  {:name Coroutine
+   :availability :implemented
+   :methods [create yield await instance?]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/coroutine.hal"}
+  {:name Arr
+   :availability :implemented
+   :methods [new instance? get-index set-index]
+   :method-classification {:foundation-primitive :all}}
+  {:name Obj
+   :availability :implemented
+   :methods [new instance? get-key set-key has-key? delete-key]
+   :method-classification {:foundation-primitive :all}}
+  {:name Runtime
+   :availability :implemented
+   :methods [load-string macroexpand-1 gensym var-sym]
+   :method-classification {:foundation-primitive :all}}
+  {:name Printer
+   :availability :implemented
+   :methods [p println]
+   :method-classification {:foundation-primitive :all}}
+  {:name Edn
+   :availability :implemented
+   :methods [read]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/edn.hal"}
+  {:name Json
+   :availability :implemented
+   :methods [read write pretty]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/json.hal"}
+  {:name Host
+   :availability :capability-gated
+   :methods [call describe capabilities capability?]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/host.hal"}
+  {:name Regex
+   :availability :implemented
+   :methods [instance?]
+   :method-classification {:foundation-primitive :all}}
+  {:name UUID
+   :availability :implemented
+   :methods [instance?]
+   :method-classification {:foundation-primitive :all}}
+  {:name Error
+   :availability :implemented
+   :methods [new message class]
+   :method-classification {:foundation-primitive :all}}
+  {:name Iter
+   :availability :implemented
+   :methods [iter iter? iter-finite? iter-materialize iter-next? iter-next
+             iter-close iter-map iter-filter iter-take-while iter-drop-while
+             iter-mapcat iter-keep iter-interpose iter-interleave iter-every?
+             iter-any? iter-take iter-drop iter-zip iter-cycle
+             iter-partition-pair iter-partition-all iter-partition iter-range
+             iter-constantly iter-repeatedly iter-iterate]
+   :method-classification
+   {:foundation-primitive [iter iter? iter-next? iter-next]
+    :native-only [iter-finite? iter-materialize iter-close iter-map
+                  iter-filter iter-take-while iter-drop-while iter-mapcat
+                  iter-keep iter-interpose iter-interleave iter-every?
+                  iter-any? iter-take iter-drop iter-zip iter-cycle
+                  iter-partition-pair iter-partition-all iter-partition
+                  iter-range iter-constantly iter-repeatedly iter-iterate]}}]
+
+ :deferred
+ [{:type Random :reason :no-agreed-portable-surface}
+  {:type UUID :methods [new random] :reason :not-implemented-on-both-runtimes}
+  {:type Regex :reason :regexp-operation-names-not-yet-selected}
+  {:type OS :reason :runtime-parity-incomplete}
+  {:type Process :reason :runtime-parity-incomplete}
+  {:type Wrapped :reason :runtime-value-not-yet-implemented}
+  {:type Var :reason :var-operation-parity-incomplete}]}
