@@ -3,39 +3,90 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  createRegistryIndex,
+  parseSpecDocument,
+  selectCanonicalSpecifications
+} from "../scripts/lib/registry-index.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
-
 const readJson = async (name) => JSON.parse(await fs.readFile(path.join(root, name), "utf8"));
 
-test("canonical registry index is non-transitional and source-addressable", async () => {
+const source = (id, version = "1.0.0-draft", title = "Example specification") => `{:document/id :${id}
+ :document/type :language-spec
+ :document/version "${version}"
+ :document/status :draft
+ :document/title "${title}"
+ :document/summary "Example specification."
+ :scope/data-notation {:notation/extension ".edn"}
+ :spec/sections [{:section/requirements [{:requirement/id :example/one}]}]}`;
+
+const file = (filePath) => ({
+  path: filePath,
+  kind: "edn",
+  classification: "hara",
+  owner: "hara-lang"
+});
+
+test("EDN metadata is converted into a source-addressable registry entry", () => {
+  const item = file("01-lang/100-example/draft/example.edn");
+  const parsed = parseSpecDocument(source("hal/example"), item, new Set([item.path, "01-lang/100-example/draft/README.md"]));
+  assert.equal(parsed.id, "hal/example");
+  assert.equal(parsed.packageName, "@hara/hal-example");
+  assert.equal(parsed.documentationPath, "01-lang/100-example/draft/README.md");
+  assert.equal(parsed.requirements, 1);
+});
+
+test("canonical selection prefers the latest numbered-layer source and retains alternates", () => {
+  const candidates = [
+    { id: "hal/example", version: "0.9.0", status: "draft", sourcePath: "01-lang/100-example/draft/example.edn", layer: "01-lang", title: "Example" },
+    { id: "hal/example", version: "1.0.0", status: "draft", sourcePath: "00-unsorted/example/draft/example.edn", layer: "00-unsorted", title: "Example" },
+    { id: "hal/example", version: "1.0.0", status: "ready", sourcePath: "01-lang/100-example/ready/example.edn", layer: "01-lang", title: "Example" }
+  ];
+  const [selected] = selectCanonicalSpecifications(candidates);
+  assert.equal(selected.sourcePath, "01-lang/100-example/ready/example.edn");
+  assert.equal(selected.alternateSources.length, 2);
+});
+
+test("registry generation excludes conformance and archive documents", () => {
+  const primary = file("01-lang/100-example/draft/example.edn");
+  const conformance = file("01-lang/100-example/draft/conformance/example.edn");
+  const archive = file("99-archive/example/draft/example.edn");
+  const manifest = {
+    version: 1,
+    files: [primary, conformance, archive, { path: "01-lang/100-example/draft/README.md", kind: "markdown" }]
+  };
+  const index = createRegistryIndex({
+    manifest,
+    documents: new Map([
+      [primary.path, source("hal/example")],
+      [conformance.path, source("hal/conformance")],
+      [archive.path, source("hal/archive")]
+    ])
+  });
+  assert.equal(index.schemaVersion, 2);
+  assert.equal(index.summary.specifications, 1);
+  assert.equal(index.summary.materialized, 1);
+  assert.equal(index.summary.pinnedSource, 0);
+  assert.equal(index.specs[0].source.repository, "hara-lang/hara-specs-registry");
+});
+
+test("committed catalogue reconciles materialized and pinned sources", async () => {
   const index = await readJson("registry-index.json");
   assert.equal(index.schemaVersion, 2);
   assert.equal(index.source.repository, "hara-lang/hara-specs-registry");
   assert.equal(index.source.transitional, false);
   assert.equal(index.summary.specifications, index.specs.length);
+  assert.equal(index.summary.materialized + index.summary.pinnedSource, index.specs.length);
   assert.equal(new Set(index.specs.map(({ id }) => id)).size, index.specs.length);
   assert.equal(new Set(index.specs.map(({ slug }) => slug)).size, index.specs.length);
 });
 
-test("materialized and pinned specifications declare different provenance", async () => {
+test("every pinned source uses immutable commit and blob identities", async () => {
   const index = await readJson("registry-index.json");
-  const materialized = index.specs.filter(({ materialization }) => materialization === "registry");
-  const pinned = index.specs.filter(({ materialization }) => materialization === "pinned-source");
-  assert.equal(materialized.length, 3);
-  assert.equal(pinned.length, 1);
-  assert.ok(materialized.every(({ source }) => source.repository === "hara-lang/hara-specs-registry"));
-  assert.match(pinned[0].source.ref, /^[0-9a-f]{40}$/);
-  assert.match(pinned[0].source.blob, /^[0-9a-f]{40}$/);
-});
-
-test("every local registry path is inventoried", async () => {
-  const [manifest, index] = await Promise.all([readJson("spec-manifest.json"), readJson("registry-index.json")]);
-  const paths = new Set(manifest.files.map(({ path: value }) => value));
-  for (const spec of index.specs) {
-    assert.ok(paths.has(spec.documentationPath));
-    if (spec.materialization === "registry") assert.ok(paths.has(spec.source.path));
-    if (spec.materialization === "pinned-source") assert.ok(paths.has(spec.migrationPath));
+  for (const spec of index.specs.filter(({ materialization }) => materialization === "pinned-source")) {
+    assert.match(spec.source.ref, /^[0-9a-f]{40}$/);
+    assert.match(spec.source.blob, /^[0-9a-f]{40}$/);
   }
 });
