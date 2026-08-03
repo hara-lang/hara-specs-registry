@@ -10,13 +10,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: import-full-specifications-corpus
+  group: import-full-specifications-corpus-macos
   cancel-in-progress: false
 
 jobs:
   import:
     if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
