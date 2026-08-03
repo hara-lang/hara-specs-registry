@@ -22,12 +22,12 @@ fi
 rm -rf 00-unsorted 01-lang 02-platform 99-archive
 rm -f spec-manifest.json
 
-git archive "$SOURCE_SHA" \
+git archive "$SOURCE_SHA" -- \
   00-unsorted \
   01-lang \
   02-platform \
   99-archive \
-  spec-manifest.json | tar -x -C "$ROOT"
+  spec-manifest.json | tar -x -f - -C "$ROOT"
 
 cp migration/full-corpus/README.final.md README.md
 cat > MIGRATION.edn <<EOF
@@ -44,7 +44,7 @@ cat > MIGRATION.edn <<EOF
  #{:00-unsorted :01-lang :02-platform :99-archive :spec-manifest}}
 EOF
 
-node <<'NODE'
+node --input-type=module <<'NODE'
 import fs from "node:fs";
 const packagePath = "package.json";
 const value = JSON.parse(fs.readFileSync(packagePath, "utf8"));
