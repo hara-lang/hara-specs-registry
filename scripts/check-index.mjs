@@ -43,7 +43,7 @@ const specs = index.specs || [];
 const expectedSummary = {
   specifications: specs.length,
   draft: specs.filter(({ status }) => status === "draft").length,
-  ready: specs.filter(({ status }) => status === "ready").length,
+  ready: specs.filter(({ status }) => status === "ready" || status === "stable").length,
   executable: specs.filter(({ executable }) => executable).length,
   requirements: specs.reduce((total, { requirements = 0 }) => total + requirements, 0),
   materialized: specs.filter(({ materialization }) => materialization === "registry").length,
