@@ -1,0 +1,12 @@
+{
+  "name": "@hara/spec-package",
+  "version": "0.1.0",
+  "kind": "hara/spec",
+  "entry": "spec/main.hal",
+  "accepts": ["application/json"],
+  "description": "Bootstrap contract for Hara specification package manifests.",
+  "license": "MIT",
+  "profiles": ["core", "strict"],
+  "capabilities": [],
+  "dependencies": {}
+}
