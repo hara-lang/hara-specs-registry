@@ -84,14 +84,16 @@ for p in (root / "02-platform/000009-publishing").rglob("*"):
         p.write_text(s)
 
 # Historical files that describe removed package authoring surfaces are removed,
-# while active files must be migrated explicitly.
+# while active files must be migrated explicitly. Generated indexes are rebuilt
+# after this pass and are checked by the workflow's final scan.
 for p in list(root.rglob("*")):
     if not p.is_file() or ".git" in p.parts or "node_modules" in p.parts: continue
+    rel = p.relative_to(root).as_posix()
+    if rel in {"spec-manifest.json", "registry-index.json"}: continue
     try: s = p.read_text()
     except UnicodeDecodeError: continue
     forbidden = ["project.hal", "hara.extension.edn", "hara.build.edn", "hara.recipe.edn", "hara.install.edn", "hara.package.json", "recipe-sha256"]
     if any(x in s for x in forbidden):
-        rel = p.relative_to(root).as_posix()
         if rel.startswith(("00-unsorted/", "99-archive/")): p.unlink()
         elif rel not in {"scripts/project-edn-migration.py", ".github/workflows/project-edn-migration.yml"}:
             raise SystemExit(f"removed authoring surface remains in {rel}")
