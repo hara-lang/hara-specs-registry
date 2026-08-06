@@ -1,0 +1,48 @@
+name: Finalize project.edn specification migration
+
+on:
+  push:
+    branches:
+      - agent/project-edn-single-manifest
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: python scripts/project-edn-migration.py
+      - run: npm test
+      - run: npm run build
+      - run: npm run check
+      - name: Ensure removed authoring surfaces are absent
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          forbidden = ["project.hal", "hara.extension.edn", "hara.build.edn", "hara.recipe.edn", "hara.install.edn", "hara.package.json", "recipe-sha256", "packageName", "legacySlugs", "@hara/"]
+          bad = []
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or '.git' in p.parts or 'node_modules' in p.parts:
+                  continue
+              try: text = p.read_text()
+              except UnicodeDecodeError: continue
+              for token in forbidden:
+                  if token in text: bad.append(f"{p}: {token}")
+          if bad: raise SystemExit("\n".join(bad))
+          PY
+      - name: Commit generated registry and cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize project.edn package specification"
+          git push origin HEAD:agent/project-edn-single-manifest

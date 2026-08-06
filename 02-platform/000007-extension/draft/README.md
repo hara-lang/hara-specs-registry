@@ -1,6 +1,3 @@
-# Hara extension packages
+# Hara extension declaration contract
 
-Extensions are package specializations. `hara.extension.edn` describes a
-provider, but the descriptor grants no authority by itself. The complete
-package and its provider artifacts are verified before the host considers
-activation.
+The authoritative document is [`hara-extension.edn`](hara-extension.edn). Extensions are declared under `:project/extensions` in `project.edn`. The package builder embeds normalized declarations in the generated `package.edn`; runtimes load those declarations without a second authored manifest.

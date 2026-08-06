@@ -1,7 +1,15 @@
-# Versioned specification packages
+# Specification packages
 
-Package releases are stored as `packages/<scope>/<name>/<version>/`.
+Versioned specification packages use the normal Hara project contract:
 
-The directory for `@acme/invoice@1.2.0` is `packages/acme/invoice/1.2.0/`. It contains `hara.package.json` and every source, profile, fixture, test, licence, and normative document required to reproduce the release.
+```text
+packages/<owner>/<name>/<version>/
+  project.edn
+  project.lock.edn
+  src/
+  tests/
+  fixtures/
+  profiles/
+```
 
-Merged version directories are immutable. Mutable channels such as `stable` or `next` belong in signed registry metadata and point to immutable versions; they do not replace version bytes.
+`project.edn` is the only authored manifest. The registry validates its coordinate and version against the directory path. Reconciliation generates `project.lock.edn`; publication generates a `.harp` whose root `package.edn` indexes the exact immutable bytes.

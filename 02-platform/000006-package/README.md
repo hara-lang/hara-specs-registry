@@ -1,5 +1,3 @@
-# 000006 — Packages
+# Hara project and package contract
 
-The normative [`draft/hara-package.edn`](draft/hara-package.edn) defines
-coordinates, projects, deterministic dependency resolution, lockfiles,
-immutable releases, local caches, installation, and yanking.
+The current draft defines the single `project.edn` authoring surface, exact lockfiles, deterministic package builds, immutable releases, installation, and runtime loading. See [`draft/`](draft/).
