@@ -1,5 +1,3 @@
-# 000007 — Extensions
+# Hara extension declaration contract
 
-The normative [`draft/hara-extension.edn`](draft/hara-extension.edn) defines
-extension descriptors, provider targets, ABI compatibility, capabilities,
-host calls, handles, and package containment.
+The current draft defines WASM and HTA declarations inside `project.edn`, generated package metadata, target selection, capabilities, and digest-pinned remote artifact delivery. See [`draft/`](draft/).

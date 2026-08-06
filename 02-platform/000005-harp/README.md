@@ -1,5 +1,3 @@
-# 000005 — HARP
+# Hara archive package format
 
-The normative [`draft/hara-harp.edn`](draft/hara-harp.edn) defines deterministic
-package archive construction, verification, safe paths, canonical manifests,
-tree digests, and read-only mounting.
+The current draft defines deterministic `.harp` archives, generated `package.edn` indexes, integrity verification, safe extraction, and read-only mounting. See [`draft/`](draft/).

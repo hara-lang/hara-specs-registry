@@ -1,14 +1,12 @@
-[{:case/id :hara.harp.case/empty-package
-  :case/type :harp-archive
-  :case/input {:entries ["package.edn"]
-               :timestamps :fixed
-               :ordering :lexical}
-  :case/expected :pass}
- {:case/id :hara.harp.case/parent-traversal
-  :case/type :harp-archive
-  :case/input {:entries ["package.edn" "../escape.hal"]}
+[{:case/id :hara.harp.case/generated-package-index
+  :case/type :archive
+  :case/input {:entries ["project.edn" "src/demo/core.hal"]}
+  :case/expected {:root-index "package.edn" :authored-manifests ["project.edn"]}}
+ {:case/id :hara.harp.case/reject-traversal
+  :case/type :archive
+  :case/input {:entry "../escape.wasm"}
   :case/expected :reject}
- {:case/id :hara.harp.case/duplicate-path
-  :case/type :harp-archive
-  :case/input {:entries ["package.edn" "src/main.hal" "src/main.hal"]}
-  :case/expected :reject}]
+ {:case/id :hara.harp.case/deterministic
+  :case/type :archive
+  :case/input {:same-project true :same-lock true :same-input-bytes true}
+  :case/expected :byte-identical}]

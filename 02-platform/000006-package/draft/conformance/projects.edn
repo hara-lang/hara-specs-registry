@@ -1,0 +1,13 @@
+[{:case/id :hara.package.case/single-manifest
+  :case/type :project
+  :case/input {:files ["project.edn" "src/app/core.hal"]
+               :project/extensions {app.native {:provider :wasm :abi :core.v1 :module "artifacts/app.wasm"}}}
+  :case/expected :valid}
+ {:case/id :hara.package.case/reject-parallel-manifest
+  :case/type :project
+  :case/input {:parallel-manifest "build.edn"}
+  :case/expected :reject}
+ {:case/id :hara.package.case/generated-lock
+  :case/type :project
+  :case/input {:project/dependencies {"hara:hara/graph" {:version "^1.2.0"}}}
+  :case/expected {:generated "project.lock.edn"}}]

@@ -1,82 +1,138 @@
 {:document/id :hara/package
  :document/type :hara/tap-protocol
- :document/version "0.2.0"
+ :document/version "0.1.0"
  :document/status :draft
- :document/title "Hara package protocol"
+ :document/title "Hara project and package contract"
  :document/summary
- "Normative package coordinates, manifests, resolution, lock, cache, installation and release-record contract."
+ "Normative single-manifest project, dependency resolution, deterministic package build, release and installation contract."
  :spec/conforms-to {:spec/id :hara/tap-protocol-metaspec
                     :spec/version "0.1.0"}
 
  :platform/roles
- [{:role/id :hara.package.role/project
-   :role/summary "Declares editable dependency and package intent."}
+ [{:role/id :hara.package.role/author
+   :role/summary "Declares all project, package, build and extension intent in project.edn."}
   {:role/id :hara.package.role/resolver
-   :role/summary "Resolves SemVer intent into a verified exact graph."}
+   :role/summary "Resolves declared dependencies and remote artifacts into project.lock.edn."}
+  {:role/id :hara.package.role/builder
+   :role/summary "Compiles HAL to HIR as applicable and builds one deterministic .harp."}
   {:role/id :hara.package.role/registry
-   :role/summary "Publishes accepted immutable package release records."}
-  {:role/id :hara.package.role/installer
-   :role/summary "Places verified archives in local content-addressed storage."}]
+   :role/summary "Accepts immutable releases authorized by GitHub-governed publisher identity."}
+  {:role/id :hara.package.role/runtime
+   :role/summary "Loads resolved package resources and embedded extension declarations."}]
 
  :platform/entities
- [{:entity/id :hara.package/coordinate
-   :entity/summary "Tap-qualified owner and package name."
-   :entity/fields [:coordinate/tap :coordinate/owner :coordinate/name]}
-  {:entity/id :hara.package/project-manifest
-   :entity/summary "Editable project.edn package and dependency intent."
-   :entity/fields [:project/id :project/version :project/dependencies
-                   :project/repositories :project/package]}
-  {:entity/id :hara.package/lockfile
-   :entity/summary "Exact verified dependency graph and tap provenance."
-   :entity/fields [:lock/format :lock/taps :lock/packages]}
+ [{:entity/id :hara.package/project
+   :entity/path "project.edn"
+   :entity/authored true
+   :entity/summary "The only contributor-authored manifest for a Hara project."
+   :entity/required-fields [:hara/type :hara/version :project/id
+                            :project/version :project/source-paths
+                            :project/test-paths :project/extension-paths
+                            :project/capabilities]
+   :entity/optional-fields [:project/main :project/default-profile
+                            :project/profiles :project/artifact-paths
+                            :project/archive-root :project/dependencies
+                            :project/package :project/build
+                            :project/extensions :project/remote-artifacts]}
+  {:entity/id :hara.package/lock
+   :entity/path "project.lock.edn"
+   :entity/generated true
+   :entity/summary "Exact package, registry revision and remote-artifact resolution."
+   :entity/fields [:lock/format :registries :packages :remote-artifacts]}
+  {:entity/id :hara.package/archive-index
+   :entity/path "package.edn"
+   :entity/generated true
+   :entity/summary "Immutable index generated inside a .harp archive."
+   :entity/fields [:harp/format :package :files :resources :extensions
+                   :remote-artifacts :integrity]}
   {:entity/id :hara.package/release
-   :entity/summary "Accepted immutable package version."
-   :entity/fields [:release/coordinate :release/version :release/source
-                   :release/artifact :release/intent :release/attestation]}]
+   :entity/summary "Immutable accepted package coordinate, version and archive digest."
+   :entity/fields [:release/coordinate :release/version :release/commit
+                   :release/project-sha256 :release/archive-sha256
+                   :release/attestation]}]
+
+ :project/fields
+ {:hara/type {:value :project}
+  :hara/version {:type :semver}
+  :project/id {:type :coordinate}
+  :project/version {:type :semver}
+  :project/source-paths {:type :relative-path-vector}
+  :project/test-paths {:type :relative-path-vector}
+  :project/extension-paths {:type :relative-path-vector}
+  :project/artifact-paths {:type :relative-path-vector}
+  :project/archive-root {:type :relative-path}
+  :project/capabilities {:type :set}
+  :project/dependencies {:type :dependency-map}
+  :project/package {:type :package-options}
+  :project/build {:type :build-declaration}
+  :project/extensions {:type :extension-map}
+  :project/remote-artifacts {:type :remote-artifact-map}}
 
  :platform/operations
- [{:operation/id :hara.package.operation/resolve
+ [{:operation/id :hara.package.operation/check
+   :operation/role :hara.package.role/builder
+   :operation/input :hara.package/project
+   :operation/output :hara.package/check-report
+   :operation/failures [:invalid-edn :invalid-field :unsafe-path
+                        :duplicate-namespace :invalid-extension]}
+  {:operation/id :hara.package.operation/sync
    :operation/role :hara.package.role/resolver
-   :operation/input :hara.package/project-manifest
-   :operation/output :hara.package/lockfile
-   :operation/failures [:unsatisfied-range :tap-untrusted :graph-conflict]}
-  {:operation/id :hara.package.operation/install
-   :operation/role :hara.package.role/installer
-   :operation/input :hara.package/release
-   :operation/output :hara.package/installed-root
-   :operation/failures [:unverified-release :unavailable-object
-                        :archive-invalid]}
-  {:operation/id :hara.package.operation/yank
+   :operation/input :hara.package/project
+   :operation/output :hara.package/lock
+   :operation/failures [:registry-unavailable :version-conflict
+                        :artifact-unavailable :integrity-mismatch]}
+  {:operation/id :hara.package.operation/build
+   :operation/role :hara.package.role/builder
+   :operation/input [:hara.package/project :hara.package/lock]
+   :operation/output :hara.harp/archive
+   :operation/failures [:unresolved-lock :compile-failed :build-failed
+                        :missing-output :nondeterministic-output]}
+  {:operation/id :hara.package.operation/publish
    :operation/role :hara.package.role/registry
-   :operation/input :hara.package/release
-   :operation/output :hara.package/yank-record
-   :operation/failures [:unauthorized :unknown-release]}]
+   :operation/input :hara.package/signed-project-intent
+   :operation/output :hara.package/release
+   :operation/failures [:unauthorized :source-mismatch :project-mismatch
+                        :archive-conflict :release-conflict]}
+  {:operation/id :hara.package.operation/load
+   :operation/role :hara.package.role/runtime
+   :operation/input :hara.package/lock
+   :operation/output :hara.package/mounted-graph
+   :operation/failures [:missing-package :hash-mismatch
+                        :incompatible-hir :capability-denied]}]
 
  :platform/invariants
- [{:requirement/id :hara.package/coordinate
+ [{:requirement/id :hara.package/single-authored-manifest
    :requirement/level :must
-   :requirement/text "Coordinates use TAP:owner/name; the built-in official tap is canonically named hara."}
-  {:requirement/id :hara.package/official-alias
-   :requirement/level :may
-   :requirement/text "Clients may accept official as a deprecated local alias but must normalize stored coordinates to the hara tap."}
-  {:requirement/id :hara.package/immutable-version
+   :requirement/text "project.edn is the sole contributor-authored manifest for project identity, dependencies, packaging, builds, extensions and remote artifacts."}
+  {:requirement/id :hara.package/generated-documents
    :requirement/level :must
-   :requirement/text "One coordinate and version identifies one release digest forever."}
-  {:requirement/id :hara.package/yank-history
+   :requirement/text "project.lock.edn and the package.edn inside a .harp are generated outputs and are never parallel authoring surfaces."}
+  {:requirement/id :hara.package/data-only
    :requirement/level :must
-   :requirement/text "Yanking prevents new selection without removing historical records or breaking locked verification."}
-  {:requirement/id :hara.package/atomic-graph
+   :requirement/text "project.edn is EDN data and is parsed without evaluating HAL or granting host authority."}
+  {:requirement/id :hara.package/exact-lock
    :requirement/level :must
-   :requirement/text "A dependency graph becomes visible only after every record, signature, object and archive validates."}
-  {:requirement/id :hara.package/local-require
+   :requirement/text "The lock records exact versions, registry revisions, source commits, archive digests and remote-artifact digests needed for reproducible loading."}
+  {:requirement/id :hara.package/reconcile-before-runtime
    :requirement/level :must
-   :requirement/text "require reads verified mounted roots only and never resolves, downloads or publishes packages."}
+   :requirement/text "Network reconciliation completes before evaluation; require resolves only the mounted local graph and never downloads code."}
+  {:requirement/id :hara.package/source-and-hir
+   :requirement/level :must
+   :requirement/text "Packages may carry HAL, HIR and EDN resources; a compatible verified HIR is preferred and HAL remains the portable fallback when included."}
   {:requirement/id :hara.package/no-install-execution
-   :requirement/level :must-not
-   :requirement/text "Checking, resolving, downloading, inspecting, installing or mounting executes package lifecycle code."}]
+   :requirement/level :must
+   :requirement/text "Installing a .harp verifies and extracts bytes but does not execute build hooks, lifecycle scripts or package code."}
+  {:requirement/id :hara.package/immutable-release
+   :requirement/level :must
+   :requirement/text "An accepted coordinate and version is bound permanently to one source commit, one project.edn digest and one archive digest."}
+  {:requirement/id :hara.package/github-governance
+   :requirement/level :must
+   :requirement/text "Contributor identity and repository authority are established through GitHub identity and exact repository identifiers; accepted management changes remain Git records."}]
 
  :platform/conformance
- [{:conformance/id :hara.package/coordinates
+ [{:conformance/id :hara.package/projects
+   :conformance/path "conformance/projects.edn"}
+  {:conformance/id :hara.package/coordinates
    :conformance/path "conformance/coordinates.edn"}
   {:conformance/id :hara.package/releases
    :conformance/path "conformance/releases.edn"}]}

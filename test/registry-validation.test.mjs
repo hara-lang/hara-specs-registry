@@ -3,12 +3,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { parseEdn } from "../scripts/lib/edn.mjs";
 import {
   expectedPackageRoot,
   safeRegistryPath,
   validateManifest,
   validateManifestFiles,
-  validatePackageManifest
+  validateProjectManifest
 } from "../scripts/lib/registry-validation.mjs";
 
 test("registry paths reject traversal and platform separators", () => {
@@ -19,14 +20,11 @@ test("registry paths reject traversal and platform separators", () => {
 });
 
 test("manifest validation catches duplicate and unsafe paths", () => {
-  const findings = validateManifest({
-    version: 1,
-    files: [
-      { path: "spec.edn", kind: "edn" },
-      { path: "spec.edn", kind: "edn" },
-      { path: "../escape.edn", kind: "edn" }
-    ]
-  });
+  const findings = validateManifest({ version: 1, files: [
+    { path: "spec.edn", kind: "edn" },
+    { path: "spec.edn", kind: "edn" },
+    { path: "../escape.edn", kind: "edn" }
+  ]});
   assert.deepEqual(findings.map(({ code }) => code), ["MANIFEST_PATH_DUPLICATE", "MANIFEST_PATH_UNSAFE"]);
 });
 
@@ -40,14 +38,27 @@ test("manifest source validation reports missing files", async () => {
   }
 });
 
-test("package coordinates map to an immutable version directory", () => {
-  const manifest = {
-    name: "@acme/invoice",
-    version: "1.2.0",
-    kind: "hara/spec",
-    entry: "spec/main.hal",
-    accepts: ["application/json"]
-  };
-  assert.deepEqual(validatePackageManifest(manifest), []);
-  assert.equal(expectedPackageRoot(manifest), "packages/acme/invoice/1.2.0");
+test("project.edn is the package authoring surface", () => {
+  const project = parseEdn(`{:hara/type :project
+    :hara/version "1.0.0"
+    :project/id acme/invoice
+    :project/version "1.2.0"
+    :project/source-paths ["src"]
+    :project/test-paths ["test"]
+    :project/extension-paths ["artifacts"]
+    :project/capabilities #{}
+    :project/dependencies {}
+    :project/extensions {invoice.native {:provider :wasm :abi :core.v1 :module "artifacts/invoice.wasm"}}}`);
+  assert.deepEqual(validateProjectManifest(project), []);
+  assert.equal(expectedPackageRoot(project), "packages/acme/invoice/1.2.0");
+});
+
+test("parallel authoring surfaces are rejected", () => {
+  const project = parseEdn(`{:hara/type :project
+    :hara/version "1.0.0"
+    :project/id acme/invoice
+    :project/version "1.2.0"
+    :project/source-paths [] :project/test-paths [] :project/extension-paths []
+    :project/capabilities #{} :project/recipe "other.edn"}`);
+  assert.ok(validateProjectManifest(project).some(({ code }) => code === "PROJECT_PARALLEL_MANIFEST_INVALID"));
 });

@@ -1,0 +1,12 @@
+{:hara/type :project
+ :hara/version "1.0.0"
+ :project/id hara/spec-package
+ :project/version "0.1.0"
+ :project/source-paths ["spec"]
+ :project/test-paths ["tests"]
+ :project/extension-paths []
+ :project/artifact-paths ["profiles" "fixtures"]
+ :project/capabilities #{}
+ :project/dependencies {}
+ :project/package {:license "MIT"
+                   :entry-points [hara.spec-package.main]}}

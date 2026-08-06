@@ -2,7 +2,7 @@
 
 `hara-lang/hara-specs-registry` is the canonical, Git-authoritative home for Hara specification documents and specification packages.
 
-The repository stores normative specification bytes, rendered documentation, conformance fixtures, package manifests, provenance, and the generated `registry-index.json` consumed by `specs.hara-lang.io`.
+The repository stores normative specification bytes, rendered documentation, conformance fixtures, provenance, and the generated `registry-index.json` consumed by `specs.hara-lang.io`.
 
 ## Repository boundary
 
@@ -11,44 +11,41 @@ The repository stores normative specification bytes, rendered documentation, con
 | `hara-lang/hara-specs-registry` | Specification source, package versions, fixtures, provenance, validation, and the generated registry index. |
 | `hara-lang/hara-specs` | Netlify UI and API, publishing management, document checking, reports, and Hara kernel adapters. |
 
-The service never owns the canonical specification bytes. Every rendered source link and conformity report identifies this repository and an exact resolved revision.
+The service never owns canonical specification bytes. Every rendered source link and conformity report identifies this repository and an exact resolved revision.
 
-## Migrated corpus
+## Numbered corpus
 
-The numbered corpus was imported from `hara-lang/hara-specs@dc269add5de05d06ddf215ca9f1d2d2b0c49f135`:
+- `01-lang/` — language, compiler, VM, data structure, and kernel contracts.
+- `02-platform/` — tooling, identity, packages, extensions, transport, substrate, and service contracts.
+- `00-unsorted/` — specifications awaiting a numbered architectural home.
+- `99-archive/` — retained non-package historical evidence.
 
-- `00-unsorted/` — specifications awaiting an architectural home;
-- `01-lang/` — language, compiler, VM, data structure, and kernel contracts;
-- `02-platform/` — tooling, identity, package, transport, substrate, and service contracts;
-- `99-archive/` — historical planning and compatibility evidence.
-
-The full source commit is a second parent of the import commit, preserving its Git history rather than reducing the migration to copied files. [`MIGRATION.edn`](MIGRATION.edn) records the source and method.
-
-`spec-manifest.json` inventories the imported documents. `registry-index.json` is generated deterministically from the manifest and authoritative EDN sources; duplicate historical identities are retained as alternate source locations while the highest-ranked active source becomes the catalogue entry.
+`spec-manifest.json` inventories the documents. `registry-index.json` is generated deterministically from that inventory and the authoritative EDN sources.
 
 ## Specification packages
 
-New package-shaped specifications live under:
+A specification package uses the same project contract as every Hara package:
 
 ```text
-packages/<scope>/<name>/<version>/
-  hara.package.json
-  spec/
-  profiles/
-  fixtures/
+packages/<owner>/<name>/<version>/
+  project.edn
+  project.lock.edn
+  src/
   tests/
+  fixtures/
+  profiles/
 ```
 
-Published version directories are immutable. Corrections are released as new versions; old versions may be deprecated or yanked through metadata, but their bytes are not replaced.
+`project.edn` is the only contributor-authored manifest. It declares identity, version, paths, dependencies, package metadata, builds, extensions, and remote artifacts. `project.lock.edn` is generated during reconciliation. A published `.harp` receives a generated root `package.edn` that indexes its exact bytes.
 
-The package schema is in [`schema/hara-spec-package.schema.json`](schema/hara-spec-package.schema.json).
+Published version directories are immutable. Corrections are released as new versions; old versions may be yanked through registry metadata, but their bytes are not replaced.
 
 ## Registry contracts
 
 - `spec-manifest.json` inventories tracked specification files.
 - `registry-index.json` is the public catalogue consumed by the service.
 - `scripts/generate-index.mjs` deterministically derives the catalogue.
-- `scripts/validate-registry.mjs` validates paths, files, and package coordinates.
+- `scripts/validate-registry.mjs` validates paths, files, package projects, and coordinates.
 - `scripts/check-index.mjs` verifies catalogue identities, source locations, materialization states, and summary totals.
 
 ```sh
@@ -59,4 +56,4 @@ npm run check
 
 ## Publishing model
 
-The first publishing transport is pull-request based. The management service validates and assembles a package, then proposes a path-scoped change here. Publisher identity, namespace ownership, signatures, immutable versions, and conformance fixtures are checked before merge.
+Publishing is GitHub-governed and pull-request based. The management service authenticates a contributor with GitHub, reads `project.edn` at an exact repository commit, verifies repository authority, builds and attests the deterministic package, and proposes a path-scoped registry change. The registry remains the source of truth for accepted releases.
