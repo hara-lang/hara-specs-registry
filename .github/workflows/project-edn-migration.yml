@@ -28,7 +28,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          forbidden = ["project.hal", "hara.extension.edn", "hara.build.edn", "hara.recipe.edn", "hara.install.edn", "hara.package.json", "recipe-sha256"]
+          forbidden = ["project.hal", "hara.extension.edn", "hara.build.edn", "hara.recipe.edn", "hara.install.edn", "hara.package.json", "recipe-sha256", "packageName", "legacySlugs", "@hara/"]
           bad = []
           for p in Path('.').rglob('*'):
               if not p.is_file() or '.git' in p.parts or 'node_modules' in p.parts:
