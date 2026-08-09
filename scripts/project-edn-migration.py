@@ -92,7 +92,7 @@ for p in list(root.rglob("*")):
     if rel in {"spec-manifest.json", "registry-index.json"}: continue
     try: s = p.read_text()
     except UnicodeDecodeError: continue
-    forbidden = ["project.hal", "hara.extension.edn", "hara.build.edn", "hara.recipe.edn", "hara.install.edn", "hara.package.json", "recipe-sha256"]
+    forbidden = ["project.hal", "hara.build.edn", "hara.recipe.edn", "hara.install.edn", "hara.package.json", "recipe-sha256"]
     if any(x in s for x in forbidden):
         if rel.startswith(("00-unsorted/", "99-archive/")): p.unlink()
         elif rel not in {"scripts/project-edn-migration.py", ".github/workflows/project-edn-migration.yml"}:

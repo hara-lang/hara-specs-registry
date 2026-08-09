@@ -25,7 +25,7 @@ program does not construct transport messages or call a WASM engine directly.
        reuse     search extension roots
                         |
                         v
-                hara.extension.edn
+            project.edn :project/extensions
                         |
                         v
                  validate manifest
@@ -37,7 +37,7 @@ program does not construct transport messages or call a WASM engine directly.
                  create namespace
 ```
 
-An extension package contains a `hara.extension.edn` manifest beside its provider artifact:
+An extension is declared under `:project/extensions` in `project.edn`:
 
 ```clojure
 {:namespace "crypto.hash"
@@ -67,7 +67,8 @@ Browser hosts can load the same EDN descriptor and resolve its sibling WASM modu
 ```javascript
 const context = await loadHtaExtension({
   worker: new Worker("./hta-worker.js", {type: "module"}),
-  descriptorUrl: new URL("./hara.extension.edn", import.meta.url).toString()
+  projectUrl: new URL("./project.edn", import.meta.url).toString(),
+  namespace: "math.tensor"
 });
 ```
 
@@ -168,7 +169,7 @@ project contains only the built result:
 project.edn
 extensions/
   ledger/noir/
-    hara.extension.edn
+    project.edn
     node/
       worker.mjs
     browser/
@@ -287,9 +288,8 @@ call site.
 
 ## Project installation and build workflow
 
-The nearest `project.edn` fixes the project extension root at `extensions/`. A namespace maps to a
-package directory by replacing dots with path separators, so `ledger.noir` is discovered
-at `extensions/ledger/noir/hara.extension.edn`. `hara.extensions.path` and
+The nearest `project.edn` declares extensions in `:project/extensions`; an optional declaration
+`:root` locates its artifacts. `hara.extensions.path` and
 `HARA_EXTENSION_PATH` remain explicit additional roots for launchers and test harnesses.
 
 Source checkouts may carry a `hara.build.edn`; installed packages do not. The canonical command
@@ -319,10 +319,9 @@ the protocol handshake. Process-backed operations are denied unless `--allow-pro
 
 ## Packaged answer-42 demonstration
 
-The import-free WASM demonstration is named `demo.000-answer-42`. Its runnable descriptor
-template lives at
-`lib/examples/extensions/demo/000-answer-42/hara.extension.edn`; an installed bundle places that
-descriptor beside `answer-42.wasm` under the same namespace-derived directory. Requiring it
+The import-free WASM demonstration is named `demo.000-answer-42`. Its project declaration lives at
+`lib/examples/extensions/demo/000-answer-42/project.edn`; an installed bundle carries the
+normalized declaration in `package.edn`. Requiring it
 generates its namespace directly from the declared WASM exports:
 
 ```hal

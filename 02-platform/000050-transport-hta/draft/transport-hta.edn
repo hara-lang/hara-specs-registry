@@ -27,7 +27,7 @@
  :spec/invariants
  [{:requirement/id :hara.hta/manifest-is-data
    :requirement/level :must
-   :requirement/text "hara.extension.edn is inert metadata and is not evaluated as Hara source."}
+   :requirement/text "The :project/extensions map in project.edn is inert metadata and is not evaluated as Hara source."}
   {:requirement/id :hara.hta/import-free
    :requirement/level :must
    :requirement/text "An HTA v1 WASM module has no ambient imports; the host drives its exported mailbox."}
@@ -46,7 +46,7 @@
 
  :hta/discovery
  {:discovery/trigger :hara.namespace/require
-  :discovery/manifest-name "hara.extension.edn"
+  :discovery/manifest-name "project.edn"
   :discovery/order
   [:registry/reuse-loaded
    :registry/search-extension-roots

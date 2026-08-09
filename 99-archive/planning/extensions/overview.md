@@ -10,7 +10,7 @@ as WASM modules; the program does not construct an engine or transport directly.
 (deref (hash/sha256 data))
 ```
 
-An extension package contains a `hara.extension.edn` manifest beside its provider artifact:
+An extension is declared under `:project/extensions` in `project.edn` alongside its provider artifacts:
 
 ```clojure
 {:namespace "crypto.hash"

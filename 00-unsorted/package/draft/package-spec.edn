@@ -199,7 +199,7 @@
      :requirement/text "The JavaScript host performs package retrieval, signature verification, and digest-addressed caching; the WASM evaluator does not fetch network content."}
     {:requirement/id :wasm/extension-validation
      :requirement/level :must
-     :requirement/text "WASM modules and HTA assets are declared in package.edn and hara.extension.edn, validated before startup, and receive no authority from declaration alone."}
+     :requirement/text "WASM modules and HTA assets are declared in project.edn and embedded in package.edn, validated before startup, and receive no authority from declaration alone."}
     {:requirement/id :wasm/browser-activation
      :requirement/level :must
      :requirement/text "Before project evaluation, a browser host resolves the locked graph, verifies signatures and archive digest, validates safe unique archive entries and package.edn, caches bytes by digest, mounts verified roots read-only, validates extension descriptors and assets, and registers required resources atomically."}
