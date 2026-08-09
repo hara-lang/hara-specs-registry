@@ -30,7 +30,7 @@
  {:status :accepted
   :closed true
   :type-count 21
-  :method-count 161
+  :method-count 162
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -168,8 +168,10 @@
    :method-classification {:foundation-primitive :all}}
   {:name Edn
    :availability :implemented
-   :methods [read]
-   :method-classification {:hal-wrapper :all}
+   :methods [read read-forms]
+   :method-classification
+   {:hal-wrapper [read]
+    :foundation-primitive [read-forms]}
    :wrapper-source "lib/src/std/foundation/edn.hal"}
   {:name Json
    :availability :implemented
