@@ -30,7 +30,7 @@
  {:status :accepted
   :closed true
   :type-count 21
-  :method-count 162
+  :method-count 166
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -113,7 +113,7 @@
    :wrapper-source "lib/src/std/foundation/bytes.hal"}
   {:name File
    :availability :capability-gated
-   :methods [resolve read write exists? list mkdir delete]
+   :methods [parent join resolve read write exists? stat list walk mkdir delete]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation/file.hal"}
   {:name Socket
