@@ -29,8 +29,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 21
-  :method-count 166
+  :type-count 22
+  :method-count 167
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -54,7 +54,7 @@
   :canonical-method-namespace "std.native.<Type>"
   :global-alias "<Type>"
   :global-aliases
-  [Maths Numbers Bits String Bytes File Socket Promise Coroutine Arr Obj
+  [Maths Numbers Bits String Bytes Crypto File Socket Promise Coroutine Arr Obj
    Runtime Printer Edn Json Host Regex UUID Error Iter Kernel]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
@@ -111,6 +111,11 @@
    {:hal-wrapper [count get set copy slice u8 s8]
     :foundation-primitive [new instance?]}
    :wrapper-source "lib/src/std/foundation/bytes.hal"}
+  {:name Crypto
+   :availability :implemented
+   :methods [sha256]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation/crypto.hal"}
   {:name File
    :availability :capability-gated
    :methods [parent join resolve read write exists? stat list walk mkdir delete]
