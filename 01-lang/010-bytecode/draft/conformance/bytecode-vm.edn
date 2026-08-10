@@ -86,7 +86,7 @@
   {:id :error/overflow-add :source "(+ 9223372036854775807 1)" :expect {:error-category "integer overflow"}}
   {:id :error/overflow-multiply :source "(* 4611686018427387904 2)" :expect {:error-category "integer overflow"}}
   {:id :error/overflow-subtract :source "(- -9223372036854775808 1)" :expect {:error-category "integer overflow"}}
-  {:id :error/mixed-numeric :source "(+ 1 1.5)" :expect {:error-category "expects numbers"}}
+  {:id :arithmetic/mixed-numeric :source "(+ 1 1.5)" :expect {:display "2.5"}}
   {:id :error/string-arithmetic :source "(+ \"a\" 1)" :expect {:error-category "expects numbers"}}
   {:id :error/string-comparison :source "(< 1 \"a\")" :expect {:error-category "expects numbers"}}
   {:id :error/less-arity :source "(< 1)" :expect {:error-category "primitive arity"}}
@@ -103,7 +103,7 @@
   {:id :compile/recur-empty :source "(loop [i 0] (recur))" :expect {:compile-error "recur expects values"}}
   {:id :compile/unbound-symbol :source "unknown" :expect {:compile-error "unbound symbol"}}
   {:id :compile/unbound-in-let :source "(let [x 1] (+ x y))" :expect {:compile-error "unbound symbol"}}
-  {:id :def/basic :source "(def answer 42)" :expect {:display "42"}}
+  {:id :def/basic :source "(def answer 42)" :expect {:display "#'user/answer"}}
   {:id :def/readback :source "(do (def answer 42) answer)" :expect {:display "42"}}
   {:id :def/redefine :source "(do (def answer 19) (def answer (+ answer 23)) answer)" :expect {:display "42"}}
   {:id :def/result-is-value :source "(do (def inc1 (fn [x] (+ x 1))) (inc1 41))" :expect {:display "42"}}
