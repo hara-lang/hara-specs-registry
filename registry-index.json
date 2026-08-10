@@ -5,7 +5,7 @@
     "ref": "main",
     "manifestPath": "spec-manifest.json",
     "manifestDigest": "sha256:28defc9fbcc643eeda663714aa323aa7801fd9c8a1658de64935ff1ed1f279b8",
-    "catalogueDigest": "sha256:cdaf6be2c0e9cbf62fc5d77075a4325a4a6bf75d7eb461c1a5144897c4a176eb",
+    "catalogueDigest": "sha256:c550234eb53a323eec157e229311e00319ba901c79cb5cfd66dee9d083e18c7a",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 50,
     "ready": 0,
     "executable": 30,
-    "requirements": 275,
+    "requirements": 328,
     "materialized": 50,
     "pinnedSource": 0,
     "layers": [
@@ -30,7 +30,7 @@
     {
       "id": "greenways/buildspec",
       "slug": "greenways-buildspec",
-      "packageName": "@hara/greenways-buildspec",
+      "coordinate": "greenways/buildspec",
       "title": "Greenways Build DSL Specification",
       "summary": "A local HAL DSL for staged artifact construction and deterministic structural verification.",
       "type": "hara/artifact-specification",
@@ -61,7 +61,7 @@
     {
       "id": "greenways/supersonic-spec",
       "slug": "greenways-supersonic-spec",
-      "packageName": "@hara/greenways-supersonic-spec",
+      "coordinate": "greenways/supersonic-spec",
       "title": "Greenways Supersonic Audio Graph Specification",
       "summary": "Canonical local data for declarative audio graphs and deterministic provider snapshots.",
       "type": "hara/artifact-specification",
@@ -92,7 +92,7 @@
     {
       "id": "hara/artifact-metaspec",
       "slug": "hara-artifact-metaspec",
-      "packageName": "@hara/hara-artifact-metaspec",
+      "coordinate": "hara/artifact-metaspec",
       "title": "HAL Artifact DSL Meta-Specification",
       "summary": "Normative schema for specifications that describe local, deterministic artifact DSLs.",
       "type": "hara/artifact-metaspec",
@@ -123,7 +123,7 @@
     {
       "id": "hal/evaluation-journal",
       "slug": "hal-evaluation-journal",
-      "packageName": "@hara/hal-evaluation-journal",
+      "coordinate": "hal/evaluation-journal",
       "title": "Hal Evaluation Journal",
       "summary": "No summary has been published for this specification.",
       "type": "diagnostic-spec",
@@ -154,7 +154,7 @@
     {
       "id": "hara/host-runtime",
       "slug": "hara-host-runtime",
-      "packageName": "@hara/hara-host-runtime",
+      "coordinate": "hara/host-runtime",
       "title": "HAL host capability boundary",
       "summary": "Product-neutral contract between a Hara evaluator and capabilities supplied by its embedding host.",
       "type": "runtime-spec",
@@ -185,7 +185,7 @@
     {
       "id": "hara/studio-runtime",
       "slug": "hara-studio-runtime",
-      "packageName": "@hara/hara-studio-runtime",
+      "coordinate": "hara/studio-runtime",
       "title": "HAL programmable Studio and node runtime",
       "summary": "Normative kernel, session, filesystem, editor, canvas, audio graph, project, node, and wire contract.",
       "type": "runtime-spec",
@@ -214,9 +214,47 @@
       }
     },
     {
+      "id": "hara/package",
+      "slug": "hara-package",
+      "coordinate": "hara/package",
+      "title": "Hara package and registry specification",
+      "summary": "Normative contract for Hara project dependencies, deterministic archives, federated signed publication, and verified package loading.",
+      "type": "package-spec",
+      "version": "0.1.2-draft",
+      "status": "draft",
+      "layer": "00-unsorted",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "00-unsorted/package/draft/package-spec.edn",
+      "documentationPath": "00-unsorted/package/draft/README.md",
+      "requirements": 50,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": true,
+      "materialization": "registry",
+      "alternateSources": [
+        {
+          "version": "0.1.0",
+          "status": "draft",
+          "path": "02-platform/000006-package/draft/hara-package.edn"
+        }
+      ],
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "00-unsorted/package/draft/package-spec.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "00-unsorted/package/draft/README.md"
+      }
+    },
+    {
       "id": "hara/design-language",
       "slug": "hara-design-language",
-      "packageName": "@hara/hara-design-language",
+      "coordinate": "hara/design-language",
       "title": "Hara Studio design language",
       "summary": "A Max/MSP-inspired, lossless code and patch interaction contract for Hara and domain DSLs.",
       "type": "design-contract",
@@ -247,7 +285,7 @@
     {
       "id": "hara/theme",
       "slug": "hara-theme",
-      "packageName": "@hara/hara-theme",
+      "coordinate": "hara/theme",
       "title": "Hara theme design contract",
       "summary": "One dark-only Hara visual system for public, documentation, specification, API, and Studio surfaces.",
       "type": "design-contract",
@@ -278,7 +316,7 @@
     {
       "id": "hal/language",
       "slug": "hal-language",
-      "packageName": "@hara/hal-language",
+      "coordinate": "hal/language",
       "title": "HAL data language specification",
       "summary": "Portable contract for the immutable data forms shared by HAL source and the Hara EDN profile.",
       "type": "language-spec",
@@ -316,7 +354,7 @@
     {
       "id": "hal/metaspec",
       "slug": "hal-metaspec",
-      "packageName": "@hara/hal-metaspec",
+      "coordinate": "hal/metaspec",
       "title": "HAL language specification meta-spec",
       "summary": "Defines the machine-readable shape, authority rules, and validation contract for a HAL language specification.",
       "type": "hal/language-metaspec",
@@ -347,7 +385,10 @@
     {
       "id": "hara/metaspec-metaspec",
       "slug": "hara-metaspec-metaspec",
-      "packageName": "@hara/hara-metaspec-metaspec",
+      "coordinate": "hara/metaspec-metaspec",
+      "aliases": [
+        "hal/metaspec"
+      ],
       "title": "HAL Meta-Specification Meta-Specification",
       "summary": "A self-describing contract for authoring, linting and verifying machine-readable Hara meta-specifications.",
       "type": "hara/metaspec",
@@ -364,12 +405,6 @@
       ],
       "executable": true,
       "materialization": "registry",
-      "aliases": [
-        "hal/metaspec"
-      ],
-      "legacySlugs": [
-        "hal-metaspec"
-      ],
       "source": {
         "repository": "hara-lang/hara-specs-registry",
         "ref": "main",
@@ -384,7 +419,7 @@
     {
       "id": "hara/protocol",
       "slug": "hara-protocol",
-      "packageName": "@hara/hara-protocol",
+      "coordinate": "hara/protocol",
       "title": "Hara built-in protocol specification",
       "summary": "Portable contract for the built-in protocol descriptors, method namespaces, dispatch, and guest extension surface under std.protocol.*.",
       "type": "protocol-spec",
@@ -415,7 +450,7 @@
     {
       "id": "hara/foundation-annex-metaspec",
       "slug": "hara-foundation-annex-metaspec",
-      "packageName": "@hara/hara-foundation-annex-metaspec",
+      "coordinate": "hara/foundation-annex-metaspec",
       "title": "Hara Foundation annex specification meta-spec",
       "summary": "Defines the machine-readable contract for public std.foundation.* library namespaces.",
       "type": "hara/metaspec",
@@ -446,7 +481,7 @@
     {
       "id": "hara/foundation",
       "slug": "hara-foundation",
-      "packageName": "@hara/hara-foundation",
+      "coordinate": "hara/foundation",
       "title": "Hara Foundation bootstrap namespace",
       "summary": "Portable contract for std.foundation, its automatically referred public surface, and the boundary between HAL definitions, protocols, and native primitives.",
       "type": "foundation-spec",
@@ -477,7 +512,7 @@
     {
       "id": "hara/foundation-annex",
       "slug": "hara-foundation-annex",
-      "packageName": "@hara/hara-foundation-annex",
+      "coordinate": "hara/foundation-annex",
       "title": "Hara Foundation library annex",
       "summary": "Portable catalog and behavioral boundary for the public std.foundation.* library namespaces.",
       "type": "foundation-annex-spec",
@@ -508,7 +543,7 @@
     {
       "id": "hara/foundation-metaspec",
       "slug": "hara-foundation-metaspec",
-      "packageName": "@hara/hara-foundation-metaspec",
+      "coordinate": "hara/foundation-metaspec",
       "title": "Hara Foundation specification meta-spec",
       "summary": "Defines the machine-readable contract for the root std.foundation bootstrap namespace.",
       "type": "hara/metaspec",
@@ -539,7 +574,7 @@
     {
       "id": "hara/host-kernel",
       "slug": "hara-host-kernel",
-      "packageName": "@hara/hara-host-kernel",
+      "coordinate": "hara/host-kernel",
       "title": "Hara host and kernel boundary",
       "summary": "Runtime authority contract between a Hara evaluator and its embedding host: kernel and session identity, capability grants, provider dispatch, settlement, and the boundary map to the surrounding specification layers.",
       "type": "host-kernel-spec",
@@ -570,7 +605,7 @@
     {
       "id": "hara/native-metaspec",
       "slug": "hara-native-metaspec",
-      "packageName": "@hara/hara-native-metaspec",
+      "coordinate": "hara/native-metaspec",
       "title": "Hara native boundary specification meta-spec",
       "summary": "Defines the machine-readable contract for std.native and std.native.* runtime adapters.",
       "type": "hara/metaspec",
@@ -601,7 +636,7 @@
     {
       "id": "hara/native",
       "slug": "hara-native",
-      "packageName": "@hara/hara-native",
+      "coordinate": "hara/native",
       "title": "Hara native runtime boundary",
       "summary": "Portable guest-visible contract for std.native descriptors and their implementation-provided methods.",
       "type": "native-spec",
@@ -632,7 +667,7 @@
     {
       "id": "hara/data-structures",
       "slug": "hara-data-structures",
-      "packageName": "@hara/hara-data-structures",
+      "coordinate": "hara/data-structures",
       "title": "Hara persistent data structures specification",
       "summary": "Portable contract for the built-in persistent data structures: the structure catalog, op semantics, iteration-order guarantees, and the cross-runtime hashing stack (RAPID default; SYSTEM, MURMUR3, SIP alternatives).",
       "type": "data-structures-spec",
@@ -663,7 +698,7 @@
     {
       "id": "hara/protocol-metaspec",
       "slug": "hara-protocol-metaspec",
-      "packageName": "@hara/hara-protocol-metaspec",
+      "coordinate": "hara/protocol-metaspec",
       "title": "Hara protocol specification meta-spec",
       "summary": "Defines the machine-readable contract for the built-in std.protocol.* namespace family.",
       "type": "hara/metaspec",
@@ -694,7 +729,7 @@
     {
       "id": "hal/bytecode-vm",
       "slug": "hal-bytecode-vm",
-      "packageName": "@hara/hal-bytecode-vm",
+      "coordinate": "hal/bytecode-vm",
       "title": "Rust HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)",
       "summary": "Rust-only implementation contract for the experimental, feature-gated bytecode VM: execution model, instruction set, persistent program representation, validation, lexical slots, stackless function calls, exception handling, globals and namespaces, primitive dispatch, diagnostics, and conformance. It does not require Java or another HAL runtime to implement a stack VM, this opcode set, numeric slots, frames, handlers, or this compiler. Portable HAL language behavior remains owned by the shared language specifications and corpora.",
       "type": "runtime-implementation-spec",
@@ -725,7 +760,7 @@
     {
       "id": "hal/rust-tracing-jit",
       "slug": "hal-rust-tracing-jit",
-      "packageName": "@hara/hal-rust-tracing-jit",
+      "coordinate": "hal/rust-tracing-jit",
       "title": "Rust Tracing Jit",
       "summary": "No summary has been published for this specification.",
       "type": "runtime-implementation-spec",
@@ -756,9 +791,9 @@
     {
       "id": "hara/harp",
       "slug": "hara-harp",
-      "packageName": "@hara/hara-harp",
+      "coordinate": "hara/harp",
       "title": "Hara archive package format",
-      "summary": "Normative deterministic, safe and read-only HARP package archive contract.",
+      "summary": "Normative deterministic .harp archive, generated package.edn index, integrity, extraction and read-only mounting contract.",
       "type": "hara/tap-protocol",
       "version": "0.1.0",
       "status": "draft",
@@ -767,7 +802,7 @@
       "classification": "hara",
       "sourcePath": "02-platform/000005-harp/draft/hara-harp.edn",
       "documentationPath": "02-platform/000005-harp/draft/README.md",
-      "requirements": 4,
+      "requirements": 8,
       "formats": [
         "application/edn"
       ],
@@ -787,7 +822,7 @@
     {
       "id": "hara/cli-app-metaspec",
       "slug": "hara-cli-app-metaspec",
-      "packageName": "@hara/hara-cli-app-metaspec",
+      "coordinate": "hara/cli-app-metaspec",
       "title": "Hara CLI application meta-specification",
       "summary": "Normative schema for deterministic, data-defined command-line applications and route manifests.",
       "type": "hara/artifact-specification",
@@ -818,7 +853,7 @@
     {
       "id": "hara/cli",
       "slug": "hara-cli",
-      "packageName": "@hara/hara-cli",
+      "coordinate": "hara/cli",
       "title": "Hara command-line application",
       "summary": "Normative public route, option, handler and outcome contract shared by the Rust and Truffle Hara runtimes.",
       "type": "hara/cli-application",
@@ -849,9 +884,9 @@
     {
       "id": "hara/extension",
       "slug": "hara-extension",
-      "packageName": "@hara/hara-extension",
-      "title": "Hara extension package protocol",
-      "summary": "Normative extension descriptor, provider, ABI, capability and target compatibility contract.",
+      "coordinate": "hara/extension",
+      "title": "Hara extension declaration contract",
+      "summary": "Normative project.edn declarations for WASM and HTA providers, targets, assets, capabilities and remote artifact delivery.",
       "type": "hara/tap-protocol",
       "version": "0.1.0",
       "status": "draft",
@@ -860,7 +895,7 @@
       "classification": "hara",
       "sourcePath": "02-platform/000007-extension/draft/hara-extension.edn",
       "documentationPath": "02-platform/000007-extension/draft/README.md",
-      "requirements": 4,
+      "requirements": 8,
       "formats": [
         "application/edn"
       ],
@@ -880,7 +915,7 @@
     {
       "id": "hara/tap",
       "slug": "hara-tap",
-      "packageName": "@hara/hara-tap",
+      "coordinate": "hara/tap",
       "title": "Hara federated tap protocol",
       "summary": "Normative trust, authority, discovery and role contract for independently operated Hara taps.",
       "type": "hara/tap-protocol",
@@ -911,7 +946,7 @@
     {
       "id": "hara/platform-artifact",
       "slug": "hara-platform-artifact",
-      "packageName": "@hara/hara-platform-artifact",
+      "coordinate": "hara/platform-artifact",
       "title": "Hara immutable artifact protocol",
       "summary": "Normative content-addressed object, manifest and build-attestation contract.",
       "type": "hara/tap-protocol",
@@ -942,7 +977,7 @@
     {
       "id": "hara/lsp-base",
       "slug": "hara-lsp-base",
-      "packageName": "@hara/hara-lsp-base",
+      "coordinate": "hara/lsp-base",
       "title": "Hara Language Server Protocol base profile",
       "summary": "Defines the portable editor-facing protocol, analysis facts, namespace resolution, capabilities, safety rules, and conformance obligations for a Hara language server.",
       "type": "lsp-profile",
@@ -971,47 +1006,9 @@
       }
     },
     {
-      "id": "hara/package",
-      "slug": "hara-package",
-      "packageName": "@hara/hara-package",
-      "title": "Hara package protocol",
-      "summary": "Normative package coordinates, manifests, resolution, lock, cache, installation and release-record contract.",
-      "type": "hara/tap-protocol",
-      "version": "0.2.0",
-      "status": "draft",
-      "layer": "02-platform",
-      "owner": "hara-lang",
-      "classification": "hara",
-      "sourcePath": "02-platform/000006-package/draft/hara-package.edn",
-      "documentationPath": "02-platform/000006-package/draft/README.md",
-      "requirements": 7,
-      "formats": [
-        "application/edn"
-      ],
-      "executable": true,
-      "materialization": "registry",
-      "alternateSources": [
-        {
-          "version": "0.1.2-draft",
-          "status": "draft",
-          "path": "00-unsorted/package/draft/package-spec.edn"
-        }
-      ],
-      "source": {
-        "repository": "hara-lang/hara-specs-registry",
-        "ref": "main",
-        "path": "02-platform/000006-package/draft/hara-package.edn"
-      },
-      "documentation": {
-        "repository": "hara-lang/hara-specs-registry",
-        "ref": "main",
-        "path": "02-platform/000006-package/draft/README.md"
-      }
-    },
-    {
       "id": "hara/transport-resp",
       "slug": "hara-transport-resp",
-      "packageName": "@hara/hara-transport-resp",
+      "coordinate": "hara/transport-resp",
       "title": "Hara RESP broker protocol",
       "summary": "Defines the RESP2 wire encoding, connection lifecycle, versioned broker dialects, operations, replies, errors, limits, and client boundary for remote Hara sessions.",
       "type": "transport-contract",
@@ -1042,9 +1039,9 @@
     {
       "id": "hara/publishing",
       "slug": "hara-publishing",
-      "packageName": "@hara/hara-publishing",
+      "coordinate": "hara/publishing",
       "title": "Hara self-publishing protocol",
-      "summary": "Normative signed intake, isolated build, protected finalization and accepted Git record contract.",
+      "summary": "Normative GitHub identity, project.edn intake, isolated package build, protected finalization and accepted Git record contract.",
       "type": "hara/tap-protocol",
       "version": "0.1.0",
       "status": "draft",
@@ -1053,7 +1050,7 @@
       "classification": "hara",
       "sourcePath": "02-platform/000009-publishing/draft/hara-publishing.edn",
       "documentationPath": "02-platform/000009-publishing/draft/README.md",
-      "requirements": 6,
+      "requirements": 8,
       "formats": [
         "application/edn"
       ],
@@ -1073,7 +1070,7 @@
     {
       "id": "hara/identity",
       "slug": "hara-identity",
-      "packageName": "@hara/hara-identity",
+      "coordinate": "hara/identity",
       "title": "Hara tap identity protocol",
       "summary": "Normative root trust, GitHub enrollment, publisher authorization and revocation contract.",
       "type": "hara/tap-protocol",
@@ -1104,7 +1101,7 @@
     {
       "id": "hara/mirroring",
       "slug": "hara-mirroring",
-      "packageName": "@hara/hara-mirroring",
+      "coordinate": "hara/mirroring",
       "title": "Hara tap mirroring protocol",
       "summary": "Normative registry revision and immutable object replication, divergence and failover contract.",
       "type": "hara/tap-protocol",
@@ -1135,7 +1132,7 @@
     {
       "id": "hara/tap-protocol-metaspec",
       "slug": "hara-tap-protocol-metaspec",
-      "packageName": "@hara/hara-tap-protocol-metaspec",
+      "coordinate": "hara/tap-protocol-metaspec",
       "title": "Hara tap protocol meta-specification",
       "summary": "Normative document model for Git-authoritative Hara platform protocols.",
       "type": "hara/artifact-specification",
@@ -1166,7 +1163,7 @@
     {
       "id": "hara/transport-hta",
       "slug": "hara-transport-hta",
-      "packageName": "@hara/hara-transport-hta",
+      "coordinate": "hara/transport-hta",
       "title": "Hara Transport Adaptor contract",
       "summary": "Defines discovery, manifests, providers, wire values, lifecycle, host calls, errors, handles, and multi-target packaging for HTA extensions.",
       "type": "transport-contract",
@@ -1197,7 +1194,7 @@
     {
       "id": "hara/distribution",
       "slug": "hara-distribution",
-      "packageName": "@hara/hara-distribution",
+      "coordinate": "hara/distribution",
       "title": "Hara verified distribution protocol",
       "summary": "Normative exact release resolution, immutable download, cache and offline activation contract.",
       "type": "hara/tap-protocol",
@@ -1228,7 +1225,7 @@
     {
       "id": "hara/asset",
       "slug": "hara-asset",
-      "packageName": "@hara/hara-asset",
+      "coordinate": "hara/asset",
       "title": "Hara versioned asset collection protocol",
       "summary": "Normative file, image, video and 3D collection, derivative and isolated delivery contract.",
       "type": "hara/tap-protocol",
@@ -1259,7 +1256,7 @@
     {
       "id": "xt/substrate-frame",
       "slug": "xt-substrate-frame",
-      "packageName": "@hara/xt-substrate-frame",
+      "coordinate": "xt/substrate-frame",
       "title": "XTalk substrate frame and JSON contract",
       "summary": "Defines the actual NodeFrame constructors, predicates, JSON validation, and error normalization.",
       "type": "xt-substrate-spec",
@@ -1290,7 +1287,7 @@
     {
       "id": "xt/substrate-runtime-profiles",
       "slug": "xt-substrate-runtime-profiles",
-      "packageName": "@hara/xt-substrate-runtime-profiles",
+      "coordinate": "xt/substrate-runtime-profiles",
       "title": "XTalk substrate generated-runtime coverage",
       "summary": "Records the runtime targets actually exercised by the pinned xt.substrate tests and aggregates the source-backed conformance corpora.",
       "type": "xt-substrate-spec",
@@ -1321,7 +1318,7 @@
     {
       "id": "xt/substrate-base",
       "slug": "xt-substrate-base",
-      "packageName": "@hara/xt-substrate-base",
+      "coordinate": "xt/substrate-base",
       "title": "XTalk substrate module contract",
       "summary": "Defines the source baseline, namespace topology, public facade, and evidence rules for xt.substrate.",
       "type": "xt-substrate-spec",
@@ -1352,7 +1349,7 @@
     {
       "id": "xt/substrate-node",
       "slug": "xt-substrate-node",
-      "packageName": "@hara/xt-substrate-node",
+      "coordinate": "xt/substrate-node",
       "title": "XTalk substrate node and space contract",
       "summary": "Defines the mutable EventNode and NodeSpace records and their current construction, configuration, and state operations.",
       "type": "xt-substrate-spec",
@@ -1383,7 +1380,7 @@
     {
       "id": "xt/substrate-page-model",
       "slug": "xt-substrate-page-model",
-      "packageName": "@hara/xt-substrate-page-model",
+      "coordinate": "xt/substrate-page-model",
       "title": "XTalk substrate page runtime",
       "summary": "Defines the existing per-space page runtime, model pipelines, dependencies, refresh, throttling, triggers, remote dispatch, and raw callbacks.",
       "type": "xt-substrate-spec",
@@ -1414,7 +1411,7 @@
     {
       "id": "xt/substrate-stream-router",
       "slug": "xt-substrate-stream-router",
-      "packageName": "@hara/xt-substrate-stream-router",
+      "coordinate": "xt/substrate-stream-router",
       "title": "XTalk substrate pub/sub and router contract",
       "summary": "Defines the actual trigger, connection, subscription, publish, routing, and control-frame behavior.",
       "type": "xt-substrate-spec",
@@ -1445,7 +1442,7 @@
     {
       "id": "xt/substrate-request",
       "slug": "xt-substrate-request",
-      "packageName": "@hara/xt-substrate-request",
+      "coordinate": "xt/substrate-request",
       "title": "XTalk substrate request contract",
       "summary": "Defines the actual handler entries, promise normalization, pending map, local and transport request paths, and response settlement.",
       "type": "xt-substrate-spec",
@@ -1476,7 +1473,7 @@
     {
       "id": "xt/substrate-service",
       "slug": "xt-substrate-service",
-      "packageName": "@hara/xt-substrate-service",
+      "coordinate": "xt/substrate-service",
       "title": "XTalk substrate service registry",
       "summary": "Defines the EventNode arbitrary-value service map and the built-in @/ utility handlers.",
       "type": "xt-substrate-spec",
@@ -1507,7 +1504,7 @@
     {
       "id": "xt/substrate-metaspec",
       "slug": "xt-substrate-metaspec",
-      "packageName": "@hara/xt-substrate-metaspec",
+      "coordinate": "xt/substrate-metaspec",
       "title": "XTalk substrate source-fidelity metaspec",
       "summary": "Defines a source-backed document model for the existing xt.substrate implementation.",
       "type": "xt-substrate-metaspec",
@@ -1538,7 +1535,7 @@
     {
       "id": "xt/substrate-transport",
       "slug": "xt-substrate-transport",
-      "packageName": "@hara/xt-substrate-transport",
+      "coordinate": "xt/substrate-transport",
       "title": "XTalk substrate transport contract",
       "summary": "Defines NodeTransport attachment and the existing memory, text, browser-worker, MessagePort, and WebSocket adapters.",
       "type": "xt-substrate-spec",
@@ -1569,7 +1566,7 @@
     {
       "id": "xt/substrate-view-proxy",
       "slug": "xt-substrate-view-proxy",
-      "packageName": "@hara/xt-substrate-view-proxy",
+      "coordinate": "xt/substrate-view-proxy",
       "title": "XTalk substrate view and page-proxy contract",
       "summary": "Defines the exact view IR, catalog grammar, state bindings, snapshots, subscriptions, action dispatch, demos, and page proxy.",
       "type": "xt-substrate-spec",
