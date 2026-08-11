@@ -129,6 +129,9 @@
   {:id :fn/captures-loop-binding :source "((loop [i 40] (fn [] (+ i 2))))" :expect {:display "42"}}
   {:id :fn/as-value :source "(fn [x] x)" :expect {:display "<fn>"}}
   {:id :fn/called-in-loop :source "(let [inc (fn [x] (+ x 1))] (loop [i 0 acc 0] (if (< i 100) (recur (inc i) (+ acc i)) acc)))" :expect {:display "4950"}}
+  {:id :fn/coroutine-yield-resume
+   :source "(do (def stream (std.foundation.coroutine/create (fn [] (std.foundation.coroutine/yield 42)))) (def yielded (std.protocol.icoroutine/resume stream)) (std.protocol.icoroutine/resume stream) yielded)"
+   :expect {:display "42"}}
 
   ;; ---- defn lowering: direct bindings, shadowing, self-recursion ----
   {:id :defn/basic :source "(do (defn f [x] (+ x 1)) (f 41))" :expect {:display "42"}}
@@ -159,7 +162,7 @@
   {:id :error/fn-params-shape :source "(fn self [x] x)" :expect {:error-category "fn params shape"}}
   {:id :error/defn-forward-reference :source "(do (defn g [x] (f x)) (defn f [x] (+ x 1)) (g 41))" :expect {:error-category "unbound symbol"}}
 
-  ;; ---- function compile errors: VM-only canonical behavior ----
+  ;; ---- function shapes and destructuring: VM-only canonical behavior ----
   ;; Variadic fn (issue #223): the rest parameter binds a list.
   {:id :fn/variadic-rest :source "((fn [left & more] left) 42 1 2)" :expect {:display "42"}}
   {:id :fn/variadic-rest-value :source "((fn [left & more] more) 42 1 2)" :expect {:display "(1 2)"}}
@@ -170,7 +173,10 @@
   {:id :defn/multi-arity :source "(do (defn choose ([value] value) ([left right] (+ left right))) (+ (choose 19) (choose 20 3)))" :expect {:display "42"}}
   {:id :defn/multi-arity-variadic :source "(do (defn sum3 ([a b] (+ a b)) ([a b c & more] (+ a b c))) (sum3 19 20 3))" :expect {:display "42"}}
   {:id :defn/variadic :source "(do (defn rest-args [first & rest] rest) (rest-args 42 1 2))" :expect {:display "(1 2)"}}
-  {:id :compile/fn-destructuring :source "(fn [[a b]] a)" :expect {:compile-error "fn destructuring is not supported"}}
+  {:id :fn/vector-destructuring :source "((fn [[a b]] (+ a b)) [19 23])" :expect {:display "42"}}
+  {:id :fn/map-destructuring :source "((fn [{:keys [value] :or {value 42}}] value) {})" :expect {:display "42"}}
+  {:id :let/nested-destructuring :source "(let [[a {:keys [b]}] [19 {:b 23}]] (+ a b))" :expect {:display "42"}}
+  {:id :loop/recur-destructuring :source "(loop [[value remaining] [40 2]] (if (= remaining 0) value (recur [(+ value 1) (- remaining 1)])))" :expect {:display "42"}}
   ;; defn interns a real var and evaluates to it (issue #223); display
   ;; is namespace-qualified, matching the JVM runtime.
   {:id :defn/result-is-var :source "(defn f [x] x)" :expect {:display "#'user/f"}}

@@ -14,4 +14,4 @@
    :spec/version "0.0.0-alpha"
    :spec/path "spec/draft/greenways-supersonic-spec.edn"
    :spec/metaspec "specs/00-unsorted/artifact/metaspec/artifact-metaspec.edn"
-   :spec/sha256 "sha256:27aa13f72535b756bdcc8c82a3be9dee32f9b5005e6ce550c2a1e56d8356af68"}]}
+   :spec/sha256 "sha256:66e613c90c86c299dadafe43f0ab354dc9a2ef4c8312eff0abccfd01bcc569cf"}]}

@@ -64,7 +64,7 @@
   {:schema/id :hara.foundation-annex.metaspec/library
    :schema/type :map
    :schema/required
-   [:library/id :library/namespace :library/classification
+   [:library/id :library/namespace :library/alias :library/classification
     :library/public-vars]}
   {:schema/id :hara.foundation-annex.metaspec/reference
    :schema/type :map

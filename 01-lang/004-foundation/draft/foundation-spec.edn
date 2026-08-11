@@ -40,7 +40,11 @@
   {:requirement/id :foundation/no-clojure-assumption
    :requirement/level :must
    :requirement/text
-   "A similarly named Clojure function does not define Foundation semantics unless this specification says so."}]
+   "A similarly named Clojure function does not define Foundation semantics unless this specification says so."}
+  {:requirement/id :foundation/lookup-does-not-load
+   :requirement/level :must
+   :requirement/text
+   "Symbol resolution only inspects loaded namespaces. Deferred or runtime-selected code may load only through an exact entry in a declared registry."}]
 
  :foundation/bootstrap
  {:bootstrap/automatic-referral
@@ -134,8 +138,7 @@
    :surface/symbols
    [eval read-forms load-string macroexpand macroexpand-all apply-in apply-as
     invoke-as current-namespace current-symbols ns-state ns-loaded?
-    ns-alias-state ns-name ns-publics ns-aliases resolve requiring-resolve
-    var-sym]
+    ns-alias-state ns-name ns-publics ns-aliases resolve var-sym]
    :surface/classification :narrow-runtime-primitive}
   {:surface/id :foundation/macros
    :surface/domain :macro

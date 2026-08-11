@@ -61,7 +61,7 @@
   {:id :nested-discard :source "[0 #_[1 #_2 3] 4]" :readable "[0 4]"}
   {:id :root-discard :source "#_1 2" :readable "2"}
   {:id :var-quote :source "#'ns/root" :readable "(var ns/root)"}
-  {:id :unsupported-anonymous-function :source "#(1 2 3)" :error "No dispatch macro for: ("}
+  {:id :anonymous-function :source "#(1 2 3)" :readable "(fn [] (1 2 3))"}
   {:id :tagged-literal :source "#example/tag {:a 1}" :readable "#example/tag{:a 1}"}
   {:id :multiple-top-level :source "nil true :a [1]" :readable "nil true :a [1]"}
 

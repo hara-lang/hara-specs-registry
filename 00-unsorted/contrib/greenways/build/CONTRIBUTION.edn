@@ -14,4 +14,4 @@
    :spec/version "0.0.0-alpha"
    :spec/path "spec/draft/greenways-buildspec.edn"
    :spec/metaspec "specs/00-unsorted/artifact/metaspec/artifact-metaspec.edn"
-   :spec/sha256 "sha256:84e2cd1a74f6e37aa262235d29cbc240333d0a6f3eaebf241e0de527ef23a2c0"}]}
+   :spec/sha256 "sha256:2c3f0d625a00890749a6617373d7aef070ead03305c3487a1962af428e8d96bd"}]}

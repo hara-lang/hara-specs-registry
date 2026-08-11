@@ -44,6 +44,7 @@
  :annex/libraries
  [{:library/id :foundation/string
    :library/namespace std.foundation.string
+   :library/alias str
    :library/classification :native-facade
    :library/native std.native.String
    :library/public-vars
@@ -53,11 +54,13 @@
     pad-right reverse encode-utf8 decode-utf8 to-fixed]}
   {:library/id :foundation/bytes
    :library/namespace std.foundation.bytes
+   :library/alias bytes
    :library/classification :native-facade
    :library/native std.native.Bytes
    :library/public-vars [count get set copy slice u8 s8]}
   {:library/id :foundation/promise
    :library/namespace std.foundation.promise
+   :library/alias promise
    :library/classification :native-and-protocol-facade
    :library/native std.native.Promise
    :library/protocol std.protocol.ipromise/IPromise
@@ -65,50 +68,59 @@
    [run new from all delay state value then catch finally cancel]}
   {:library/id :foundation/coroutine
    :library/namespace std.foundation.coroutine
+   :library/alias co
    :library/classification :native-and-protocol-facade
    :library/native std.native.Coroutine
    :library/protocol std.protocol.icoroutine/ICoroutine
    :library/public-vars [create coroutine? status resume close yield await]}
   {:library/id :foundation/edn
    :library/namespace std.foundation.edn
+   :library/alias edn
    :library/classification :native-facade
    :library/native std.native.Edn
    :library/public-vars [read write pretty]}
   {:library/id :foundation/json
    :library/namespace std.foundation.json
+   :library/alias json
    :library/classification :native-facade
    :library/native std.native.Json
    :library/public-vars [read write pretty]}
   {:library/id :foundation/set
    :library/namespace std.foundation.set
+   :library/alias set
    :library/classification :portable-hal
    :library/public-vars
    [union intersection difference subset? superset? select]}
   {:library/id :foundation/pretty
    :library/namespace std.foundation.pretty
+   :library/alias pretty
    :library/classification :portable-hal
    :library/private-namespaces [std.foundation.pretty.engine]
    :library/public-vars [render write]}
   {:library/id :foundation/file
    :library/namespace std.foundation.file
+   :library/alias file
    :library/classification :capability-facade
    :library/native std.native.File
    :library/capability :file
    :library/public-vars [resolve read write exists? list mkdir delete]}
   {:library/id :foundation/socket
    :library/namespace std.foundation.socket
+   :library/alias socket
    :library/classification :capability-facade
    :library/native std.native.Socket
    :library/capability :network
    :library/public-vars [connect listen endpoint events next send close]}
   {:library/id :foundation/host
    :library/namespace std.foundation.host
+   :library/alias host
    :library/classification :capability-facade
    :library/native std.native.Host
    :library/capability :host-call
    :library/public-vars [call describe capabilities capability?]}
   {:library/id :foundation/kernel
    :library/namespace std.foundation.kernel
+   :library/alias kernel
    :library/classification :capability-facade
    :library/native std.native.Kernel
    :library/capability :kernel
@@ -119,28 +131,25 @@
     filesystem-info filesystem-close capabilities]}
   {:library/id :foundation/os
    :library/namespace std.foundation.os
+   :library/alias os
    :library/classification :runtime-export-facade
    :library/capability :process
    :library/public-vars
    [platform arch cwd env getenv spawn process? process-alive? process-write
     process-close-input process-stdout process-stderr process-wait
-    process-kill]}]
+    process-kill]}
+  {:library/id :foundation/crypto
+   :library/namespace std.foundation.crypto
+   :library/alias crypto
+   :library/classification :native-facade
+   :library/native std.native.Crypto
+   :library/public-vars [sha256]}]
 
  :annex/aliases
- {:alias/defaults
-  {string str
-   bytes bytes
-   promise promise
-   coroutine coroutine
-   file file
-   os os}
-  :alias/selection :namespace-config-intrinsics
+ {:alias/selection :all-public-libraries
+  :alias/configuration :namespace-config-intrinsics
   :alias/exclusion-effect :remove-automatic-alias-only
-  :alias/explicit-require-after-exclusion true
-  :alias/non-default
-  [std.foundation.edn std.foundation.json std.foundation.set
-   std.foundation.pretty std.foundation.socket std.foundation.host
-   std.foundation.kernel]}
+  :alias/explicit-require-after-exclusion true}
 
  :annex/capabilities
  {:capability/file
