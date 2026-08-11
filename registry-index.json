@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:28defc9fbcc643eeda663714aa323aa7801fd9c8a1658de64935ff1ed1f279b8",
-    "catalogueDigest": "sha256:c550234eb53a323eec157e229311e00319ba901c79cb5cfd66dee9d083e18c7a",
+    "manifestDigest": "sha256:9da1ea2758fc548af07e1a87ae0bde9115174d4d6cf253c1f9bd1cedb81df344",
+    "catalogueDigest": "sha256:6dfd0a396a22efbfff47d81c8efaecffed4c40a8662bede6126a143ca392b404",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -13,12 +13,12 @@
     }
   },
   "summary": {
-    "specifications": 50,
-    "draft": 50,
+    "specifications": 51,
+    "draft": 51,
     "ready": 0,
-    "executable": 30,
-    "requirements": 328,
-    "materialized": 50,
+    "executable": 31,
+    "requirements": 336,
+    "materialized": 51,
     "pinnedSource": 0,
     "layers": [
       "00-unsorted",
@@ -786,6 +786,37 @@
         "repository": "hara-lang/hara-specs-registry",
         "ref": "main",
         "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "tool/source-analysis",
+      "slug": "tool-source-analysis",
+      "coordinate": "tool/source-analysis",
+      "title": "Static source analysis for Hara",
+      "summary": "Portable rules and generated-profile inputs for non-evaluating Hara source analysis.",
+      "type": "tool/source-analysis-spec",
+      "version": "0.1.0-draft",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/008-source-analysis/draft/source-analysis.edn",
+      "documentationPath": "01-lang/008-source-analysis/draft/README.md",
+      "requirements": 8,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": true,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/008-source-analysis/draft/source-analysis.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/008-source-analysis/draft/README.md"
       }
     },
     {

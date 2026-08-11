@@ -440,6 +440,18 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/008-source-analysis/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/008-source-analysis/draft/source-analysis.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/009-halc/draft/conformance/README.md",
       "kind": "markdown",
       "classification": "hara",

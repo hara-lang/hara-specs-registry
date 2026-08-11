@@ -1,0 +1,57 @@
+{:document/id :tool/source-analysis
+ :document/type :tool/source-analysis-spec
+ :document/version "0.1.0-draft"
+ :document/status :draft
+ :document/title "Static source analysis for Hara"
+ :document/summary
+ "Portable rules and generated-profile inputs for non-evaluating Hara source analysis."
+
+ :analysis/scope
+ {:scope/input :std.block/recovering-tree
+  :scope/project-model :tool/project
+  :scope/type-model :std.typed.schema/compatible?
+  :scope/evaluation :forbidden
+  :scope/default-paths [:project/source-paths :project/test-paths]}
+
+ :analysis/invariants
+ [{:requirement/id :tool.source-analysis/recovering-reader
+   :requirement/level :must
+   :requirement/text "Unreadable forms produce ranged findings and analysis continues at the next recoverable form boundary."}
+  {:requirement/id :tool.source-analysis/unqualified-resolution
+   :requirement/level :must
+   :requirement/text "An unqualified symbol resolves only through lexical bindings, current definitions, explicit refers, special forms, modeled macros, or the pinned Foundation surface."}
+  {:requirement/id :tool.source-analysis/qualified-resolution
+   :requirement/level :must
+   :requirement/text "A qualified symbol resolves only through the current namespace, a declared alias, or a namespace in the project index."}
+  {:requirement/id :tool.source-analysis/binding-shape
+   :requirement/level :must
+   :requirement/text "Binding and parameter vectors have structurally valid pairs and introduce lexical symbols only after their initializer is analyzed."}
+  {:requirement/id :tool.source-analysis/arity
+   :requirement/level :must
+   :requirement/text "Calls to locally declared functions and pinned Foundation functions are checked against fixed or variadic arities."}
+  {:requirement/id :tool.source-analysis/literal-type
+   :requirement/level :should
+   :requirement/text "Concrete literal argument types are compared with pinned schemas without inferring unknown expressions."}
+  {:requirement/id :tool.source-analysis/duplicate-definition
+   :requirement/level :must
+   :requirement/text "A namespace reports repeated top-level definition names."}
+  {:requirement/id :tool.source-analysis/static-macros
+   :requirement/level :must
+   :requirement/text "Known macros use pinned static models; project code and runtime macro expansion are never executed."}]
+
+ :analysis/profile
+ {:profile/id :tool.lint/hara-v1
+  :profile/version "0.1.0"
+  :profile/source-specs
+  [{:spec/id :hal/language :spec/version "1.0.0-draft"}
+   {:spec/id :hara/foundation :spec/version "0.1.0-draft"}
+   {:spec/id :tool/source-analysis :spec/version "0.1.0-draft"}]
+  :profile/artifact "../../../../technology/hara/core/lib/src/tool/lint/profile.hal"
+  :profile/determinism :byte-identical}
+
+ :analysis/output
+ {:finding/required [:type :level :message :file :row :col :end-row :end-col
+                     :start-offset :end-offset :spec/requirement]
+  :levels [:error :warning]
+  :exit-policy {:errors 1 :warnings 0 :clean 0}
+  :formats [:text :edn]}}
