@@ -3,12 +3,12 @@
   :case/input
   {:document/id :example/protocol
    :document/type :hara/tap-protocol
-   :document/version "0.1.0"
+   :document/version "0.0.0-alpha"
    :document/status :draft
    :document/title "Example"
    :document/summary "Example protocol."
    :spec/conforms-to {:spec/id :hara/tap-protocol-metaspec
-                      :spec/version "0.1.0"}
+                      :spec/version "0.0.0-alpha"}
    :platform/roles []
    :platform/entities []
    :platform/operations []

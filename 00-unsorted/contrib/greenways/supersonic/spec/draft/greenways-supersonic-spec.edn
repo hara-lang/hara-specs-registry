@@ -1,12 +1,12 @@
 {:document/id :greenways/supersonic-spec
  :document/type :hara/artifact-specification
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Greenways Supersonic Audio Graph Specification"
  :document/summary "Canonical local data for declarative audio graphs and deterministic provider snapshots."
 
  :spec/conforms-to {:spec/id :hara/artifact-metaspec
-                    :spec/version "0.1.0"}
+                    :spec/version "0.0.0-alpha"}
  :spec/artifact-kind :greenways.supersonic/audio-graph
 
  :spec/forms []

@@ -2,7 +2,7 @@
  :document/type :runtime-implementation-spec
  :runtime :rust
  :feature "bytecode-vm"
- :document/version "0.7.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Rust HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)"
  :document/summary
@@ -11,7 +11,7 @@
  :vm/ownership
  {:owner :rust-runtime
   :portable-input "Decoded HAL forms, including forms loaded from HALC."
-  :private-artifacts #{:HBC1 :HBC2 :HBC3 :HBC4 :HNW1 :Program :Instruction :whole-function-mir :numeric-slots :handler-table :call-frames}
+  :private-artifacts #{:HBC1 :HBC2 :HBC3 :HBC4 :HNW0 :Program :Instruction :whole-function-mir :numeric-slots :handler-table :call-frames}
   :halc-boundary "HALC contains portable forms and metadata only. VM Program and Instructions are compiled after HALC decoding and are never embedded in HALC."
   :journal-boundary "Evaluation Journal events are portable diagnostics, not VM instructions and not an input to execution or future JIT tracing. VM instruction details may appear only in optional runtime extensions."
   :java-obligation "None beyond the shared HAL language, HALC, and Evaluation Journal contracts. Java remains free to use Truffle ASTs and Graal."}
@@ -412,7 +412,7 @@
   :corpus "specs/01-lang/010-bytecode/draft/conformance/bytecode-vm.edn"
   :consumer "rust/src/vm/conformance_tests.rs (feature bytecode-vm)"
   :schema
-  {:spec/version "0.1"
+  {:spec/version "0.0.0-alpha"
    :runtime "hara-bytecode-vm"
    :cases
    [{:id :keyword
@@ -437,7 +437,7 @@
  {:status :experimental-first-vertical
   :feature-gate "whole-wasm"
   :goal "Compile complete eligible function control-flow graphs to portable WebAssembly rather than recording and replaying one hot loop trace. The same Wasm payload is consumable by Wasmtime and browser WebAssembly engines."
-  :pipeline [:validated-HBC4 :basic-block-discovery :typed-MIR :MIR-verification :deterministic-Wasm :HNW1 :engine-validation :direct-function-call]
+  :pipeline [:validated-HBC4 :basic-block-discovery :typed-MIR :MIR-verification :deterministic-Wasm :HNW0 :engine-validation :direct-function-call]
   :distinction-from-tracing
   {:whole-function "Every block and control-flow edge of an eligible function is lowered before execution; direct static calls become Wasm calls."
    :tracing "The tracing-jit feature remains a separate narrow experiment and is not evidence that a general whole-function compiler exists."
@@ -453,16 +453,16 @@
    :calls "Capture-free fixed-arity CallStatic instructions lower to Wasm direct calls."
    :unsupported "Async, variadic, captured, dynamic-value, collection, closure/global-bootstrap, and exception operations remain explicit eligibility failures until their representation or runtime boundary is implemented."}
   :artifact
-  {:format :HNW1
+  {:format :HNW0
    :abi-version 1
-   :header "four-byte HNW1 magic followed by a big-endian u32 payload length"
+   :header "four-byte HNW0 magic followed by a big-endian u32 payload length"
    :integrity "SHA-256 of the complete payload"
    :payload "ABI version, canonical function id/arity table, complete authenticated HBC4 fallback, and deterministic Wasm module"
    :decode-rule "Reject bad magic, length, checksum, ABI, non-canonical function metadata, HBC mismatch, invalid Wasm magic, or trailing bytes before engine instantiation."
    :fallback-rule "The HBC4 program is retained so an explicit caller or future tier manager can choose semantic fallback. A native call never falls back after entering generated code."}
   :execution
   {:native "Wasmtime validates and instantiates the module once; prepared calls resolve an exported hara_fn_N and cross only the typed value boundary."
-   :browser "The HNW1 decoder and Wasm bytes are target-independent; browser loader integration remains an implementation milestone."
+   :browser "The HNW0 decoder and Wasm bytes are target-independent; browser loader integration remains an implementation milestone."
    :error-channel "Generated code stores a stable ABI error code in mutable exported global hara_error and then traps. The host resets it before each call and translates known codes to exact Hara messages."}
   :benchmark-gate
   {:corpus "lib/bench/lisp-hara/workloads.json"

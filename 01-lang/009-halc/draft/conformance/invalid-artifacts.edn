@@ -1,5 +1,5 @@
 {:corpus/id :halc/invalid-artifacts
- :corpus/version 1
+ :corpus/version "0.0.0-alpha"
  :base/artifact "golden/complete.halc"
  :cases
  [{:case/id :envelope/bad-magic :mutations [[:replace 0 "00000000"]] :expect/error :bad-magic}

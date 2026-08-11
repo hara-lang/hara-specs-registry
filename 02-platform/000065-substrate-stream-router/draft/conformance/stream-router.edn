@@ -1,6 +1,6 @@
 {:document/id :xt.substrate.conformance/stream-router
  :document/type :xt-substrate-conformance
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :conformance/spec :xt/substrate-stream-router
  :conformance/source-tests

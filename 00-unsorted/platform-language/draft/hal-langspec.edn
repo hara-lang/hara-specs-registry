@@ -1,6 +1,6 @@
 {:document/id :hal/language
  :document/type :language-spec
- :document/version "1.0.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "HAL language specification"
  :document/summary

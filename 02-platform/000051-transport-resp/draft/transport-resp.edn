@@ -1,6 +1,6 @@
 {:document/id :hara/transport-resp
  :document/type :transport-contract
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara RESP broker protocol"
  :document/summary

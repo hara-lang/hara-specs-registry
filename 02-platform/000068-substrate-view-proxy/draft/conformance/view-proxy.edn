@@ -1,6 +1,6 @@
 {:document/id :xt.substrate.conformance/view-proxy
  :document/type :xt-substrate-conformance
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :conformance/spec :xt/substrate-view-proxy
  :conformance/source-tests

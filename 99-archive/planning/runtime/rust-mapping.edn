@@ -1,4 +1,4 @@
-{:spec/version "0.1"
+{:spec/version "0.0.0-alpha"
  :language "hara"
  :target :rust-wasm
  :collection-implementation :im-rc

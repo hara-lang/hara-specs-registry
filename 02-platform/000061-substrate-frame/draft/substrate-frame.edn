@@ -1,13 +1,13 @@
 {:document/id :xt/substrate-frame
  :document/type :xt-substrate-spec
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "XTalk substrate frame and JSON contract"
  :document/summary
  "Defines the actual NodeFrame constructors, predicates, JSON validation, and error normalization."
 
  :spec/conforms-to
- {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ {:spec/id :xt/substrate-metaspec :spec/version "0.0.0-alpha"}
  :spec/family :xt/substrate
  :spec/depends-on [:xt/substrate-base]
 

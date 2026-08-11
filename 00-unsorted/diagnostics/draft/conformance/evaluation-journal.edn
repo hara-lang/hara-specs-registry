@@ -1,6 +1,6 @@
 {:corpus/id :hal/evaluation-journal
- :corpus/version 1
- :journal/schema "hal.evaluation-journal/v1"
+ :corpus/version "0.0.0-alpha"
+ :journal/schema "hal.evaluation-journal/0-alpha"
  :defaults {:limit/events 10000 :limit/depth 100 :limit/value-characters 1000}
  :cases
  [{:case/id :literal/success

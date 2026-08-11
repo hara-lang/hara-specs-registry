@@ -125,7 +125,7 @@ Hara call -> hta_start -> task
 The required exports are `hta_abi_version`, `hta_alloc`, `hta_dealloc`, `hta_start`,
 `hta_next_event`, `hta_deliver`, `hta_cancel`, `hta_drop_task`, and `hta_release`;
 `hta_poll` is optional. Frames use the
-canonical binary `HTA1` value encoding. Its portable value intersection is nil, booleans, signed
+canonical binary `HTA0` value encoding. Its portable value intersection is nil, booleans, signed
 64-bit integers, UTF-8 strings, bytes, keywords, symbols, lists, vectors, sets, maps, and opaque `{owner, type, id}` handles. Map and
 set elements are ordered by their encoded bytes so Rust, Java, and JavaScript produce identical
 frames.

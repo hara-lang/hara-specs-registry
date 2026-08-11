@@ -1,15 +1,15 @@
 {:document/id :hara/session-snapshot
  :document/type :session-snapshot-spec
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara session snapshots"
  :document/summary
  "Portable, deterministic startup images shared by Hara embeddings, with optional content-addressed incremental layers and runtime accelerators."
 
  :snapshot/format
- {:format/id :HSS1
-  :format/magic "HSS1"
-  :format/version 1
+ {:format/id :HSS0
+  :format/magic "HSS0"
+  :format/version "0.0.0-alpha"
   :format/checksum :sha-256
   :format/portable-digest
   "The digest of the resolved portable manifest. Runtime accelerator sections do not contribute to this identity."
@@ -60,7 +60,7 @@
   :secret/rotation
   "A host may attach a new provider version without rebuilding portable language state. Traces may record a non-secret provider version identifier, never key bytes or a guessable-value digest."
   :secret/security-boundary
-  "The embedding host necessarily handles a secret it uses. HSS1 prevents the key from entering portable artifacts and ordinary guest values; it does not protect against malicious native code in the host process."}
+  "The embedding host necessarily handles a secret it uses. HSS0 prevents the key from entering portable artifacts and ordinary guest values; it does not protect against malicious native code in the host process."}
 
  :snapshot/limitations
  [{:limitation/id :snapshot/no-live-values
@@ -68,7 +68,7 @@
    "Promises, fibers, continuations, closures, dynamic bindings, mutable references, streams, sockets, files, native handles, provider instances, and host facades cannot be captured."}
   {:limitation/id :snapshot/no-in-flight-resume
    :limitation/text
-   "Requests and asynchronous operations running at capture time cannot resume from HSS1."}
+   "Requests and asynchronous operations running at capture time cannot resume from HSS0."}
   {:limitation/id :snapshot/no-authority
    :limitation/text
    "Capabilities in a snapshot are requirements only. Every restored session receives fresh grants from its host."}

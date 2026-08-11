@@ -1,6 +1,6 @@
 {:document/id :xt.substrate.conformance/runtime-profiles
  :document/type :xt-substrate-conformance
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :conformance/spec :xt/substrate-runtime-profiles
  :conformance/source-command "lein test :with xt.substrate"

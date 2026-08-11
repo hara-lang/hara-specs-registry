@@ -1,13 +1,13 @@
 {:document/id :xt/substrate-runtime-profiles
  :document/type :xt-substrate-spec
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "XTalk substrate generated-runtime coverage"
  :document/summary
  "Records the runtime targets actually exercised by the pinned xt.substrate tests and aggregates the source-backed conformance corpora."
 
  :spec/conforms-to
- {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ {:spec/id :xt/substrate-metaspec :spec/version "0.0.0-alpha"}
  :spec/family :xt/substrate
  :spec/depends-on
  [:xt/substrate-base :xt/substrate-frame :xt/substrate-node

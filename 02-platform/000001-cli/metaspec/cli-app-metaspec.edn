@@ -1,13 +1,13 @@
 {:document/id :hara/cli-app-metaspec
  :document/type :hara/artifact-specification
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara CLI application meta-specification"
  :document/summary
  "Normative schema for deterministic, data-defined command-line applications and route manifests."
 
  :spec/conforms-to {:spec/id :hara/artifact-metaspec
-                    :spec/version "0.1.0"}
+                    :spec/version "0.0.0-alpha"}
  :spec/artifact-kind :hara/cli-application-specification
 
  :spec/forms

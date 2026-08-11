@@ -1,8 +1,8 @@
 {:document/id :hal/evaluation-journal
  :document/type :diagnostic-spec
- :document/version "1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
- :journal/schema "hal.evaluation-journal/v1"
+ :journal/schema "hal.evaluation-journal/0-alpha"
  :purpose
  "A runtime-neutral, bounded record of observable HAL evaluation operations. The journal is diagnostic data, never an execution trace or semantic input."
  :ownership

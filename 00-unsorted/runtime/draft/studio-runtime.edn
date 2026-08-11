@@ -1,6 +1,6 @@
 {:document/id :hara/studio-runtime
  :document/type :runtime-spec
- :document/version "1.5.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "HAL programmable Studio and node runtime"
  :document/summary

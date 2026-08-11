@@ -1,12 +1,12 @@
 {:document/id :hara/platform-artifact
  :document/type :hara/tap-protocol
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara immutable artifact protocol"
  :document/summary
  "Normative content-addressed object, manifest and build-attestation contract."
  :spec/conforms-to {:spec/id :hara/tap-protocol-metaspec
-                    :spec/version "0.1.0"}
+                    :spec/version "0.0.0-alpha"}
 
  :platform/roles
  [{:role/id :hara.artifact.role/builder

@@ -1,6 +1,6 @@
 {:document/id :hara/package
  :document/type :package-spec
- :document/version "0.1.2-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara package and registry specification"
  :document/summary
@@ -241,7 +241,7 @@
   :project/package {:include-source true :entry-points ["visual-lab.main"] :license "MIT"}}
 
  :package/lock-example
- {:lock/format 2
+ {:lock/format "0.0.0-alpha"
   :taps {"hara" {:registry {:repository "github:hara-lang/hara-packages" :commit "registry-commit"}
                   :identity {:repository "github:hara-lang/hara-identity" :commit "identity-commit"
                              :root-key-sha256 "sha256:..."}}}

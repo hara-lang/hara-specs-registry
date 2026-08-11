@@ -1,6 +1,6 @@
 {:document/id :tahto/compiler
  :document/type :compiler-spec
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Tahto staged compiler pipeline"
  :document/summary

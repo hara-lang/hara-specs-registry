@@ -1,6 +1,6 @@
 {:document/id :hara/foundation-metaspec
  :document/type :hara/metaspec
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara Foundation specification meta-spec"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hara/metaspec-metaspec
-  :spec/version "0.1.0"}
+  :spec/version "0.0.0-alpha"}
  :spec/artifact-kind :hara/foundation-spec
 
  :meta/document-schema

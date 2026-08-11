@@ -1,4 +1,4 @@
-{:spec/version "0.1"
+{:spec/version "0.0.0-alpha"
  :document/id :hara/data-structures-hash-parity-conformance
  :document/for :hara/data-structures
  :document/status :draft

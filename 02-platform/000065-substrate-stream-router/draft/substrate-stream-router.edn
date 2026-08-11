@@ -1,13 +1,13 @@
 {:document/id :xt/substrate-stream-router
  :document/type :xt-substrate-spec
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "XTalk substrate pub/sub and router contract"
  :document/summary
  "Defines the actual trigger, connection, subscription, publish, routing, and control-frame behavior."
 
  :spec/conforms-to
- {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ {:spec/id :xt/substrate-metaspec :spec/version "0.0.0-alpha"}
  :spec/family :xt/substrate
  :spec/depends-on
  [:xt/substrate-base :xt/substrate-frame :xt/substrate-node

@@ -6,7 +6,7 @@
   :artifact/output "dist/example.hal"}
  :build/specs
  [{:spec/id :hal/language
-   :spec/version "1.0.0"}]
+   :spec/version "0.0.0-alpha"}]
  :build/stages
  [{:stage/id :parse
    :stage/requires []

@@ -1,4 +1,4 @@
-{:spec/version "0.2"
+{:spec/version "0.0.0-alpha"
  :language "hara"
  :engines [:jvm-interpreter :truffle]
  :cases

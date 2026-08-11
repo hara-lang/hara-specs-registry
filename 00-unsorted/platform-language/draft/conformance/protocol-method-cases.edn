@@ -1,4 +1,4 @@
-{:spec/version "0.1"
+{:spec/version "0.0.0-alpha"
  :spec/status :draft
  :syntax :edn
  :purpose :per-method-functional-conformance

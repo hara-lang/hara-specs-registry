@@ -1,6 +1,6 @@
 [{:case/id :hara.publishing.case/project-intent
   :case/type :publication-intent
-  :case/input {:intent/format 1
+  :case/input {:intent/format "0.0.0-alpha"
                :intent/tap "hara"
                :intent/coordinate "hara/graph"
                :intent/version "1.2.3"

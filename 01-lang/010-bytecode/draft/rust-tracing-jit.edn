@@ -1,6 +1,6 @@
 {:document/id :hal/rust-tracing-jit
  :document/type :runtime-implementation-spec
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :runtime :rust
  :feature "tracing-jit"

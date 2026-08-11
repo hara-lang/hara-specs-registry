@@ -1,13 +1,13 @@
 {:document/id :hara/cli
  :document/type :hara/cli-application
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara command-line application"
  :document/summary
  "Normative public route, option, handler and outcome contract shared by the Rust and Truffle Hara runtimes."
 
  :spec/conforms-to {:spec/id :hara/cli-app-metaspec
-                    :spec/version "0.1.0"}
+                    :spec/version "0.0.0-alpha"}
 
  :cli/apps
  [{:app/id :hara.cli/language

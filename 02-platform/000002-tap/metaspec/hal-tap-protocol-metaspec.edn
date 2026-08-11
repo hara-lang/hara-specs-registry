@@ -1,13 +1,13 @@
 {:document/id :hara/tap-protocol-metaspec
  :document/type :hara/artifact-specification
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara tap protocol meta-specification"
  :document/summary
  "Normative document model for Git-authoritative Hara platform protocols."
 
  :spec/conforms-to {:spec/id :hara/artifact-metaspec
-                    :spec/version "0.1.0"}
+                    :spec/version "0.0.0-alpha"}
  :spec/artifact-kind :hara/tap-protocol-specification
 
  :spec/forms

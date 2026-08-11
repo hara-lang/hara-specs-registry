@@ -1,6 +1,6 @@
 {:document/id :hara/transport-hta
  :document/type :transport-contract
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara Transport Adaptor contract"
  :document/summary
@@ -39,7 +39,7 @@
    :requirement/text "Reading a printed handle creates inert data and never creates a live provider-owned capability."}
   {:requirement/id :hara.hta/canonical-values
    :requirement/level :must
-   :requirement/text "Equivalent portable values produce identical HTA1 frames across Java, Rust, and JavaScript implementations."}
+   :requirement/text "Equivalent portable values produce identical HTA0 frames across Java, Rust, and JavaScript implementations."}
   {:requirement/id :hara.hta/no-spin
    :requirement/level :must-not
    :requirement/text "An idle provider actor or worker polls its mailbox in a spin loop."}]
@@ -120,7 +120,7 @@
    :abi/stateful false}
   {:abi/id :hta.v1
    :abi/summary
-   "Stateful promise-returning mailbox ABI using canonical HTA1 frames."
+   "Stateful promise-returning mailbox ABI using canonical HTA0 frames."
    :abi/stateful true
    :abi/imports []
    :abi/accepted-exported-versions [1 2]
@@ -139,7 +139,7 @@
    :abi/event-kinds [:hta/settlement :hta/host-call]}]
 
  :hta/value-codec
- {:codec/id :hta/HTA1
+ {:codec/id :hta/HTA0
   :codec/portable-values
   [:value/nil
    :value/boolean

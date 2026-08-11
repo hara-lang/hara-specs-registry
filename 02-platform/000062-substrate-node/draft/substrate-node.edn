@@ -1,13 +1,13 @@
 {:document/id :xt/substrate-node
  :document/type :xt-substrate-spec
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "XTalk substrate node and space contract"
  :document/summary
  "Defines the mutable EventNode and NodeSpace records and their current construction, configuration, and state operations."
 
  :spec/conforms-to
- {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ {:spec/id :xt/substrate-metaspec :spec/version "0.0.0-alpha"}
  :spec/family :xt/substrate
  :spec/depends-on [:xt/substrate-base :xt/substrate-frame]
 

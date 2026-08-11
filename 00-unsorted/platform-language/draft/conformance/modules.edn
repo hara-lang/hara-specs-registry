@@ -1,4 +1,4 @@
-{:spec/version "0.2"
+{:spec/version "0.0.0-alpha"
  :language "hal-modules"
  :description
  "Cross-runtime acceptance scenarios for namespace identity, transactional modules, lazy loading, macros, sessions, and retained REPL state."

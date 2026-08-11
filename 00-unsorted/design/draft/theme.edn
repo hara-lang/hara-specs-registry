@@ -1,6 +1,6 @@
 {:document/id :hara/theme
  :document/type :design-contract
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara theme design contract"
  :document/summary "One dark-only Hara visual system for public, documentation, specification, API, and Studio surfaces."

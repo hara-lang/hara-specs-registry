@@ -1,12 +1,12 @@
 {:document/id :hara/artifact-metaspec
  :document/type :hara/artifact-metaspec
- :document/version "0.1.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "HAL Artifact DSL Meta-Specification"
  :document/summary "Normative schema for specifications that describe local, deterministic artifact DSLs."
 
  :spec/conforms-to {:spec/id :hara/metaspec-metaspec
-                    :spec/version "0.1.0"}
+                    :spec/version "0.0.0-alpha"}
  :spec/artifact-kind :hara/artifact-specification
 
  :meta/extension-key-rule

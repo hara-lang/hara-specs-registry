@@ -1,13 +1,13 @@
 {:document/id :xt/substrate-service
  :document/type :xt-substrate-spec
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "XTalk substrate service registry"
  :document/summary
  "Defines the EventNode arbitrary-value service map and the built-in @/ utility handlers."
 
  :spec/conforms-to
- {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ {:spec/id :xt/substrate-metaspec :spec/version "0.0.0-alpha"}
  :spec/family :xt/substrate
  :spec/depends-on [:xt/substrate-base :xt/substrate-node]
 

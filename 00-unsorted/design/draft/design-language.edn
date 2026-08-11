@@ -1,6 +1,6 @@
 {:document/id :hara/design-language
  :document/type :design-contract
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara Studio design language"
  :document/summary "A Max/MSP-inspired, lossless code and patch interaction contract for Hara and domain DSLs."

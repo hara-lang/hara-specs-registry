@@ -1,6 +1,6 @@
 {:document/id :hara/native
  :document/type :native-spec
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara native runtime boundary"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hara/native-metaspec
-  :spec/version "0.1.0"}
+  :spec/version "0.0.0-alpha"}
 
  :native/scope
  {:scope/namespace "std.native"

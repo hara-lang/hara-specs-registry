@@ -1,4 +1,4 @@
-{:spec/version "0.2"
+{:spec/version "0.0.0-alpha"
  :language "hara-l0"
  :seed 20260723
  :curated 256

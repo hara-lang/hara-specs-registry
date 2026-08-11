@@ -1,6 +1,6 @@
 {:document/id :hara/data-structures
  :document/type :data-structures-spec
- :document/version "0.1.0-draft"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "Hara persistent data structures specification"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hara/data-structures-metaspec
-  :spec/version "0.1.0"
+  :spec/version "0.0.0-alpha"
   :spec/status :planned}
 
  :data-structures/scope

@@ -3,7 +3,7 @@
   :case/input {:extension/namespace "demo.answer"
                :provider/type :wasm
                :provider/artifact "answer.wasm"
-               :provider/abi "hara.wasm/v1"}
+               :provider/abi "hara.wasm/0-alpha"}
   :case/expected :pass}
  {:case/id :hara.extension.case/missing-artifact
   :case/type :extension-descriptor

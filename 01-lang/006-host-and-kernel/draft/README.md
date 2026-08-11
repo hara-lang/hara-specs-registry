@@ -22,7 +22,7 @@ to [003-native](../../003-native/draft/native-spec.edn); the
 This layer owns what those surfaces enforce — see the `:host-kernel/boundaries`
 map in the spec for the full ownership table.
 
-[`session-snapshot-spec.edn`](session-snapshot-spec.edn) defines HSS1 portable
+[`session-snapshot-spec.edn`](session-snapshot-spec.edn) defines HSS0 portable
 startup images, incremental layers, sealed and overlay restore modes, secret
 requirements, and the limits that keep live authority out of snapshots.
 

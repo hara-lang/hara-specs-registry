@@ -1,13 +1,13 @@
 {:document/id :xt/substrate-page-model
  :document/type :xt-substrate-spec
- :document/version "0.2.0"
+ :document/version "0.0.0-alpha"
  :document/status :draft
  :document/title "XTalk substrate page runtime"
  :document/summary
  "Defines the existing per-space page runtime, model pipelines, dependencies, refresh, throttling, triggers, remote dispatch, and raw callbacks."
 
  :spec/conforms-to
- {:spec/id :xt/substrate-metaspec :spec/version "0.2.0"}
+ {:spec/id :xt/substrate-metaspec :spec/version "0.0.0-alpha"}
  :spec/family :xt/substrate
  :spec/depends-on
  [:xt/substrate-base :xt/substrate-node :xt/substrate-request
