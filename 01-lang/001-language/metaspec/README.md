@@ -1,7 +1,7 @@
 # HAL language metaspec
 
 Status: **draft**  
-Version: **0.1.0-draft**
+Version: **alpha**
 
 The authoritative document is
 [`language-metaspec.edn`](language-metaspec.edn). It defines the shape of HAL

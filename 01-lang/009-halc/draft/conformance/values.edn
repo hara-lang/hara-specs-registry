@@ -1,6 +1,6 @@
 {:corpus/id :halc/values
- :corpus/version "0.0.0-alpha"
- :format/version "0.0.0-alpha"
+ :corpus/version "alpha"
+ :format/version "alpha"
  :golden/module
  {:module/identity "halc.conformance.complete"
   :source/identity "conformance/complete.hal"

@@ -2,7 +2,7 @@
  :document/type :runtime-implementation-spec
  :runtime :rust
  :feature "bytecode-vm"
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "Rust HAL staged bytecode VM (milestones 1-5: synchronous core through persistent artifacts)"
  :document/summary
@@ -412,7 +412,7 @@
   :corpus "specs/01-lang/010-bytecode/draft/conformance/bytecode-vm.edn"
   :consumer "rust/src/vm/conformance_tests.rs (feature bytecode-vm)"
   :schema
-  {:spec/version "0.0.0-alpha"
+  {:spec/version "alpha"
    :runtime "hara-bytecode-vm"
    :cases
    [{:id :keyword

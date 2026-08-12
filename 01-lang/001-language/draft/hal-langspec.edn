@@ -1,6 +1,6 @@
 {:document/id :hal/language
  :document/type :language-spec
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "HAL data language specification"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hal/metaspec
-  :spec/version "0.0.0-alpha"}
+  :spec/version "alpha"}
 
  :spec/scope
  {:scope/language "HAL data"

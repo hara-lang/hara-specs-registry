@@ -1,6 +1,6 @@
 {:document/id :hara/native-metaspec
  :document/type :hara/metaspec
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "Hara native boundary specification meta-spec"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hara/metaspec-metaspec
-  :spec/version "0.0.0-alpha"}
+  :spec/version "alpha"}
  :spec/artifact-kind :hara/native-spec
 
  :meta/document-schema
@@ -52,7 +52,7 @@
    :schema/min-length 1}
   {:schema/id :hara.native.metaspec/version-string
    :schema/type :string
-   :schema/pattern "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"}
+   :schema/pattern "^alpha$"}
   {:schema/id :hara.native.metaspec/status
    :schema/type :enum
    :schema/values [:draft :candidate :stable :deprecated :retired]}

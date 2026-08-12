@@ -1,6 +1,6 @@
 {:document/id :hara/foundation-annex
  :document/type :foundation-annex-spec
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "Hara Foundation library annex"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hara/foundation-annex-metaspec
-  :spec/version "0.0.0-alpha"}
+  :spec/version "alpha"}
 
  :annex/scope
  {:scope/namespace-family "std.foundation.*"

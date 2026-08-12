@@ -269,7 +269,7 @@
 
   :removal-debt
   {:truffle-public
-   [load-file requiring-resolve module-dependencies module-revision
+   [load-file module-dependencies module-revision
     iter-any? iter-close iter-constantly iter-cycle iter-drop
     iter-drop-while iter-every? iter-filter iter-has? iter-interleave
     iter-interpose iter-iterate iter-keep iter-map iter-mapcat

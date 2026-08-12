@@ -1,4 +1,4 @@
-{:spec/version "0.0.0-alpha"
+{:spec/version "alpha"
  :runtime "hara-bytecode-vm"
  :document/id :hal/bytecode-vm-conformance
  :document/for :hal/bytecode-vm

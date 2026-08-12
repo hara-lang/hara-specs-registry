@@ -1,6 +1,6 @@
 {:document/id :hara/session-snapshot
  :document/type :session-snapshot-spec
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "Hara session snapshots"
  :document/summary
@@ -9,7 +9,7 @@
  :snapshot/format
  {:format/id :HSS0
   :format/magic "HSS0"
-  :format/version "0.0.0-alpha"
+  :format/version "alpha"
   :format/checksum :sha-256
   :format/portable-digest
   "The digest of the resolved portable manifest. Runtime accelerator sections do not contribute to this identity."

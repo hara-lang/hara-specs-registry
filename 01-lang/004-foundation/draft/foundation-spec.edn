@@ -1,6 +1,6 @@
 {:document/id :hara/foundation
  :document/type :foundation-spec
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "Hara Foundation bootstrap namespace"
  :document/summary
@@ -8,7 +8,7 @@
 
  :spec/conforms-to
  {:spec/id :hara/foundation-metaspec
-  :spec/version "0.0.0-alpha"}
+  :spec/version "alpha"}
 
  :foundation/scope
  {:scope/namespace std.foundation

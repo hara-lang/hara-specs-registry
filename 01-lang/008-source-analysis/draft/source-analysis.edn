@@ -1,6 +1,6 @@
 {:document/id :tool/source-analysis
  :document/type :tool/source-analysis-spec
- :document/version "0.0.0-alpha"
+ :document/version "alpha"
  :document/status :draft
  :document/title "Static source analysis for Hara"
  :document/summary
@@ -43,9 +43,9 @@
  {:profile/id :tool.lint/hara-v1
   :profile/version "0.1.0"
   :profile/source-specs
-  [{:spec/id :hal/language :spec/version "0.0.0-alpha"}
-   {:spec/id :hara/foundation :spec/version "0.0.0-alpha"}
-   {:spec/id :tool/source-analysis :spec/version "0.0.0-alpha"}]
+  [{:spec/id :hal/language :spec/version "alpha"}
+   {:spec/id :hara/foundation :spec/version "alpha"}
+   {:spec/id :tool/source-analysis :spec/version "alpha"}]
   :profile/artifact "../../../../technology/hara/core/lib/src/tool/lint/profile.hal"
   :profile/determinism :byte-identical}
 

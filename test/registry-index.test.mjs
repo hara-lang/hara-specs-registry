@@ -8,7 +8,7 @@ import { createRegistryIndex, parseSpecDocument, selectCanonicalSpecifications }
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const readJson = async (name) => JSON.parse(await fs.readFile(path.join(root, name), "utf8"));
-const source = (id, version = "1.0.0-draft", title = "Example specification") => `{:document/id :${id}\n :document/type :language-spec\n :document/version "${version}"\n :document/status :draft\n :document/title "${title}"\n :document/summary "Example specification."\n :scope/data-notation {:notation/extension ".edn"}\n :spec/sections [{:section/requirements [{:requirement/id :example/one}]}]}`;
+const source = (id, title = "Example specification") => `{:document/id :${id}\n :document/type :language-spec\n :document/version "alpha"\n :document/status :draft\n :document/title "${title}"\n :document/summary "Example specification."\n :scope/data-notation {:notation/extension ".edn"}\n :spec/sections [{:section/requirements [{:requirement/id :example/one}]}]}`;
 const file = (filePath) => ({ path: filePath, kind: "edn", classification: "hara", owner: "hara-lang" });
 
 test("EDN metadata is converted into a source-addressable registry entry", () => {
@@ -20,11 +20,11 @@ test("EDN metadata is converted into a source-addressable registry entry", () =>
   assert.equal(parsed.requirements, 1);
 });
 
-test("canonical selection prefers the latest numbered-layer source and retains alternates", () => {
+test("canonical selection prefers status and the authoritative layer and retains alternates", () => {
   const candidates = [
-    { id: "hal/example", version: "0.9.0", status: "draft", sourcePath: "01-lang/100-example/draft/example.edn", layer: "01-lang", title: "Example" },
-    { id: "hal/example", version: "1.0.0", status: "draft", sourcePath: "00-unsorted/example/draft/example.edn", layer: "00-unsorted", title: "Example" },
-    { id: "hal/example", version: "1.0.0", status: "ready", sourcePath: "01-lang/100-example/ready/example.edn", layer: "01-lang", title: "Example" }
+    { id: "hal/example", version: "alpha", status: "draft", sourcePath: "01-lang/100-example/draft/example.edn", layer: "01-lang", title: "Example" },
+    { id: "hal/example", version: "alpha", status: "draft", sourcePath: "00-unsorted/example/draft/example.edn", layer: "00-unsorted", title: "Example" },
+    { id: "hal/example", version: "alpha", status: "ready", sourcePath: "01-lang/100-example/ready/example.edn", layer: "01-lang", title: "Example" }
   ];
   const [selected] = selectCanonicalSpecifications(candidates);
   assert.equal(selected.sourcePath, "01-lang/100-example/ready/example.edn");

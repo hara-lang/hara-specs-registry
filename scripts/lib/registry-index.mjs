@@ -38,15 +38,6 @@ const mediaTypeForExtension = (extension) => {
     default: return "application/edn";
   }
 };
-const versionParts = (value) => {
-  const match = String(value || "").match(/^(\d+)\.(\d+)\.(\d+)(?:[-+](.*))?$/);
-  return match ? [Number(match[1]), Number(match[2]), Number(match[3]), match[4] ? 0 : 1, match[4] || ""] : [0, 0, 0, 0, String(value || "")];
-};
-const compareVersion = (left, right) => {
-  const a = versionParts(left); const b = versionParts(right);
-  for (let index = 0; index < 4; index += 1) if (a[index] !== b[index]) return a[index] - b[index];
-  return String(a[4]).localeCompare(String(b[4]));
-};
 const statusRank = (value) => ({ stable: 6, ready: 5, candidate: 4, draft: 3, deprecated: 2, unclassified: 1 }[value] || 0);
 const layerRank = (filePath) => filePath.startsWith("01-lang/") || filePath.startsWith("02-platform/") ? 3 : filePath.startsWith("00-unsorted/") ? 2 : 1;
 const documentationPathFor = (sourcePath, manifestPaths) => {
@@ -60,7 +51,7 @@ export function parseSpecDocument(source, file, manifestPaths = new Set()) {
   if (!id) return null;
   const title = captureString(source, ":document/title") || captureString(source, ":spec/title") || titleFromPath(file.path);
   const summary = captureString(source, ":document/summary") || captureString(source, ":spec/summary") || "No summary has been published for this specification.";
-  const version = captureString(source, ":document/version") || captureString(source, ":spec/version") || "0.0.0-draft";
+  const version = captureString(source, ":document/version") || captureString(source, ":spec/version") || "alpha";
   const status = captureKeyword(source, ":document/status") || captureKeyword(source, ":spec/status") || (file.path.includes("/ready/") ? "ready" : file.path.includes("/draft/") ? "draft" : "unclassified");
   const type = captureKeyword(source, ":document/type") || captureKeyword(source, ":spec/type") || "specification";
   const notationExtension = captureString(source, ":notation/extension");
@@ -88,7 +79,7 @@ export function parseSpecDocument(source, file, manifestPaths = new Set()) {
   };
 }
 
-const candidateOrder = (left, right) => compareVersion(right.version, left.version) || statusRank(right.status) - statusRank(left.status) || layerRank(right.sourcePath) - layerRank(left.sourcePath) || left.sourcePath.localeCompare(right.sourcePath);
+const candidateOrder = (left, right) => statusRank(right.status) - statusRank(left.status) || layerRank(right.sourcePath) - layerRank(left.sourcePath) || left.sourcePath.localeCompare(right.sourcePath);
 export function selectCanonicalSpecifications(candidates) {
   const byId = new Map();
   for (const candidate of candidates) {
