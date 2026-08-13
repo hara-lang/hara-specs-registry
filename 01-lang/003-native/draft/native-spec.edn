@@ -99,11 +99,12 @@
   {:native/id :std.native/arr
    :native/symbol Arr :native/namespace std.native.Arr
    :native/availability :portable
-   :native/methods [new instance? get-index set-index]}
+   :native/methods [new instance? get set push-first push-last pop-first pop-last
+                    insert remove clone slice map filter fold-left fold-right]}
   {:native/id :std.native/obj
    :native/symbol Obj :native/namespace std.native.Obj
    :native/availability :portable
-   :native/methods [new instance? get-key set-key has-key? delete-key]}
+   :native/methods [new instance? get set has? delete clone assign keys vals pairs]}
   {:native/id :std.native/runtime
    :native/symbol Runtime :native/namespace std.native.Runtime
    :native/availability :portable

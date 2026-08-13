@@ -30,7 +30,7 @@
  {:status :accepted
   :closed true
   :type-count 24
-  :method-count 181
+  :method-count 198
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -167,11 +167,12 @@
    :wrapper-source "lib/src/std/foundation/coroutine.hal"}
   {:name Arr
    :availability :implemented
-   :methods [new instance? get-index set-index]
+   :methods [new instance? get set push-first push-last pop-first pop-last
+             insert remove clone slice map filter fold-left fold-right]
    :method-classification {:foundation-primitive :all}}
   {:name Obj
    :availability :implemented
-   :methods [new instance? get-key set-key has-key? delete-key]
+   :methods [new instance? get set has? delete clone assign keys vals pairs]
    :method-classification {:foundation-primitive :all}}
   {:name Runtime
    :availability :implemented
