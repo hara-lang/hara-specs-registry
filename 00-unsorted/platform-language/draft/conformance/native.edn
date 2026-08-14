@@ -47,7 +47,7 @@
  {:status :accepted
   :closed true
   :type-count 26
-  :method-count 239
+  :method-count 244
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -152,6 +152,44 @@
                  :malformed-key :crypto-error}
   :errors {:prefix "crypto/<method>:" :stable true}}
 
+
+ :file
+ {:status :accepted
+  :logical-paths
+  {:root "/"
+   :separator "/"
+   :relative-inputs true
+   :returns :canonical-absolute
+   :normalisation [:duplicate-separators :dot-segments :parent-segments]
+   :escape-above-root :file/outside-root
+   :host-paths :provider-private}
+  :effects
+  {:returns :promise
+   :argument-errors :synchronous
+   :capability-and-filesystem-errors :rejected-promise}
+  :entry-shape
+  {:path :string
+   :name :string
+   :type [:file :directory :symlink :other]
+   :size [:integer nil]
+   :modified-at :unix-epoch-milliseconds
+   :extensions {}}
+  :no-follow [:stat :entries :walk :copy]
+  :sorted-results [:entries :list :walk]
+  :write-default {:mode :create :parents? false}
+  :mkdir-default {:parents? true :exists-ok? true}
+  :delete-default {:missing-ok? false}
+  :copy-default {:replace? false :parents? false :preserve-modified? false}
+  :move-default {:replace? false :parents? false :atomic? false}
+  :temp-file-default {:prefix "tmp" :suffix ""}
+  :temp-directory-default {:prefix "tmp"}
+  :stable-error-data
+  [:error/code :file/operation :file/path :file/target]
+  :stable-error-codes
+  [:file/not-found :file/already-exists :file/invalid-path
+   :file/outside-root :file/denied :file/not-directory :file/is-directory
+   :file/directory-not-empty :file/permission-denied :file/unsupported :file/io]}
+
  :types
  [{:name Maths
    :availability :implemented
@@ -209,8 +247,11 @@
    :method-classification {:native-only :all}}
   {:name File
    :availability :capability-gated
-   :methods [parent join resolve read write exists? stat list walk mkdir delete]
-   :method-classification {:native-only :all}}
+   :methods [parent join resolve read write exists? stat entries list walk mkdir delete
+             copy move temp-file temp-directory]
+   :method-classification {:native-only :all}
+   :deprecated [parent join resolve walk]
+   :preferred-path-library std.fs.path}
   {:name Socket
    :availability :capability-gated
    :methods [connect listen endpoint events next send close]

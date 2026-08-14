@@ -83,7 +83,9 @@
   {:native/id :std.native/file
    :native/symbol File :native/namespace std.native.File
    :native/availability :capability-gated :native/capability :file
-   :native/methods [resolve read write exists? list mkdir delete]}
+   :native/methods
+   [parent join resolve read write exists? stat entries list walk mkdir delete
+    copy move temp-file temp-directory]}
   {:native/id :std.native/socket
    :native/symbol Socket :native/namespace std.native.Socket
    :native/availability :capability-gated :native/capability :network
@@ -140,6 +142,101 @@
     iter-interpose iter-interleave iter-every? iter-any? iter-take iter-drop
     iter-zip iter-cycle iter-partition-pair iter-partition-all iter-partition
     iter-range iter-constantly iter-repeatedly iter-iterate]}]
+
+
+ :native/file
+ {:file/logical-paths
+  {:path/root "/"
+   :path/root-meaning :mounted-filesystem-root
+   :path/separator "/"
+   :path/relative-inputs true
+   :path/returned-form :canonical-absolute
+   :path/normalisation
+   [:collapse-duplicate-separators :remove-dot-segments :resolve-parent-segments]
+   :path/outside-root :file/outside-root
+   :path/forbidden
+   [:tilde-expansion :ambient-working-directory :windows-drive-prefixes
+    :host-specific-separators]
+   :path/host-mapping :provider-boundary-only}
+
+  :file/effects
+  {:effect/result :promise
+   :effect/argument-and-type-errors :synchronous
+   :effect/capability-and-filesystem-errors :promise-rejection
+   :effect/valid-call-never-throws-host-error true}
+
+  :file/operations
+  {:pure-compatibility [parent join resolve]
+   :metadata [stat entries]
+   :read [read exists? list walk]
+   :write [write mkdir delete copy move temp-file temp-directory]
+   :deprecated [parent join resolve walk]
+   :preferred-path-library std.fs.path
+   :preferred-directory-enumeration entries}
+
+  :file/options
+  {:write {:mode #{:create :replace :append}
+           :parents? false
+           :default {:mode :create :parents? false}}
+   :mkdir {:parents? true
+           :exists-ok? true
+           :default {:parents? true :exists-ok? true}}
+   :delete {:missing-ok? false
+            :default {:missing-ok? false}
+            :scope #{:file :symlink :empty-directory}}
+   :copy {:replace? false
+          :parents? false
+          :preserve-modified? false
+          :scope :one-regular-file
+          :follow-links false}
+   :move {:replace? false
+          :parents? false
+          :atomic? false
+          :scope :one-provider}
+   :temp-file {:prefix "tmp" :suffix ""}
+   :temp-directory {:prefix "tmp"}}
+
+  :file/entry
+  {:entry/shape
+   {:path :canonical-logical-path
+    :name :string
+    :type #{:file :directory :symlink :other}
+    :size #{:integer nil}
+    :modified-at :unix-epoch-milliseconds
+    :extensions :map}
+   :entry/size-only-for :file
+   :entry/sorted-by :path
+   :entry/follow-symbolic-links false}
+
+  :file/results
+  {:read :bytes
+   :exists? :boolean
+   :stat :entry
+   :entries :sorted-entry-vector
+   :list :sorted-canonical-path-vector
+   :write :canonical-path
+   :mkdir :canonical-path
+   :delete :canonical-path
+   :copy :canonical-target-path
+   :move :canonical-target-path
+   :temp-file :canonical-path
+   :temp-directory :canonical-path}
+
+  :file/errors
+  {:error/type ExceptionInfo
+   :error/data
+   {:error/code :file/code
+    :file/operation :keyword
+    :file/path :canonical-logical-path
+    :file/target #{:canonical-logical-path nil}}
+   :error/codes
+   [:file/not-found :file/already-exists :file/invalid-path
+    :file/outside-root :file/denied :file/not-directory :file/is-directory
+    :file/directory-not-empty :file/permission-denied :file/unsupported
+    :file/io]
+   :error/exists-not-found false
+   :error/exists-other-failures :reject
+   :error/host-message-non-semantic true}}
 
  :native/capabilities
  {:capability/catalog
