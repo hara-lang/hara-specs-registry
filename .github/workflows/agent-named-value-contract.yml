@@ -1,0 +1,87 @@
+name: Build named-value contract branch
+
+on:
+  push:
+    branches:
+      - agent/named-value-contract-bootstrap
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Create a clean target branch from main
+        shell: bash
+        run: |
+          mkdir -p /tmp/named-value-contract
+          cp .github/scripts/named_values_common.py /tmp/named-value-contract/
+          cp .github/scripts/patch_named_values_language.py /tmp/named-value-contract/
+          cp .github/scripts/patch_named_values_vm.py /tmp/named-value-contract/
+          cp .github/scripts/patch_named_values_hta.py /tmp/named-value-contract/
+          git fetch origin main
+          git switch -C agent/named-value-contract origin/main
+          git clean -fdx
+
+      - name: Apply the portable named-value contract
+        shell: bash
+        run: |
+          python /tmp/named-value-contract/patch_named_values_language.py
+          python /tmp/named-value-contract/patch_named_values_vm.py
+          python /tmp/named-value-contract/patch_named_values_hta.py
+
+      - name: Validate source documents
+        run: npm test
+
+      - name: Regenerate the registry index
+        run: npm run build
+
+      - name: Validate registry and generated index
+        run: npm run check
+
+      - name: Verify the change boundary
+        shell: bash
+        run: |
+          git diff --check
+          git add \
+            00-unsorted/platform-language/draft/README.md \
+            00-unsorted/platform-language/draft/hal-langspec.edn \
+            00-unsorted/platform-language/draft/conformance/l0.edn \
+            01-lang/010-bytecode/draft/README.md \
+            01-lang/010-bytecode/draft/hal-bytecode-vm.edn \
+            01-lang/010-bytecode/draft/conformance/bytecode-vm.edn \
+            02-platform/000050-transport-hta/draft/README.md \
+            02-platform/000050-transport-hta/draft/transport-hta.edn \
+            02-platform/000050-transport-hta/draft/conformance/transport-hta.edn \
+            registry-index.json
+          actual="$(git diff --cached --name-only | sort)"
+          expected="$(printf '%s\n' \
+            00-unsorted/platform-language/draft/README.md \
+            00-unsorted/platform-language/draft/conformance/l0.edn \
+            00-unsorted/platform-language/draft/hal-langspec.edn \
+            01-lang/010-bytecode/draft/README.md \
+            01-lang/010-bytecode/draft/conformance/bytecode-vm.edn \
+            01-lang/010-bytecode/draft/hal-bytecode-vm.edn \
+            02-platform/000050-transport-hta/draft/README.md \
+            02-platform/000050-transport-hta/draft/conformance/transport-hta.edn \
+            02-platform/000050-transport-hta/draft/transport-hta.edn \
+            registry-index.json | sort)"
+          diff -u <(printf '%s\n' "$expected") <(printf '%s\n' "$actual")
+
+      - name: Publish the validated branch
+        shell: bash
+        run: |
+          git config user.name "Hoebat Kappa Mu"
+          git config user.email "1455572+hoebat@users.noreply.github.com"
+          git commit -m "Specify persistent and mutable named values"
+          git push --force origin HEAD:refs/heads/agent/named-value-contract
