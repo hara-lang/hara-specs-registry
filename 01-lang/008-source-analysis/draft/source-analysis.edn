@@ -4,14 +4,17 @@
  :document/status :draft
  :document/title "Static source analysis for Hara"
  :document/summary
- "Portable rules and generated-profile inputs for non-evaluating Hara source analysis."
+ "Portable rules and generated-profile inputs for non-evaluating Hara source analysis, including canonical ^{:schema ...} metadata collection and checking."
 
  :analysis/scope
  {:scope/input :std.block/recovering-tree
   :scope/project-model :tool/project
-  :scope/type-model :std.typed.schema/compatible?
+  :scope/type-model :std.typed
+  :scope/schema-contract :std/typed
   :scope/evaluation :forbidden
-  :scope/default-paths [:project/source-paths :project/test-paths]}
+  :scope/runtime-instrumentation :forbidden
+  :scope/default-paths [:project/source-paths :project/test-paths]
+  :scope/project-index-before-files true}
 
  :analysis/invariants
  [{:requirement/id :tool.source-analysis/recovering-reader
@@ -37,7 +40,55 @@
    :requirement/text "A namespace reports repeated top-level definition names."}
   {:requirement/id :tool.source-analysis/static-macros
    :requirement/level :must
-   :requirement/text "Known macros use pinned static models; project code and runtime macro expansion are never executed."}]
+   :requirement/text "Known macros use pinned static models; project code and runtime macro expansion are never executed."}
+  {:requirement/id :tool.source-analysis/schema-collection
+   :requirement/level :must
+   :requirement/text "The analyzer collects ^{:schema ...} metadata, annotated values, and reachable named schema Vars from recovering source trees without evaluating code."}
+  {:requirement/id :tool.source-analysis/schema-normalization
+   :requirement/level :must
+   :requirement/text "Every collected schema is normalized by std.typed; malformed or unsupported inline schemas and reachable named schemas produce invalid-schema findings."}
+  {:requirement/id :tool.source-analysis/schema-resolution
+   :requirement/level :must
+   :requirement/text "Schema references resolve through the current namespace, aliases, explicit refers, qualified names, forward definitions, and recursive definitions; unresolved project-local references produce findings, while unavailable external references become unknown."}
+  {:requirement/id :tool.source-analysis/function-schema
+   :requirement/level :must
+   :requirement/text "A resolved schema attached to defn or defn- is a :fn or :function schema."}
+  {:requirement/id :tool.source-analysis/schema-arity
+   :requirement/level :must
+   :requirement/text "A function metadata contract has exactly the same fixed and variadic arity shapes as the function parameter lists."}
+  {:requirement/id :tool.source-analysis/schema-argument
+   :requirement/level :should
+   :requirement/text "A known call argument is checked directionally against the corresponding metadata-derived function input schema."}
+  {:requirement/id :tool.source-analysis/schema-value
+   :requirement/level :should
+   :requirement/text "A known def initializer is checked directionally against its metadata-derived value schema."}
+  {:requirement/id :tool.source-analysis/schema-return
+   :requirement/level :should
+   :requirement/text "A known conservatively inferred function result is checked directionally against the metadata-derived output schema."}
+  {:requirement/id :tool.source-analysis/schema-precedence
+   :requirement/level :must
+   :requirement/text "Resolved metadata-derived signatures precede pinned profile signatures; profile signatures remain available when metadata is absent or unknown."}
+  {:requirement/id :tool.source-analysis/schema-mode
+   :requirement/level :must
+   :requirement/text "Schema diagnostics support off, warn, and error modes with CLI, analyzer option, project configuration, then warning-default precedence; every mode still builds the schema index."}
+  {:requirement/id :tool.source-analysis/schema-index-output
+   :requirement/level :must
+   :requirement/text "Source and project analysis return the normalized public schema index for LSP and other consumers."}]
+
+ :analysis/schema-metadata
+ {:contract :std/typed
+  :index
+  {:definitions :reachable-named-schemas
+   :values :annotated-value-contracts
+   :functions :annotated-function-contracts
+   :inferred-functions :conservative-body-facts
+   :mode #{:off :warn :error}}
+  :build :before-per-file-analysis
+  :external-input :schema-index
+  :evaluation false
+  :unknown-suppresses-mismatch-findings true
+  :signature-precedence [:metadata :profile :inferred :unknown]
+  :mode-precedence [:cli :analyzer-option :project-configuration :warn-default]}
 
  :analysis/profile
  {:profile/id :tool.lint/hara-v1
@@ -45,7 +96,8 @@
   :profile/source-specs
   [{:spec/id :hal/language :spec/version "alpha"}
    {:spec/id :hara/foundation :spec/version "alpha"}
-   {:spec/id :tool/source-analysis :spec/version "alpha"}]
+   {:spec/id :tool/source-analysis :spec/version "alpha"}
+   {:spec/id :std/typed :spec/version "alpha"}]
   :profile/artifact "../../../../technology/hara/core/lib/src/tool/lint/profile.hal"
   :profile/determinism :byte-identical}
 
@@ -53,5 +105,15 @@
  {:finding/required [:type :level :message :file :row :col :end-row :end-col
                      :start-offset :end-offset :spec/requirement]
   :levels [:error :warning]
+  :schema-finding-types
+  [:tool.lint/invalid-schema
+   :tool.lint/unresolved-schema
+   :tool.lint/invalid-function-schema
+   :tool.lint/schema-arity-mismatch
+   :tool.lint/schema-argument-mismatch
+   :tool.lint/schema-value-mismatch
+   :tool.lint/schema-return-mismatch]
+  :schema-index-required
+  [:definitions :values :functions :inferred-functions :mode]
   :exit-policy {:errors 1 :warnings 0 :clean 0}
   :formats [:text :edn]}}
