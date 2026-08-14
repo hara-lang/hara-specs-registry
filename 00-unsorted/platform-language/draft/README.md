@@ -24,7 +24,7 @@ integers, and the quote, syntax-quote, unquote, unquote-splicing, deref, and var
 prefixes. Executable HAL source uses `.hal`; data uses `.edn`.
 
 The specification covers the reader, values, evaluation, functions and
-bindings, collections and iteration, numbers, errors, protocols and structs,
+bindings, collections and iteration, numbers, errors, protocols and named values,
 namespaces and modules, portable standard libraries, and the explicit host
 boundary.
 
@@ -37,6 +37,9 @@ editor UX, and extension packaging are outside this language document.
   target runtime or host language is selected.
 - **`:hal/persistent-values`** — literal collections remain persistent unless
   an explicit mutable constructor is used.
+- **`:hal/named-value-separation`** — `defstruct` is immutable and persistent;
+  `defmutable` is fixed-shape, reference-identical, and mutated only through
+  `field`/`set!`.
 - **`:hal/iterator-first`** — sequence operations use HAL's iterator boundary,
   not a host sequence abstraction.
 - **`:sequence/optional-non-empty`** — a `Seq` is a guaranteed non-empty lazy
@@ -66,8 +69,11 @@ editor UX, and extension packaging are outside this language document.
    arithmetic errors.
 7. **Errors and cleanup** — guest values, catches, `finally`, and source
    diagnostics.
-8. **Protocols, structs, and multimethods** — context-local dispatch and
-   immutable domain values.
+8. **Protocols, named values, and multimethods** — context-local dispatch;
+   persistent map-backed `defstruct` values with structural equality; and
+   fixed-shape `defmutable` values with reference identity and `field`/`set!`.
+   Both definitions install `Name`, `->Name`, and `map->Name` constructors
+   before later forms in the same evaluation unit are analysed.
 9. **Vars, namespaces, macros, and modules** — live Var identity, compile-time
    expansion, transactional loading, and the reserved `-` alias for the current
    namespace.
@@ -94,6 +100,8 @@ cases and future tooling.
 - [`conformance/parity/wasm-truffle.edn`](conformance/parity/wasm-truffle.edn) —
   Rust WebAssembly/Truffle parity.
 
-Coverage is currently partial. Host authority, numeric promotion, iterator
+The L0 corpus now pins immutable and mutable named-value constructors,
+persistent struct updates, mutable alias visibility, and field-place evaluation
+order. Coverage is still partial. Host authority, numeric promotion, iterator
 closure, error-source behaviour, and standard-library behaviour still need
 explicitly linked cases before candidate promotion.

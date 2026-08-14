@@ -5,7 +5,7 @@
     "ref": "main",
     "manifestPath": "spec-manifest.json",
     "manifestDigest": "sha256:9da1ea2758fc548af07e1a87ae0bde9115174d4d6cf253c1f9bd1cedb81df344",
-    "catalogueDigest": "sha256:995cd6fc5971f18dc15344a8a1ea2d5dd31023d93bdc08747cd5d24315fba81a",
+    "catalogueDigest": "sha256:dc09795843816ed2ec3c6739b6b941f7b08bc6da8a10ef887e1387b6c267028c",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 51,
     "ready": 0,
     "executable": 31,
-    "requirements": 296,
+    "requirements": 298,
     "materialized": 51,
     "pinnedSource": 0,
     "layers": [
@@ -1205,7 +1205,7 @@
       "classification": "hara",
       "sourcePath": "02-platform/000050-transport-hta/draft/transport-hta.edn",
       "documentationPath": "02-platform/000050-transport-hta/draft/README.md",
-      "requirements": 12,
+      "requirements": 14,
       "formats": [
         "application/edn"
       ],

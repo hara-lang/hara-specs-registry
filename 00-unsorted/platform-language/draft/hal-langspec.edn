@@ -57,6 +57,17 @@
      :cases [:collection/core-functions
              :collection/ordinary-dissoc-navigation]}]}
 
+  {:requirement/id :hal/named-value-separation
+   :requirement/level :must
+   :requirement/text
+   "defstruct defines an immutable persistent named value with structural equality and persistent updates; defmutable defines a fixed-shape mutable named value with reference identity and field/set! mutation. The two categories are distinct language abstractions rather than aliases for one host representation."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:named-value/constructors-same-unit
+             :named-value/defstruct-persistent-map
+             :named-value/defmutable-reference
+             :named-value/defmutable-evaluation-order]}]}
+
   {:requirement/id :hal/iterator-first
    :requirement/level :must
    :requirement/text
@@ -145,7 +156,7 @@
   {:section/id :hal/values
    :section/title "Values and truth"
    :section/summary
-   "HAL defines host-neutral scalar, persistent collection, function, Var, protocol, struct, iterator, and explicit mutable value categories."
+   "HAL defines host-neutral scalar, persistent collection, function, Var, protocol, named-value, iterator, and explicit mutable value categories."
    :section/requirements
    [{:requirement/id :value/truth
      :requirement/level :must
@@ -157,7 +168,7 @@
     {:requirement/id :value/equality
      :requirement/level :must
      :requirement/text
-     "Value equality and hashing are defined by HAL value category rather than host object identity."}
+     "Immutable values use value or structural equality with compatible hashing. Mutable named values use reference identity: aliases compare equal, while distinct instances with equal field contents do not."}
     {:requirement/id :value/metadata
      :requirement/level :must
      :requirement/text
@@ -363,9 +374,9 @@
    [:hal.form/throw :hal.form/try]}
 
   {:section/id :hal/protocols-structs
-   :section/title "Protocols, structs, and multimethods"
+   :section/title "Protocols, named values, and multimethods"
    :section/summary
-   "Protocols are context-local language descriptors; structs are immutable domain values; multimethods dispatch using HAL equality."
+   "Protocols are context-local language descriptors; defstruct and defmutable provide deliberately separate immutable and mutable named-value abstractions; multimethods dispatch using HAL equality."
    :section/requirements
    [{:requirement/id :protocol/context
      :requirement/level :must
@@ -375,12 +386,60 @@
      :requirement/level :must-not
      :requirement/text
      "A host interface or class relationship alone must not define HAL protocol semantics."}
-    {:requirement/id :struct/immutable
+    {:requirement/id :definition/named-value-visibility
      :requirement/level :must
      :requirement/text
-     "Struct field values are immutable and struct metadata is separate from fields."}]
+     "defstruct and defmutable install Name, ->Name, and map->Name constructor Vars in the current evaluation environment before following forms in the same enclosing do or source unit are analysed. Constructors consume declared fields in declaration order; map constructors bind missing fields to nil and ignore extra fields."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:named-value/constructors-same-unit]}]}
+    {:requirement/id :struct/persistent-map
+     :requirement/level :must
+     :requirement/text
+     "A defstruct instance is an immutable persistent named value backed by map semantics. Declared keyword fields are readable through keyword invocation and get. assoc and assoc-in may update declared fields only, return the same struct type, leave the receiver unchanged, and preserve structural sharing. Declared field order is retained for construction, iteration, display, and transport encoding."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:named-value/defstruct-persistent-map]}]}
+    {:requirement/id :struct/equality-metadata-and-removal
+     :requirement/level :must
+     :requirement/text
+     "defstruct equality and hashing are structural and include the named type and declared field values, while metadata remains separate from fields and equality. dissoc returns a plain persistent map rather than a struct. field is not an immutable struct accessor and rejects a defstruct instance."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:runtime/metadata
+               :named-value/defstruct-persistent-map]}]}
+    {:requirement/id :mutable/reference-identity
+     :requirement/level :must
+     :requirement/text
+     "A defmutable instance has a fixed declared field set and reference identity. field reads a declared field directly; aliases observe the same subsequent writes; distinct instances remain unequal even when every field value is equal."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:named-value/defmutable-reference]}]}
+    {:requirement/id :mutable/field-write
+     :requirement/level :must
+     :requirement/text
+     "set! with a (field receiver field) place evaluates the receiver once, then the replacement once, from left to right; mutates exactly one declared field; and returns the replacement value. An unknown field is a deterministic HAL error."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:named-value/defmutable-reference
+               :named-value/defmutable-evaluation-order]}]}
+    {:requirement/id :mutable/no-associative-operations
+     :requirement/level :must-not
+     :requirement/text
+     "assoc, assoc-in, and dissoc do not treat a defmutable instance as a persistent associative collection. Mutable named values and their type descriptors are live values and cannot cross HTA or session-transfer boundaries."}
+    {:requirement/id :named-value/dispatch
+     :requirement/level :must
+     :requirement/text
+     "instance? and protocol dispatch recognise both defstruct and defmutable descriptors consistently across the tree evaluator, Rust bytecode VM, and Java/Truffle runtime. Protocol methods read immutable receivers with keyword/get lookup and mutable receivers with field."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:protocol/struct-extension
+               :protocol/struct-inline-extension
+               :protocol/mutable-extension]}]}]
    :section/forms
    [:hal.form/defstruct
+    :hal.form/defmutable
+    :hal.form/field
     :hal.form/defprotocol
     :hal.form/extend-type
     :hal.form/defmulti
@@ -641,8 +700,21 @@
    :form/symbol defstruct
    :form/class :special-form
    :form/shape (quote (defstruct name [field*] protocol-implementation*))
-   :form/semantics "Defines the sole immutable, user-extensible HAL receiver descriptor and constructor; trailing protocol clauses install its initial implementations, while extend-type may add or replace implementations later. defrecord and deftype are unsupported."
+   :form/semantics "Defines an immutable persistent named-value descriptor and the Name, ->Name, and map->Name constructors. Trailing protocol clauses install its initial implementations, while extend-type may add or replace implementations later. defrecord and deftype are unsupported."
    :form/evaluation :special}
+  {:form/id :hal.form/defmutable
+   :form/symbol defmutable
+   :form/class :special-form
+   :form/shape (quote (defmutable name [field*]))
+   :form/semantics "Defines a fixed-shape reference-identity mutable named-value descriptor and the Name, ->Name, and map->Name constructors. Declared fields are read with field and replaced with set! field places."
+   :form/evaluation :special}
+  {:form/id :hal.form/field
+   :form/symbol field
+   :form/class :special-form
+   :form/shape (quote (field mutable-value field))
+   :form/semantics "Evaluates the receiver once and returns one declared field of a defmutable instance. In a set! place the receiver precedes the replacement in left-to-right evaluation."
+   :form/evaluation :special
+   :form/arity 2}
   {:form/id :hal.form/defprotocol
    :form/symbol defprotocol
    :form/class :special-form
@@ -653,7 +725,7 @@
    :form/symbol extend-type
    :form/class :special-form
    :form/shape (quote (extend-type type protocol method-implementation*))
-   :form/semantics "Installs protocol implementations only for a defstruct descriptor."
+   :form/semantics "Installs protocol implementations for a defstruct or defmutable descriptor."
    :form/evaluation :special}
   {:form/id :hal.form/defmulti
    :form/symbol defmulti
@@ -733,7 +805,8 @@
  :spec/coverage
  {:status :partial
   :covered
-  #{:reader :values :evaluation :functions-and-bindings :collections-and-iteration}
+  #{:reader :values :evaluation :functions-and-bindings :collections-and-iteration
+    :protocols-and-structs}
   :awaiting-explicit-cases
   #{:host-authority :module-rollback :numeric-promotion :iterator-close :error-source
     :standard-libraries}}

@@ -194,6 +194,23 @@
   {:id :compile/declare-nested :source "(let [x 1] (declare y) x)" :expect {:compile-error "declare is only supported as a top-level statement"}}
   {:id :compile/declare-non-symbol :source "(declare 1)" :expect {:compile-error "declare expects name symbols"}}
 
+  ;; ---- persistent and mutable named values ----
+  {:id :named-value/defstruct-constructors
+   :source "(do (defstruct Point [x y]) (+ (get (Point 1 2) :x) (get (->Point 3 4) :x) (get (map->Point {:x 5}) :x)))"
+   :expect {:display "9"}}
+  {:id :named-value/defmutable-constructors
+   :source "(do (defmutable Cursor [x y]) (+ (field (Cursor 1 2) :x) (field (->Cursor 3 4) :x) (field (map->Cursor {:x 5}) :x)))"
+   :expect {:display "9"}}
+  {:id :named-value/mutable-alias-set-result
+   :source "(do (defmutable Cursor [x y]) (let [cursor (Cursor 1 2) alias cursor result (set! (field cursor :x) 42)] (+ result (field alias :x))))"
+   :expect {:display "84"}}
+  {:id :named-value/mutable-identity
+   :source "(do (defmutable Cursor [x y]) (let [cursor (Cursor 1 2) alias cursor] (if (= cursor alias) (if (= cursor (Cursor 1 2)) 0 42) 0)))"
+   :expect {:display "42"}}
+  {:id :named-value/mutable-evaluation-order
+   :source "(do (defmutable Cursor [x]) (def named-value-order 0) (let [cursor (Cursor 1)] (set! (field (do (set! named-value-order (+ (* named-value-order 10) 1)) cursor) :x) (do (set! named-value-order (+ (* named-value-order 10) 2)) 42)) named-value-order))"
+   :expect {:display "12"}}
+
   ;; ---- exceptions: try/catch/finally and guest throw ----
   {:id :error/catch-guest-value :source "(try (throw 41) (catch Exception error (+ error 1)))" :expect {:display "42"}}
   {:id :error/catch-first-match :source "(try (throw 1) (catch Exception a 41) (catch Exception b 42))" :expect {:display "41"}}

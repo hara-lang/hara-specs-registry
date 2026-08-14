@@ -11,7 +11,7 @@
  :vm/ownership
  {:owner :rust-runtime
   :portable-input "Decoded HAL forms, including forms loaded from HALC."
-  :private-artifacts #{:HBC1 :HBC2 :HBC3 :HBC4 :HNW0 :Program :Instruction :whole-function-mir :numeric-slots :handler-table :call-frames}
+  :private-artifacts #{:HBC0 :HNW0 :Program :Instruction :whole-function-mir :numeric-slots :handler-table :call-frames}
   :halc-boundary "HALC contains portable forms and metadata only. VM Program and Instructions are compiled after HALC decoding and are never embedded in HALC."
   :journal-boundary "Evaluation Journal events are portable diagnostics, not VM instructions and not an input to execution or future JIT tracing. VM instruction details may appear only in optional runtime extensions."
   :java-obligation "None beyond the shared HAL language, HALC, and Evaluation Journal contracts. Java remains free to use Truffle ASTs and Graal."}
@@ -27,7 +27,7 @@
   :globals :registry-direct
   :suspension false
   :rule
-  "Source or decoded HALC forms are compiled into a typed instruction program and validated by abstract interpretation. HALC module namespace configuration is applied before lowering. Declared schema contracts and conservative body-derived inference facts remain distinct. HBC4 persists both with the executable program; HBC1-HBC3 remain readable legacy inputs with empty type tables. Decoded artifacts pass checksum verification and the same structural validation before execution. Execution is fully synchronous; unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
+  "Source or decoded HALC forms are compiled into a typed instruction program and validated by abstract interpretation. HALC module namespace configuration is applied before lowering. Declared schema contracts and conservative body-derived inference facts remain distinct. HBC0 persists both with the executable program. Opcode numbers are append-only; retired encodings fail closed with a rebuild-required diagnostic. Decoded artifacts pass checksum verification and the same structural validation before execution. Execution is fully synchronous; unsupported forms are compile errors, never silent fallback into the tree-walking evaluator."
   :reference-implementation
   {:module rust/src/vm
    :feature "bytecode-vm"
@@ -85,14 +85,35 @@
    {:op DefStruct :operand {:name :u32-constant-index :fields :u32-constant-index}
     :pops 0 :pushes 1
     :meaning "create the struct type qualified to the current namespace, intern the constructor vars (Name, ->Name, map->Name), push the type value; fields is a vector constant of field-name strings"}
-   {:op StructField :operand :u32-constant-index :pops 1 :pushes 1
-    :meaning "pop a struct instance, push the positional field value named by the keyword constant (the field special form)"}
+   {:op DefMutable :operand {:name :u32-constant-index :fields :u32-constant-index}
+    :pops 0 :pushes 1
+    :meaning "create a mutable named type qualified to the current namespace, intern Name, ->Name, and map->Name constructor Vars, and push nil; fields is a vector constant of field-name strings"}
+   {:op MutableFieldGet :operand :u32-constant-index :pops 1 :pushes 1
+    :meaning "pop a defmutable instance and push the declared field value named by the string constant"}
+   {:op MutableFieldSet :operand :u32-constant-index :pops 2 :pushes 1
+    :meaning "pop replacement and receiver, mutate one declared field, and push the replacement value"}
    {:op InstanceOf :pops 2 :pushes 1
-    :meaning "pop the value then the struct type; push whether the value is an instance (the instance? special form)"}
+    :meaning "pop the value then a defstruct or defmutable type descriptor; push whether the value is an instance (the instance? special form)"}
    {:op MakeMultiArity :operand :u8-count :pops :count :pushes 1
     :meaning "pop count function values and push the arity dispatcher built through the shared core::multi_arity_function/select_clause boundary"}
    {:op Return :terminal true
     :meaning "return the top of stack; requires stack height exactly 1"}]}
+
+ :vm/persistent-opcodes
+ {:format :HBC0
+  :numbering :append-only
+  :named-values
+  [{:opcode 20 :op DefStruct :status :active}
+   {:opcode 21
+    :op StructField
+    :status :retired
+    :decode-error "bytecode artifact uses retired StructField opcode 21; rebuild required"}
+   {:opcode 47 :op DefMutable :status :active}
+   {:opcode 48 :op MutableFieldGet :status :active}
+   {:opcode 49 :op MutableFieldSet :status :active}]
+  :compatibility-rule
+  "An assigned opcode number is never renumbered or reused. Decoding retired opcode 21 fails with the exact rebuild-required diagnostic; incompatible future program envelopes use a new magic rather than guessing."
+  :source-of-truth "core/rust/src/vm/artifact.rs"}
 
  :vm/program
  {:model
@@ -122,13 +143,13 @@
    :max-call-arguments 255
    :max-captures-per-closure 255}
   :persistence
-  {:format :HBC4
-   :header "four-byte HBC4 magic followed by a big-endian u32 payload length"
+  {:format :HBC0
+   :header "four-byte HBC0 magic followed by a big-endian u32 payload length"
    :integrity "SHA-256 of the complete payload"
    :payload "entry index, optional owning namespace, HTA-encoded constant pool, var metadata, normalized named-schema table, normalized declared function-type table, inferred function-type table, prototypes, typed instructions, source positions, and exception handlers"
    :decode-rule "reject bad magic, length, checksum, tags, UTF-8, or trailing bytes, then run normal VM validation before returning a Program"
    :constant-rule "constants use the portable HTA value codec; runtime-only values unsupported by HTA are rejected during encoding"
-   :compatibility "the version is carried by the magic; HBC1-HBC3 decode with empty schema tables, and incompatible future encodings use a new magic rather than guessing"}}
+   :compatibility "HBC0 is the only accepted program magic. Opcode numbers are append-only within HBC0; retired opcode 21 reports rebuild required; incompatible future envelopes use a new magic rather than guessing"}}
 
  :vm/type-inference
  {:contract "Declared :schema values are user contracts. Inferred types are compiler facts and never rewrite or silently strengthen those contracts."
@@ -175,6 +196,8 @@
    :try-ranges-partially-overlap
    :global-name-constant-not-a-string
    :defstruct-fields-constant-not-a-string-vector
+   :defmutable-fields-constant-not-a-string-vector
+   :mutable-field-name-constant-not-a-string
    :defglobal-metadata-constant-not-a-map
    :declared-function-schema-has-no-compatible-prototype-arity
    :make-multi-arity-with-empty-stack]
@@ -229,7 +252,7 @@
   "The VM talks to kernel::NamespaceRegistry directly. DefGlobal interns a Var into the current namespace with the qualified name from the start; GetGlobal/SetGlobal/VarGlobal resolve through NamespaceRegistry::resolve at execution time. The tree evaluator's flat env plus save_namespace/refresh_qualified_bindings bridge is not joined: there is no snapshot/restore, no env cloning, and no qualified-name materialization on the VM path. A failed execution leaves successfully interned vars in place, the same observable state the evaluator produces after save_namespace."
   :visibility
   {:rule
-   "Name checking is two-phase. The compiler tracks program-declared globals (top-level declare, def, defn, defstruct in the same source) and queries the compilation registry for pre-existing globals. An unqualified symbol that is neither lexical, nor a primitive, nor a visible global is the compile error \"unbound symbol: {name}\" — closed-program behavior is unchanged. A visible global compiles to GetGlobal and resolves at runtime, so same-program def-then-use works and redefinition between compile and execute is observed. Qualified symbols (a/b) always compile to GetGlobal with runtime resolution; alias loading and load-failure retention are runtime concerns."
+   "Name checking is two-phase. The compiler tracks program-declared globals (top-level declare, def, defn, defstruct, defmutable, and the Name/->Name/map->Name constructors generated by either named-value definition in the same source) and queries the compilation registry for pre-existing globals. An unqualified symbol that is neither lexical, nor a primitive, nor a visible global is the compile error \"unbound symbol: {name}\" — closed-program behavior is unchanged. A visible global compiles to GetGlobal and resolves at runtime, so same-program def-then-use works and redefinition between compile and execute is observed. Qualified symbols (a/b) always compile to GetGlobal with runtime resolution; alias loading and load-failure retention are runtime concerns."
    :compile-registry
    "compile_source_with takes a registry reference; the milestone-1 compile_source compiles against an empty registry, preserving every closed-program compile error."}
   :host-boundary
@@ -239,6 +262,7 @@
   :deferred
   [:binding-and-dynamic-vars
    :defstruct-protocol-clauses
+   :defmutable-protocol-clauses
    :protocol-based-struct-metadata
    :module-and-namespace-config-forms
    :destructuring-parameters]
@@ -266,6 +290,13 @@
    "defstruct executes the evaluator's construction through a registry-based helper: validate name/fields, create the StructType qualified to the current namespace, intern Name, ->Name, and map->Name. Trailing protocol clauses are the compile error \"defstruct protocol clauses are not supported\"."
    :catch-interaction
    "catch_matches matches struct type names with the /{class} suffix rule (milestone 3), so the L0 error/catch-order, error/unmatched-catch, error/finally-normal, and error/finally-unwind cases run verbatim."}
+  :defmutable
+  {:rule
+   "defmutable executes the registry helper that validates name and fields, creates the MutableType qualified to the current namespace, and interns Name, ->Name, and map->Name. Trailing protocol clauses fail compilation with the diagnostic defmutable protocol clauses are not supported; portable dispatch is installed with extend-type."
+   :field-access
+   "field lowers to MutableFieldGet. set! with a field place evaluates receiver then replacement exactly once and lowers to MutableFieldSet, which returns the replacement."
+   :identity
+   "Mutable instances compare and hash by shared storage identity; aliases observe writes while separately constructed instances remain distinct."}
   :namespace-owned-vars
   {:rule
    "Callable foundation bindings are Vars. def, defn, defmacro, declare, and set! may mutate only Vars owned by the current namespace. A referred Var is protected with \"Cannot replace referred Var without ns omission: <name>\"; a blank namespace, an omitted refer, or :require :exclude must establish the local slot before definition."
@@ -437,7 +468,7 @@
  {:status :experimental-first-vertical
   :feature-gate "whole-wasm"
   :goal "Compile complete eligible function control-flow graphs to portable WebAssembly rather than recording and replaying one hot loop trace. The same Wasm payload is consumable by Wasmtime and browser WebAssembly engines."
-  :pipeline [:validated-HBC4 :basic-block-discovery :typed-MIR :MIR-verification :deterministic-Wasm :HNW0 :engine-validation :direct-function-call]
+  :pipeline [:validated-HBC0 :basic-block-discovery :typed-MIR :MIR-verification :deterministic-Wasm :HNW0 :engine-validation :direct-function-call]
   :distinction-from-tracing
   {:whole-function "Every block and control-flow edge of an eligible function is lowered before execution; direct static calls become Wasm calls."
    :tracing "The tracing-jit feature remains a separate narrow experiment and is not evidence that a general whole-function compiler exists."
@@ -457,9 +488,9 @@
    :abi-version 1
    :header "four-byte HNW0 magic followed by a big-endian u32 payload length"
    :integrity "SHA-256 of the complete payload"
-   :payload "ABI version, canonical function id/arity table, complete authenticated HBC4 fallback, and deterministic Wasm module"
+   :payload "ABI version, canonical function id/arity table, complete authenticated HBC0 fallback, and deterministic Wasm module"
    :decode-rule "Reject bad magic, length, checksum, ABI, non-canonical function metadata, HBC mismatch, invalid Wasm magic, or trailing bytes before engine instantiation."
-   :fallback-rule "The HBC4 program is retained so an explicit caller or future tier manager can choose semantic fallback. A native call never falls back after entering generated code."}
+   :fallback-rule "The HBC0 program is retained so an explicit caller or future tier manager can choose semantic fallback. A native call never falls back after entering generated code."}
   :execution
   {:native "Wasmtime validates and instantiates the module once; prepared calls resolve an exported hara_fn_N and cross only the typed value boundary."
    :browser "The HNW0 decoder and Wasm bytes are target-independent; browser loader integration remains an implementation milestone."
