@@ -10,4 +10,123 @@
  {:case/id :hara.package.case/generated-lock
   :case/type :project
   :case/input {:project/dependencies {"hara:hara/graph" {:version "^1.2.0"}}}
-  :case/expected {:generated "project.lock.edn"}}]
+  :case/expected {:generated "project.lock.edn"}} {:case/id :hara.package.case/runtime-profile-jvm
+  :case/type :project-runtime-profile
+  :case/input
+  {:runtime :jvm
+   :project
+   {:project/source-paths ["src"]
+    :project/test-paths ["test"]
+    :project/extension-paths ["extensions"]
+    :project/dependencies {"hara:hara/base" {:version "^1.0.0"}}
+    :project/runtime-profiles
+    {:jvm
+     {:runtime/source-paths ["src-jvm"]
+      :runtime/test-paths ["test-jvm"]
+      :runtime/extension-paths ["extensions-jvm"]
+      :runtime/native-source-paths ["src-java"]
+      :runtime/target-path "target/jvm/classes"
+      :runtime/dependencies
+      {:maven {org.postgresql/postgresql {:version "42.7.7"}}}}}}}
+  :case/expected
+  {:runtime :jvm
+   :source-paths ["src" "src-jvm"]
+   :test-paths ["test" "test-jvm"]
+   :extension-paths ["extensions" "extensions-jvm"]
+   :native-source-paths ["src-java"]
+   :target-path "target/jvm/classes"
+   :hara-dependencies {"hara:hara/base" {:version "^1.0.0"}}
+   :maven-dependencies {org.postgresql/postgresql {:version "42.7.7"}}}}
+ {:case/id :hara.package.case/runtime-profile-rust
+  :case/type :project-runtime-profile
+  :case/input
+  {:runtime :rust
+   :project
+   {:project/source-paths ["src"]
+    :project/test-paths ["test"]
+    :project/extension-paths []
+    :project/dependencies {"hara:hara/base" {:version "^1.0.0"}}
+    :project/runtime-profiles
+    {:rust
+     {:runtime/source-paths ["src-rust"]
+      :runtime/test-paths ["test-rust"]
+      :runtime/extension-paths ["extensions-rust"]
+      :runtime/dependencies
+      {:hara {"hara:hara/crypto" {:version "^1.0.0"}}}}}}}
+  :case/expected
+  {:runtime :rust
+   :source-paths ["src" "src-rust"]
+   :test-paths ["test" "test-rust"]
+   :extension-paths ["extensions-rust"]
+   :native-source-paths []
+   :hara-dependencies
+   {"hara:hara/base" {:version "^1.0.0"}
+    "hara:hara/crypto" {:version "^1.0.0"}}
+   :maven-dependencies {}}}
+ {:case/id :hara.package.case/runtime-profile-none
+  :case/type :project-runtime-profile
+  :case/input
+  {:runtime :rust
+   :project {:project/source-paths ["src"]
+             :project/test-paths ["test"]
+             :project/extension-paths []
+             :project/dependencies {}}}
+  :case/expected
+  {:runtime :rust
+   :source-paths ["src"]
+   :test-paths ["test"]
+   :extension-paths []
+   :native-source-paths []
+   :hara-dependencies {}
+   :maven-dependencies {}}}
+ {:case/id :hara.package.case/runtime-profile-disjoint-namespace
+  :case/type :project-runtime-profile
+  :case/input
+  {:namespaces {:jvm {"src-jvm/demo/adapter.hal" demo.adapter}
+                :rust {"src-rust/demo/adapter.hal" demo.adapter}}}
+  :case/expected :valid}
+ {:case/id :hara.package.case/runtime-profile-effective-duplicate
+  :case/type :project-runtime-profile
+  :case/input
+  {:runtime :jvm
+   :namespaces {"src/demo/adapter.hal" demo.adapter
+                "src-jvm/demo/adapter.hal" demo.adapter}}
+  :case/expected {:reject :duplicate-namespace}}
+ {:case/id :hara.package.case/runtime-profile-build-orthogonality
+  :case/type :project-runtime-profile
+  :case/input
+  {:runtime :rust
+   :build-profile :production
+   :project/profiles {:production {:profile/language :hara
+                                   :profile/build {:build/tree-shake true}}}
+   :project/runtime-profiles
+   {:rust {:runtime/source-paths ["src-rust"]}}}
+  :case/expected {:runtime :rust :build-profile :production}}
+ {:case/id :hara.package.case/runtime-profile-legacy-jvm-keys
+  :case/type :project-runtime-profile
+  :case/input {:jvm/source-paths ["src-java"]
+               :jvm/dependencies [[org.example/library "1.0.0"]]
+               :jvm/target-path "target/classes"}
+  :case/expected
+  {:reject :legacy-runtime-key
+   :replacements
+   {:jvm/source-paths [:project/runtime-profiles :jvm :runtime/native-source-paths]
+    :jvm/dependencies [:project/runtime-profiles :jvm :runtime/dependencies :maven]
+    :jvm/target-path [:project/runtime-profiles :jvm :runtime/target-path]}}}
+ {:case/id :hara.package.case/runtime-profile-hara-conflict
+  :case/type :project-runtime-profile
+  :case/input
+  {:runtime :rust
+   :project/dependencies {"hara:hara/crypto" {:version "^1.0.0"}}
+   :project/runtime-profiles
+   {:rust {:runtime/dependencies
+           {:hara {"hara:hara/crypto" {:version "^2.0.0"}}}}}}
+  :case/expected {:reject :runtime-profile-conflict}}
+ {:case/id :hara.package.case/runtime-profile-preserve-inactive-lock
+  :case/type :project-runtime-lock
+  :case/input {:active-runtime :jvm
+               :existing-sections {:jvm {:digest "old-jvm"}
+                                   :rust {:digest "keep-rust"}}}
+  :case/expected {:jvm {:digest :reconciled}
+                  :rust {:digest "keep-rust"}}}
+]

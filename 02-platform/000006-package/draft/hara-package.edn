@@ -30,7 +30,8 @@
                             :project/test-paths :project/extension-paths
                             :project/capabilities]
    :entity/optional-fields [:project/main :project/default-profile
-                            :project/profiles :project/artifact-paths
+                            :project/profiles :project/runtime-profiles
+                            :project/artifact-paths
                             :project/archive-root :project/dependencies
                             :project/package :project/build
                             :project/extensions :project/remote-artifacts]}
@@ -38,7 +39,8 @@
    :entity/path "project.lock.edn"
    :entity/generated true
    :entity/summary "Exact package, registry revision and remote-artifact resolution."
-   :entity/fields [:lock/format :registries :packages :remote-artifacts]}
+   :entity/fields [:lock/format :runtime-sections :registries :packages
+                   :remote-artifacts]}
   {:entity/id :hara.package/archive-index
    :entity/path "package.edn"
    :entity/generated true
@@ -63,6 +65,7 @@
   :project/archive-root {:type :relative-path}
   :project/capabilities {:type :set}
   :project/dependencies {:type :dependency-map}
+  :project/runtime-profiles {:type :runtime-profile-map}
   :project/package {:type :package-options}
   :project/build {:type :build-declaration}
   :project/extensions {:type :extension-map}
@@ -80,6 +83,7 @@
    :operation/input :hara.package/project
    :operation/output :hara.package/lock
    :operation/failures [:registry-unavailable :version-conflict
+                        :runtime-profile-conflict :stale-runtime-lock
                         :artifact-unavailable :integrity-mismatch]}
   {:operation/id :hara.package.operation/build
    :operation/role :hara.package.role/builder
@@ -127,7 +131,37 @@
    :requirement/text "An accepted coordinate and version is bound permanently to one source commit, one project.edn digest and one archive digest."}
   {:requirement/id :hara.package/github-governance
    :requirement/level :must
-   :requirement/text "Contributor identity and repository authority are established through GitHub identity and exact repository identifiers; accepted management changes remain Git records."}]
+   :requirement/text "Contributor identity and repository authority are established through GitHub identity and exact repository identifiers; accepted management changes remain Git records."}
+  {:requirement/id :hara.package/runtime-profile-shape
+   :requirement/level :must
+   :requirement/text "Runtime-specific project intent is declared only below :project/runtime-profiles, keyed by :jvm or :rust, using :runtime/source-paths, :runtime/test-paths, :runtime/extension-paths, :runtime/native-source-paths, :runtime/target-path, and :runtime/dependencies."}
+  {:requirement/id :hara.package/runtime-profile-auto-selection
+   :requirement/level :must
+   :requirement/text "JVM commands select :jvm and native Rust commands select :rust automatically; ordinary commands do not expose a runtime-profile selection flag."}
+  {:requirement/id :hara.package/runtime-profile-effective-paths
+   :requirement/level :must
+   :requirement/text "Effective HAL source, test, and extension roots are the ordered shared roots followed by the selected runtime profile additions; native source roots and target paths belong only to the selected runtime profile."}
+  {:requirement/id :hara.package/runtime-profile-namespace-isolation
+   :requirement/level :must
+   :requirement/text "A namespace may have different implementations in disjoint runtime-only roots, but duplicate declarations within one effective runtime profile are rejected and package resource metadata records runtime ownership."}
+  {:requirement/id :hara.package/runtime-profile-build-orthogonality
+   :requirement/level :must
+   :requirement/text "Build profiles under :project/profiles remain orthogonal to runtime profiles and never select or rewrite :project/runtime-profiles."}
+  {:requirement/id :hara.package/runtime-profile-legacy-hard-cut
+   :requirement/level :must
+   :requirement/text "The top-level :jvm/source-paths, :jvm/dependencies, and :jvm/target-path keys are invalid; diagnostics identify their replacements under :project/runtime-profiles :jvm."}
+  {:requirement/id :hara.package/runtime-profile-dependency-merge
+   :requirement/level :must
+   :requirement/text "Shared :project/dependencies are merged with the selected profile's :hara declarations; conflicting requirements fail closed, Maven versions are exact, and Hara declarations use semantic-version requirements."}
+  {:requirement/id :hara.package/runtime-profile-lock-sections
+   :requirement/level :must
+   :requirement/text "project.lock.edn stores independent runtime-keyed sections with normalized declaration digests and complete exact dependency graphs; synchronizing the active runtime preserves every inactive section atomically."}
+  {:requirement/id :hara.package/runtime-profile-locked-modes
+   :requirement/level :must
+   :requirement/text "Locked and frozen execution reject an absent, stale, incomplete, or manifest-divergent active runtime section, while offline execution performs no network access."}
+  {:requirement/id :hara.package/runtime-profile-package-mount
+   :requirement/level :must
+   :requirement/text "Before evaluation, the active locked graph is mounted read-only; package builds retain shared and runtime-specific resources, profile-scoped indexes, and the exact multi-runtime lockfile."}]
 
  :platform/conformance
  [{:conformance/id :hara.package/projects
