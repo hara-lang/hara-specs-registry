@@ -121,7 +121,7 @@
    :expect {:value 42 :type :integer}}
   {:id :error/catch-order
    :class :error
-   :source "(do (defstruct Problem [value]) (try (throw (Problem 42)) (catch Other error 0) (catch Problem error (field error :value))))"
+   :source "(do (defstruct Problem [value]) (try (throw (Problem 42)) (catch Other error 0) (catch Problem error (:value error))))"
    :expect {:value 42 :type :integer}}
   {:id :error/unmatched-catch
    :class :error
@@ -388,13 +388,18 @@
   {:id :protocol/struct-extension
    :class :protocol
    :source "(ICount/count (Box 4))"
-   :setup "(defstruct Box [size]) (extend-type Box ICount (count [self] (field self :size)))"
+   :setup "(defstruct Box [size]) (extend-type Box ICount (count [self] (:size self)))"
    :expect {:value 4 :type :integer}}
   {:id :protocol/struct-inline-extension
    :class :protocol
    :source "(ICount/count (InlineBox 5))"
-   :setup "(defstruct InlineBox [size] ICount (count [self] (field self :size)))"
+   :setup "(defstruct InlineBox [size] ICount (count [self] (:size self)))"
    :expect {:value 5 :type :integer}}
+  {:id :protocol/mutable-extension
+   :class :protocol
+   :source "(ICount/count (MutableBox 6))"
+   :setup "(defmutable MutableBox [size]) (extend-type MutableBox ICount (count [self] (field self :size)))"
+   :expect {:value 6 :type :integer}}
   {:id :protocol/multimethod
    :class :protocol
    :source "(defmulti kind (fn [x] (if (= x 1) :one :other))) (defmethod kind :one [x] \"one\") (defmethod kind :default [x] \"other\") (kind 2)"
@@ -494,6 +499,22 @@
    :class :namespace
    :source "(ns std.foundation (:config {:builtins [count]})) (std.foundation/count [41 42])"
    :expect {:value 2 :type :integer}}
+  {:id :named-value/constructors-same-unit
+   :class :named-value
+   :source "(do (defstruct Point [x y]) (defmutable Cursor [x y]) (+ (get (Point 1 2) :x) (get (->Point 3 4) :x) (get (map->Point {:x 5}) :x) (field (Cursor 1 2) :x) (field (->Cursor 3 4) :x) (field (map->Cursor {:x 5}) :x)))"
+   :expect {:value 18 :type :integer}}
+  {:id :named-value/defstruct-persistent-map
+   :class :named-value
+   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9}) changed (assoc point :x 10) nested (assoc-in changed [:y :nested] 12) plain (dissoc nested :x)] (and (= 1 (:x point)) (nil? (:y point)) (nil? (:extra point)) (= 10 (:x changed)) (= 12 (get (:y nested) :nested)) (instance? Point changed) (= {:y {:nested 12}} plain) (not (instance? Point plain)))))"
+   :expect {:value true :type :boolean}}
+  {:id :named-value/defmutable-reference
+   :class :named-value
+   :source "(do (defmutable Cursor [x y]) (let [cursor (Cursor 1 2) alias cursor result (set! (field cursor :x) 42)] (and (= 42 result) (= 42 (field alias :x)) (= cursor alias) (not (= cursor (Cursor 42 2))))))"
+   :expect {:value true :type :boolean}}
+  {:id :named-value/defmutable-evaluation-order
+   :class :named-value
+   :source "(do (defmutable Cursor [x]) (def named-value-order 0) (let [cursor (Cursor 1) result (set! (field (do (set! named-value-order (+ (* named-value-order 10) 1)) cursor) :x) (do (set! named-value-order (+ (* named-value-order 10) 2)) 42))] (and (= 12 named-value-order) (= 42 result) (= 42 (field cursor :x)))))"
+   :expect {:value true :type :boolean}}
   {:id :unsupported/ratio
    :class :unsupported
    :source "1/2"

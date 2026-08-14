@@ -21,6 +21,11 @@ feature:
 - lexical slot allocation and `loop`/`recur` lowering;
 - function values, by-value captures as prefixed slots, direct and static
   calls, and `defn` lowering to direct bindings;
+- persistent `defstruct` and reference-identity `defmutable` definitions,
+  same-unit constructor visibility, and dedicated mutable field read/write
+  instructions;
+- append-only HBC0 opcode compatibility, including the retired opcode 21
+  rebuild-required diagnostic;
 - namespace-owned callable Vars, protected referrals, and `declare` as
   forward visibility only;
 - coexistence with the tree-walking evaluator: the VM never replaces it and
@@ -35,5 +40,7 @@ and points to the shared module corpus for cross-runtime behavior.
 [`conformance/bytecode-vm.edn`](conformance/bytecode-vm.edn) is the
 machine-checked corpus, consumed by `rust/src/vm/conformance_tests.rs`.
 `:display` and `:error-category` cases must agree on both evaluators;
-`:compile-error` cases pin VM-only lowering boundaries. Namespace, reload, and
+`:compile-error` cases pin VM-only lowering boundaries. The corpus also pins
+`defstruct`/`defmutable` constructor visibility, mutable identity, alias-visible
+writes, return values, and field-place evaluation order. Namespace, reload, and
 callable-Var cases live in the shared platform-language modules corpus.

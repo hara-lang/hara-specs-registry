@@ -126,9 +126,14 @@ The required exports are `hta_abi_version`, `hta_alloc`, `hta_dealloc`, `hta_sta
 `hta_next_event`, `hta_deliver`, `hta_cancel`, `hta_drop_task`, and `hta_release`;
 `hta_poll` is optional. Frames use the
 canonical binary `HTA0` value encoding. Its portable value intersection is nil, booleans, signed
-64-bit integers, UTF-8 strings, bytes, keywords, symbols, lists, vectors, sets, maps, and opaque `{owner, type, id}` handles. Map and
+64-bit integers, UTF-8 strings, bytes, keywords, symbols, lists, vectors, sets, maps, immutable named structs, and opaque `{owner, type, id}` handles. Map and
 set elements are ordered by their encoded bytes so Rust, Java, and JavaScript produce identical
 frames.
+
+Immutable `defstruct` values use append-only tag 33 and carry the qualified
+type name, declared field order, and ordered field values. `defmutable` values
+and mutable named type descriptors are live references: HTA rejects them rather
+than snapshotting them or silently converting them to handles.
 
 Each Truffle extension instance has one Java virtual-thread actor which exclusively owns its
 nested GraalWasm context. Browser instances use one Web Worker per context. Both actors block on a
@@ -272,7 +277,8 @@ manifest requests capability
 
 [`conformance/transport-hta.edn`](conformance/transport-hta.edn) defines the
 shared Truffle, Rust, and browser validation gates. The portable codec profile
-is tags 0–12 and includes an exact shared golden vector, cross-runtime
+uses the original tags 0–12 plus append-only struct tag 33 and includes an exact
+shared golden vector, cross-runtime
 round-trips, canonical map and set ordering, malformed-frame rejection,
 manifest parity, module export checks, handle lifecycle, task cancellation,
 host-call authorization, and path-containment fixtures.

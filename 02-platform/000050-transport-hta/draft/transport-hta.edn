@@ -40,6 +40,9 @@
   {:requirement/id :hara.hta/canonical-values
    :requirement/level :must
    :requirement/text "Equivalent portable values produce identical HTA0 frames across Java, Rust, and JavaScript implementations."}
+  {:requirement/id :hara.hta/named-value-boundary
+   :requirement/level :must
+   :requirement/text "An immutable defstruct value encodes its qualified type name, declared field order, and ordered field values. A defmutable value or mutable named type descriptor is a live reference and is rejected rather than snapshotted or converted to an opaque handle."}
   {:requirement/id :hara.hta/no-spin
    :requirement/level :must-not
    :requirement/text "An idle provider actor or worker polls its mailbox in a spin loop."}]
@@ -152,6 +155,7 @@
    :value/vector
    :value/set
    :value/map
+   :value/struct
    :value/opaque-handle]
   :codec/handle-fields
   [:handle/owner :handle/type :handle/id]
@@ -168,7 +172,8 @@
    {:tag/number 9 :tag/value :value/vector}
    {:tag/number 10 :tag/value :value/set}
    {:tag/number 11 :tag/value :value/map}
-   {:tag/number 12 :tag/value :value/opaque-handle}]
+   {:tag/number 12 :tag/value :value/opaque-handle}
+   {:tag/number 33 :tag/value :value/struct}]
   :codec/extension-tags
   {:codec/rust-and-browser
    [{:tag/number 13 :tag/value :value/namespace}
@@ -178,7 +183,9 @@
     {:tag/number 17 :tag/value :value/mutable-array-snapshot}
     {:tag/number 18 :tag/value :value/mutable-object-snapshot}]}
   :codec/map-order :encoded-byte-order
-  :codec/set-order :encoded-byte-order}
+  :codec/set-order :encoded-byte-order
+  :codec/struct-shape [:struct/type-name :struct/declared-fields :struct/ordered-values]
+  :codec/mutable-named-values :unsupported}
 
  :hta/handles
  {:handle/registered-print-shape "#<tag>[:<type> <id>]"
@@ -239,6 +246,9 @@
   {:requirement/id :hara.hta.discovery/no-authority
    :requirement/level :must-not
    :requirement/text "Loading a manifest grants a requested capability."}
+  {:requirement/id :hara.hta.values/named-values
+   :requirement/level :must
+   :requirement/text "Cross-runtime HTA codecs preserve immutable defstruct type and declared field order exactly, and fail with an unsupported-value error for defmutable instances and mutable named type descriptors."}
   {:requirement/id :hara.hta.provider/actor-ownership
    :requirement/level :must
    :requirement/text "One actor or worker exclusively owns each stateful provider context."}

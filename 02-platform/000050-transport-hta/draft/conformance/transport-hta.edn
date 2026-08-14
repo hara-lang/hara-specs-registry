@@ -35,6 +35,7 @@
    [:hta.case/manifest
     :hta.case/golden-vector
     :hta.case/portable-round-trip
+    :hta.case/named-value-boundary
     :hta.case/canonical-collections
     :hta.case/malformed-frame
     :hta.case/opaque-handle
@@ -51,7 +52,7 @@
  {:acceptance/portable
   "Every implementation passes every portable case using the same fixtures and exact bytes or semantic outcomes."
   :acceptance/extensions
-  "Tags above 12 require an advertised extension profile; portable consumers reject unknown tags deterministically."
+  "Tags above 12 require an advertised extension profile except for the standardized portable struct tag 33; portable consumers reject every other unknown tag deterministically."
   :acceptance/skips
   "A missing optional WASM artifact may skip a local integration case, but release conformance requires the artifact and forbids the skip."
   :acceptance/regression
@@ -103,9 +104,22 @@
     :value/vector
     :value/set
     :value/map
+    :value/struct
     :value/opaque-handle]
    :case/expect
    "Every producer frame decodes to an equivalent value in every consumer."}
+  {:case/id :hta.case/named-value-boundary
+   :case/level :must
+   :case/method :cross-runtime-matrix
+   :case/input
+   [:named-value/struct-round-trip
+    :named-value/mutable-instance
+    :named-value/mutable-type]
+   :case/expect
+   [:struct/type-name-preserved
+    :struct/declared-field-order-preserved
+    :struct/ordered-values-preserved
+    :mutable/unsupported-value-error]}
   {:case/id :hta.case/canonical-collections
    :case/level :must
    :case/method :property
