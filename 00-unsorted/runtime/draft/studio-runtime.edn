@@ -9,7 +9,7 @@
  :runtime/host-contract
  {:spec :hara/host-runtime
   :host-layer hara-web
-  :portable-substrate std.lib.substrate
+  :portable-substrate std.substrate
   :related-substrate-spec :xt/substrate-base
   :substrate-conformance-claim false
   :product-layer greenways.studio

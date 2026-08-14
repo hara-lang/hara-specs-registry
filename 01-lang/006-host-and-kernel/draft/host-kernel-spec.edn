@@ -177,7 +177,7 @@
   {:boundary/neighbor :hara/substrate
    :boundary/layer "02-platform"
    :boundary/neighbor-owns
-   "std.lib.substrate transport-neutral nodes, frames, request/response, streams, and routing."
+   "std.substrate transport-neutral nodes, frames, request/response, streams, and routing."
    :boundary/this-layer-owns
    "Host capability use only at adapters that cross an embedding boundary; substrate itself holds no host authority."}
   {:boundary/neighbor :hara/product-shells
