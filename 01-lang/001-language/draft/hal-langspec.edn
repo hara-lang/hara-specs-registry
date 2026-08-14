@@ -99,6 +99,10 @@
      :requirement/level :must
      :requirement/text
      "Collection equality and hashing are structural and independent of runtime storage layout."}
+    {:requirement/id :value/vector-literal
+     :requirement/level :must
+     :requirement/text
+     "A bracket collection literal denotes one logical vector value. Compact and persistent runtime representations do not change its readable form, structural equality, hashing, iteration order, metadata semantics, or destructuring behaviour."}
     {:requirement/id :value/unique-map-set-members
      :requirement/level :must
      :requirement/text

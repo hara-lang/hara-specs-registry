@@ -26,9 +26,9 @@
   :hidden-methods []}
  :inventory
  {:protocol-count 53
-  :method-count 103
+  :method-count 101
   :public-protocol-count 53
-  :public-method-count 103
+  :public-method-count 101
   :hidden-protocol-count 0
   :hidden-method-count 0}
  :runtime-modules
@@ -41,14 +41,14 @@
  {:fixture "lib/test-fixtures/std/foundation/protocol_conformance.hal"
   :platforms [:rust :truffle]
   :protocol-count 53
-  :method-count 103
+  :method-count 101
   :invocation :direct-canonical-method-var
   :legacy-special-form false}
  :functional-conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
   :case-catalog "specs/00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
   :platforms [:rust :truffle]
-  :method-count 88
+  :method-count 86
   :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
   :error-matching :category-prefix
   :error-message-text :non-normative
@@ -116,7 +116,7 @@
   {:name IPromise
    :extends [IDeref IDerefTimeout]
    :methods {state 1 value 1 then 2 catch 2 finally 2 cancel 1}}
-  {:name IPointer :methods {ptr-context 1 ptr-keys 1 ptr-val 2}}
+  {:name IPointer :methods {ptr-context 1}}
   {:name IPopFirst :methods {pop-first 1}}
   {:name IPopLast :methods {pop-last 1}}
   {:name IPushFirst :methods {push-first 2}}

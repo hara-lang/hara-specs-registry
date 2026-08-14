@@ -181,7 +181,26 @@
     {:tag/number 15 :tag/value :value/binary64}
     {:tag/number 16 :tag/value :value/atom-snapshot}
     {:tag/number 17 :tag/value :value/mutable-array-snapshot}
-    {:tag/number 18 :tag/value :value/mutable-object-snapshot}]}
+    {:tag/number 18 :tag/value :value/mutable-object-snapshot}
+    {:tag/number 19 :tag/value :value/character}
+    {:tag/number 20 :tag/value :value/big-integer}
+    {:tag/number 21 :tag/value :value/decimal}
+    {:tag/number 22 :tag/value :value/regex}
+    {:tag/number 23 :tag/value :value/tuple}
+    {:tag/number 24 :tag/value :value/cons}
+    {:tag/number 25 :tag/value :value/queue}
+    {:tag/number 26 :tag/value :value/ordered-map}
+    {:tag/number 27 :tag/value :value/sorted-map}
+    {:tag/number 28 :tag/value :value/trie}
+    {:tag/number 29 :tag/value :value/ordered-set}
+    {:tag/number 30 :tag/value :value/sorted-set}
+    {:tag/number 31 :tag/value :value/tagged-literal}
+    {:tag/number 32 :tag/value :value/exception-info}
+    {:tag/number 33 :tag/value :value/struct}
+    {:tag/number 34 :tag/value :value/pointer}
+    {:tag/number 35 :tag/value :value/var-reference}
+    {:tag/number 36 :tag/value :value/deque}
+    {:tag/number 37 :tag/value :value/priority-map}]}
   :codec/map-order :encoded-byte-order
   :codec/set-order :encoded-byte-order
   :codec/struct-shape [:struct/type-name :struct/declared-fields :struct/ordered-values]

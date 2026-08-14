@@ -19,6 +19,8 @@ source and the Hara EDN profile:
 - symbols and keywords;
 - signed 64-bit integers and binary64 floating-point numbers;
 - immutable lists, vectors, maps, and sets;
+- bracket literals as logical vectors independent of compact or persistent
+  runtime representation;
 - structural equality, hashing, and metadata;
 - UTF-8 reading and canonical readable representations.
 

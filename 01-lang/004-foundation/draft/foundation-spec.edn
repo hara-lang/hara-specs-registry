@@ -99,6 +99,19 @@
    [zero? pos? neg? even? odd? nil? false? true? has? empty?
     distinct?]
    :surface/classification :portable-hal}
+  {:surface/id :foundation/value-classification
+   :surface/domain :function
+   :surface/symbols [type vector? tuple? pair?]
+   :surface/classification :narrow-runtime-primitive
+   :surface/requirements
+   [{:requirement/id :foundation/vector-type
+     :requirement/level :must
+     :requirement/text
+     "type returns :hara/Vector for both compact tuple-backed and persistent-tree-backed vector values."}
+    {:requirement/id :foundation/vector-predicates
+     :requirement/level :must
+     :requirement/text
+     "vector? accepts both vector backends; tuple? accepts only the compact backend; pair? accepts a compact tuple of count two and does not accept an ordinary persistent vector or list merely because its count is two."}]}
   {:surface/id :foundation/references
    :surface/domain :function
    :surface/symbols

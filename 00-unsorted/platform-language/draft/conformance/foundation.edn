@@ -166,6 +166,13 @@
     :implementation :host-byte-primitives
     :functions [count get set copy slice u8 s8]}
 
+   :pretty
+   {:namespace std.foundation.pretty
+    :call-prefix pretty
+    :implementation :portable-structural-visitor-over-native-document
+    :functions [canonical-printer pretty-printer format-doc-edn format-doc
+                render write pprint-str pprint]}
+
    :edn
    {:namespace std.foundation.edn
     :call-prefix edn
@@ -314,7 +321,7 @@
   IObjType/meta IObjType/with-meta IPair/key IPair/value
   IPeekFirst/peek-first IPeekLast/peek-last IPromise/state IPromise/value
   IPromise/then IPromise/catch IPromise/finally IPromise/cancel
-  IPointer/ptr-context IPointer/ptr-keys IPointer/ptr-val IPopFirst/pop-first
+  IPointer/ptr-context IPopFirst/pop-first
   IPopLast/pop-last IPushFirst/push-first IPushLast/push-last IRealize/realized?
   IRealize/realize IReduce/reduce
   IReset/reset ISpace/context-set ISpace/context-unset ISpace/context-list
@@ -336,8 +343,8 @@
   IInvokeIn/invoke-in IIter/iter IIterator/iter-next? IIterator/iter-next
   ILookup/lookup IMetadata/metatype IPeekFirst/peek-first IPeekLast/peek-last
   IPromise/state IPromise/value IPromise/then IPromise/catch
-  IPromise/finally IPromise/cancel IPointer/ptr-context IPointer/ptr-keys
-  IPointer/ptr-val IPopFirst/pop-first IPopLast/pop-last IPushFirst/push-first
+  IPromise/finally IPromise/cancel IPointer/ptr-context
+  IPopFirst/pop-first IPopLast/pop-last IPushFirst/push-first
   IPushLast/push-last IRealize/realize
   ISpace/context-set ISpace/context-unset ISpace/context-list ISpace/context-get
   ISpace/rt-active ISpace/rt-get ISpace/rt-start ISpace/rt-started?
@@ -395,8 +402,6 @@
   {:dispatch IPromise/finally, :target std.foundation.promise/finally}
   {:dispatch IPromise/cancel, :target std.foundation.promise/cancel}
   {:dispatch IPointer/ptr-context, :target std.lib.context/ptr-context}
-  {:dispatch IPointer/ptr-keys, :target std.lib.context/ptr-keys}
-  {:dispatch IPointer/ptr-val, :target std.lib.context/ptr-val}
   {:dispatch IPopFirst/pop-first, :target std.foundation/pop-first}
   {:dispatch IPopLast/pop-last, :target std.foundation/pop-last}
   {:dispatch IPushFirst/push-first, :target std.foundation/push-first}
@@ -897,20 +902,6 @@
    :foundation {:classification :direct-interface-wrapper
                 :namespace std.lib.context
                 :name ptr-context
-                :status :proposed}
-   :clojure {:equivalent nil :relation :none}}
-  {:protocol IPointer :method ptr-keys :arity 1 :domain :runtime-pointer
-   :dispatch IPointer/ptr-keys
-   :foundation {:classification :direct-interface-wrapper
-                :namespace std.lib.context
-                :name ptr-keys
-                :status :proposed}
-   :clojure {:equivalent nil :relation :none}}
-  {:protocol IPointer :method ptr-val :arity 2 :domain :runtime-pointer
-   :dispatch IPointer/ptr-val
-   :foundation {:classification :direct-interface-wrapper
-                :namespace std.lib.context
-                :name ptr-val
                 :status :proposed}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IPopFirst :method pop-first :arity 1 :domain :deque

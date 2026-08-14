@@ -15,6 +15,23 @@
   :predicate instance?
   :interface-prefix false}
 
+ :source-resolution
+ {:status :accepted
+  :model :builtin-static-object
+  :canonical-object "<Type>"
+  :canonical-method "<Type>/<method>"
+  :runtime-qualified-identity "std.native.<Type>"
+  :namespace-dependency false
+  :requireable false
+  :aliasable false
+  :qualified-source-spelling :noncanonical
+  :rules
+  ["Native type objects are installed in every namespace at startup."
+   "The std.native.<Type> name describes runtime identity; it is not a loadable source namespace."
+   "Source calls use <Type>/<method> directly."
+   "Require entries such as [std.native.Json :as json] are invalid and must be removed."
+   "Aliases such as json/read are normalized to Json/read by migration tooling."]}
+
  :descriptor
  {:kind :native-type
   :callable false
@@ -29,8 +46,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 24
-  :method-count 198
+  :type-count 26
+  :method-count 239
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -41,7 +58,7 @@
   :invocation :direct-canonical-method
   :fixture "lib/test-fixtures/std/foundation/native_method_conformance.hal"
   :classifications [:implemented :capability-gated]
-  :foundation-exposure [:hal-wrapper :foundation-primitive]
+  :foundation-exposure [:hal-wrapper :foundation-primitive :native-only]
   :raw-rust
   {:scope :startup-descriptors
    :method-parity false
@@ -55,11 +72,33 @@
   :global-alias "<Type>"
   :global-aliases
   [Maths Numbers Bits String Bytes Crypto OS Process File Socket Promise Coroutine Arr Obj
-   Runtime Printer Edn Json Host Regex UUID Error Iter Kernel]
+   Runtime Printer Document Edn Json Host Test Regex UUID Error Iter Kernel]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
   :blank-namespaces true
   :installed-with :global-protocol-aliases}
+
+ :translation-conformance
+ {:status :accepted
+  :implementation "lib/src/code/translate/rules.hal"
+  :test "rust/src/lib.rs#code_translate_resolves_required_namespace_aliases"
+  :coverage :all-inventory-types
+  :input
+  {:dependency "[std.native.<Type> :as native]"
+   :aliased-call "native/<method>"
+   :qualified-call "std.native.<Type>/<method>"}
+  :output
+  {:dependency :removed
+   :aliased-call "<Type>/<method>"
+   :qualified-call "<Type>/<method>"}
+  :requirements
+  [:inventory-is-closed
+   :every-type-has-global-object
+   :global-object-is-runtime-qualified-object
+   :native-dependencies-are-rejected
+   :aliased-calls-are-canonicalized
+   :qualified-calls-are-canonicalized
+   :translation-is-idempotent]}
 
  :ownership
  {:syntax :runtime-intrinsic
@@ -69,6 +108,49 @@
   :foundation "Ordinary HAL wrappers over protocol or std.native calls."
   :duplicate-protocol-methods false
   :builtin-activation-clause false}
+
+ :document-model
+ {:status :accepted
+  :type Document
+  :representation :ordinary-hara-data
+  :canonical-tags
+  [:document/fragment :document/annotate :document/pass :document/escaped
+   :document/group :document/line :document/break :document/nest :document/align]
+  :annotations {:semantic true :text-rendering :transparent}
+  :renderers {:text {:status :implemented :option :width}
+              :html {:status :deferred}}
+  :visitor {:protocol IEncodeVisitor
+            :implementation std.foundation.pretty
+            :native-callbacks false}
+  :public-alias pretty
+  :removed-namespaces [std.pretty std.foundation.pretty.engine]}
+
+ :crypto
+ {:status :accepted
+  :type Crypto
+  :input :bytes
+  :implicit-string-encoding false
+  :digest-output :lowercase-hex
+  :hmac-output :lowercase-hex
+  :random-bytes {:result :bytes :maximum-size 1048576}
+  :secure-equal {:result :boolean :constant-time-for-equal-length-inputs true}
+  :keypair-result {:private :bytes :public :bytes}
+  :ed25519 {:private :seed-32
+            :public :raw-32
+            :signature :raw-64}
+  :x25519 {:private :raw-32
+           :public :raw-32
+           :shared-secret :raw-32
+           :reject-all-zero-shared-secret true}
+  :p256 {:private :unsigned-scalar-32
+         :public :sec1-compressed-33
+         :signature :ieee-p1363-64
+         :signature-hash :sha256
+         :signing :deterministic-rfc6979
+         :shared-secret :raw-x-coordinate-32}
+  :verification {:invalid-signature false
+                 :malformed-key :crypto-error}
+  :errors {:prefix "crypto/<method>:" :stable true}}
 
  :types
  [{:name Maths
@@ -93,8 +175,7 @@
              session-namespace session-complete resource-register resource-remove
              resource-list filesystem-create filesystem-attach filesystem-detach
              filesystem-info filesystem-close capabilities]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/kernel.hal"}
+   :method-classification {:native-only :all}}
   {:name String
    :availability :implemented
    :methods [length blank? includes? starts-with? ends-with? char-at slice
@@ -113,28 +194,27 @@
    :wrapper-source "lib/src/std/foundation/bytes.hal"}
   {:name Crypto
    :availability :implemented
-   :methods [sha256]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/crypto.hal"}
+   :methods [sha256 sha512 hmac-sha256 hmac-sha512 random-bytes secure-equal?
+             ed25519-keypair ed25519-public ed25519-sign ed25519-verify
+             x25519-keypair x25519-public x25519-shared
+             p256-keypair p256-public p256-sign p256-verify p256-shared]
+   :method-classification {:native-only :all}}
   {:name OS
    :availability :implemented
    :methods [platform arch cwd env getenv]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/os.hal"}
+   :method-classification {:native-only :all}}
   {:name Process
    :availability :capability-gated
    :methods [spawn instance? alive? write close-input stdout stderr wait kill]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/os.hal"}
+   :method-classification {:native-only :all}}
   {:name File
    :availability :capability-gated
    :methods [parent join resolve read write exists? stat list walk mkdir delete]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/file.hal"}
+   :method-classification {:native-only :all}}
   {:name Socket
    :availability :capability-gated
    :methods [connect listen endpoint events next send close]
-   :method-classification {:hal-wrapper :all}
+   :method-classification {:native-only :all}
    :server-streaming
    {:listen {:arguments [host port options callback]
              :returns :socket-server
@@ -151,8 +231,7 @@
            :fulfills :socket-event
            :pending-limit 1}
     :threading {:host-threads :raw-events-only
-                :hal-callbacks :evaluator-thread}}
-   :wrapper-source "lib/src/std/foundation/socket.hal"}
+                :hal-callbacks :evaluator-thread}}}
   {:name Promise
    :availability :implemented
    :methods [run new from all delay instance?]
@@ -182,26 +261,30 @@
    :availability :implemented
    :methods [p println]
    :method-classification {:foundation-primitive :all}}
+  {:name Document
+   :availability :implemented
+   :methods [element text fragment annotate pass escaped group line break nest align
+             normalize valid? render]
+   :method-classification {:native-only :all}}
   {:name Edn
    :availability :implemented
-   :methods [read read-forms]
-   :method-classification
-   {:hal-wrapper [read]
-    :foundation-primitive [read-forms]}
-   :wrapper-source "lib/src/std/foundation/edn.hal"}
+   :methods [read read-forms write pretty]
+   :method-classification {:native-only :all}}
   {:name Json
    :availability :implemented
    :methods [read write pretty]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/json.hal"}
+   :method-classification {:native-only :all}}
   {:name Host
    :availability :capability-gated
    :methods [call describe capabilities capability?]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation/host.hal"}
+   :method-classification {:native-only :all}}
+  {:name Test
+   :availability :implemented
+   :methods [catalog config context events result passed?]
+   :method-classification {:native-only :all}}
   {:name Regex
    :availability :implemented
-   :methods [instance?]
+   :methods [instance? pattern find?]
    :method-classification {:foundation-primitive :all}}
   {:name UUID
    :availability :implemented
@@ -231,7 +314,6 @@
  :deferred
  [{:type Random :reason :no-agreed-portable-surface}
   {:type UUID :methods [new random] :reason :not-implemented-on-both-runtimes}
-  {:type Regex :reason :regexp-operation-names-not-yet-selected}
   {:type OS :reason :runtime-parity-incomplete}
   {:type Process :reason :runtime-parity-incomplete}
   {:type Wrapped :reason :runtime-value-not-yet-implemented}

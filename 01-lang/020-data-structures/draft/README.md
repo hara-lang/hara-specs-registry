@@ -9,10 +9,20 @@ metaspec layer for this area has not been written yet; see the area
 [README](../README.md).
 
 This layer owns the observable behaviour of the built-in persistent data
-structures: the structure catalog (vector, list, queue, map, set,
-ordered-map, ordered-set, sorted-map, sorted-set, trie), op semantics,
+structures: the structure catalog (vector, list, queue, deque, map, set,
+ordered-map, ordered-set, sorted-map, priority-map, sorted-set, trie), op semantics,
 iteration-order guarantees, transient (Mutable) semantics, and the
 Java-parity hashing stack (RAPID default; SYSTEM, MURMUR3, SIP).
+
+`deque` is a persistent count-measured finger tree with efficient operations
+at both ends. `priority-map` is a persistent map ordered by ascending natural
+priority; equal-priority keys retain stable insertion order.
+
+Vector is one public `:hara/Vector` category with two runtime backends. Bracket
+literals and portable `BUILD_VECTOR` use compact tuples for counts 0 through 8
+and persistent vectors from count 9. `tuple?` deliberately exposes that backend
+choice; `pair?` additionally recognises compact two-tuples. Equality, hashing,
+iteration, lookup, destructuring, metadata, and display remain vector semantics.
 
 It does not own reader syntax for collection literals
 ([01-lang/001-language](../../001-language)) or protocol dispatch

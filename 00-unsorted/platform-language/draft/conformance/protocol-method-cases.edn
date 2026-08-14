@@ -4,7 +4,7 @@
  :purpose :per-method-functional-conformance
  :platforms [:rust :truffle]
  :fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
- :method-count 88
+ :method-count 86
  :error-contract
  {:matching :category-prefix
   :message-text :non-normative
@@ -261,14 +261,6 @@
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
   {:protocol IPointer :method ptr-context :domain :runtime-pointer
-   :success {:case :actual-use-case :fixture-result :success}
-   :limit {:case :missing-receiver :category :protocol/arity}
-   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
-  {:protocol IPointer :method ptr-keys :domain :runtime-pointer
-   :success {:case :actual-use-case :fixture-result :success}
-   :limit {:case :missing-receiver :category :protocol/arity}
-   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
-  {:protocol IPointer :method ptr-val :domain :runtime-pointer
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
