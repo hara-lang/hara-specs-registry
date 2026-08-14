@@ -14,3 +14,5 @@ cross-runtime parity contract.
 
 Schema metadata is data only. Analysis does not evaluate project code,
 instrument runtime calls, expand macros, or load dependency artifacts.
+
+`std.typed` itself consumes ordinary Hara values and forms. Recovering `std.block` trees, source spans, and diagnostics remain responsibilities of source-analysis consumers such as `tool.lint`; they are not portable type-system dependencies.

@@ -12,6 +12,12 @@
   :scope/runtime-instrumentation :forbidden
   :scope/evaluation :forbidden
   :scope/primary-consumer :tool/lint
+  :scope/input-model :ordinary-hara-values-and-forms
+  :scope/source-tree-adapters :consumer-owned
+  :scope/dependency-boundary
+  {:std.typed.infer [:std.typed.schema]
+   :std.typed.schema [:std.foundation]
+   :std.block :forbidden}
   :scope/portable-implementations
   [:hara/std.typed.schema :hara/std.typed.infer :rust/SchemaType :jvm/HalcSchema]
   :scope/deferred
@@ -29,6 +35,12 @@
   {:requirement/id :std.typed/data-only
    :requirement/level :must
    :requirement/text "Schema annotations remain ordinary Hara data and never instrument, wrap, transform, or otherwise alter runtime calls or values."}
+  {:requirement/id :std.typed/source-tree-independence
+   :requirement/level :must
+   :requirement/text "Portable std.typed modules consume ordinary Hara values and forms and do not depend on std.block, recovering source trees, or source-span APIs; consumers such as tool.lint own those adapters."}
+  {:requirement/id :std.typed/minimal-dependency-graph
+   :requirement/level :must
+   :requirement/text "std.typed.infer directly depends only on std.typed.schema, while std.typed.schema depends only on the portable std.foundation value layer."}
   {:requirement/id :std.typed/strict-known-forms
    :requirement/level :must
    :requirement/text "Known schema forms reject malformed arity, shape, rest markers, duplicate map fields, unsupported primitives, and unsupported composite heads."}
