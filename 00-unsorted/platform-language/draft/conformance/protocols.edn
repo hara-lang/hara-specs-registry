@@ -25,10 +25,10 @@
   :hidden-protocols []
   :hidden-methods []}
  :inventory
- {:protocol-count 53
-  :method-count 101
-  :public-protocol-count 53
-  :public-method-count 101
+ {:protocol-count 54
+  :method-count 104
+  :public-protocol-count 54
+  :public-method-count 104
   :hidden-protocol-count 0
   :hidden-method-count 0}
  :runtime-modules
@@ -40,15 +40,15 @@
  :conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_conformance.hal"
   :platforms [:rust :truffle]
-  :protocol-count 53
-  :method-count 101
+  :protocol-count 54
+  :method-count 104
   :invocation :direct-canonical-method-var
   :legacy-special-form false}
  :functional-conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
   :case-catalog "specs/00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
   :platforms [:rust :truffle]
-  :method-count 86
+  :method-count 89
   :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
   :error-matching :category-prefix
   :error-message-text :non-normative
@@ -73,6 +73,7 @@
   {:name ICount :methods {count 1}}
   {:name IDeref :methods {deref 1}}
   {:name IDerefTimeout :methods {deref-timeout 3}}
+  {:name IDeps :methods {get-entry 2 get-deps 2 list-entries 1}}
   {:name IDisplay :methods {display 1}}
   {:name IDissoc :methods {dissoc 2}}
   {:name IEmpty :methods {empty 1}}

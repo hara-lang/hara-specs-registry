@@ -4,7 +4,7 @@
  :purpose :per-method-functional-conformance
  :platforms [:rust :truffle]
  :fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
- :method-count 86
+ :method-count 89
  :error-contract
  {:matching :category-prefix
   :message-text :non-normative
@@ -125,6 +125,18 @@
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
   {:protocol IDerefTimeout :method deref-timeout :domain :reference-state
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDeps :method get-entry :domain :dependency-graph
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDeps :method get-deps :domain :dependency-graph
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IDeps :method list-entries :domain :dependency-graph
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
