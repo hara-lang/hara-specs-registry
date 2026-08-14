@@ -15,7 +15,7 @@
   :scope/includes
   #{:bootstrap-referral :namespace-configuration :root-public-vars
     :root-macros :protocol-aliases :native-type-aliases
-    :portable-function-wrappers :public-metadata}
+    :portable-function-wrappers :public-metadata :portable-library-contracts}
   :scope/excludes
   #{:core-form-semantics :protocol-dispatch-semantics :native-method-semantics
     :qualified-foundation-libraries :general-host-interop}}
@@ -183,6 +183,63 @@
   "Names a canonical std.native.* namespace."
   :classification/candidate-gate
   "Before candidate status, a fresh-context ns-publics inventory must exactly match the union of declared surface groups; draft omissions are specification findings."}
+
+
+ :foundation/portable-filesystem
+ {:filesystem/status :draft
+  :filesystem/not-root-referred true
+  :filesystem/native-spec :hara/native
+  :filesystem/native-type :std.native/file
+  :filesystem/path-model :canonical-logical-path
+  :filesystem/effect-model :promise
+  :filesystem/namespaces
+  [{:namespace std.fs.path
+    :classification :portable-hal
+    :functions
+    [normalise join resolve parent root file-name segments relativize subpath
+     suffix remove-suffix add-suffix replace-suffix]}
+   {:namespace std.fs.walk
+    :classification :portable-hal-over-native-entries
+    :functions [walk]}
+   {:namespace std.fs
+    :classification :portable-hal-over-native-file
+    :functions
+    [stat exists? entries list read-bytes write-bytes file? directory? symlink?
+     select create-directory mkdir temp-file temp-directory copy-single copy
+     copy-into move delete]}]
+  :filesystem/requirements
+  [{:requirement/id :filesystem/path-purity
+    :requirement/level :must
+    :requirement/text
+    "std.fs.path is synchronous portable HAL and exposes no host path semantics."}
+   {:requirement/id :filesystem/effect-promises
+    :requirement/level :must
+    :requirement/text
+    "Every std.fs operation that touches the mounted filesystem returns a promise."}
+   {:requirement/id :filesystem/deterministic-traversal
+    :requirement/level :must
+    :requirement/text
+    "Traversal is lexical, sorted, depth-controlled, and never follows symbolic links."}
+   {:requirement/id :filesystem/portable-recursion
+    :requirement/level :must
+    :requirement/text
+    "Recursive copy creates directories before children; recursive delete removes directories in post-order."}
+   {:requirement/id :filesystem/fail-fast
+    :requirement/level :must
+    :requirement/text
+    "Recursive failures reject immediately; completed mutations are neither rolled back nor returned as partial success."}
+   {:requirement/id :filesystem/safe-existing-targets
+    :requirement/level :must
+    :requirement/text
+    "Write, copy, and move fail when the target exists unless replacement is explicitly requested."}]
+  :filesystem/results
+  {:simple-mutations :canonical-logical-path
+   :recursive-copy :source-to-target-map
+   :recursive-delete :deleted-path-vector}
+  :filesystem/source
+  ["../../../../lib/src/std/fs.hal"
+   "../../../../lib/src/std/fs/path.hal"
+   "../../../../lib/src/std/fs/walk.hal"]}
 
  :foundation/errors
  [{:error/id :foundation/invalid-arity}
