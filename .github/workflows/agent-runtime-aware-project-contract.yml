@@ -1,0 +1,39 @@
+name: Bootstrap runtime-aware project contract
+
+on:
+  push:
+    branches:
+      - agent/runtime-aware-project-contract
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: agent/runtime-aware-project-contract
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Apply contract changes
+        run: python3 .github/agent/runtime-aware-project-contract.py
+      - name: Validate source corpus
+        run: npm test
+      - name: Regenerate registry index
+        run: npm run build
+      - name: Validate generated registry
+        run: npm run check
+      - name: Commit generated contract
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/agent-runtime-aware-project-contract.yml
+          git rm .github/agent/runtime-aware-project-contract.py
+          git add -A
+          git commit -m "Specify runtime-aware project profiles"
+          git push origin HEAD:agent/runtime-aware-project-contract
