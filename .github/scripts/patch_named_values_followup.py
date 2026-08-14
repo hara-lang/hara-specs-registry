@@ -16,6 +16,16 @@ replace_once(
     ":cases [:protocol/struct-extension\n               :protocol/struct-inline-extension]}]}",
     ":cases [:protocol/struct-extension\n               :protocol/struct-inline-extension\n               :protocol/mutable-extension]}]}",
 )
+replace_once(
+    LANG,
+    '"Installs protocol implementations only for a defstruct descriptor."',
+    '"Installs protocol implementations for a defstruct or defmutable descriptor."',
+)
+replace_once(
+    LANG,
+    '"HAL defines host-neutral scalar, persistent collection, function, Var, protocol, struct, iterator, and explicit mutable value categories."',
+    '"HAL defines host-neutral scalar, persistent collection, function, Var, protocol, named-value, iterator, and explicit mutable value categories."',
+)
 insert_before(
     L0,
     "  {:id :protocol/multimethod\n",
@@ -37,7 +47,7 @@ insert_before(
     "  :namespace-owned-vars\n",
     '''  :defmutable
   {:rule
-   "defmutable executes the registry helper that validates name and fields, creates the MutableType qualified to the current namespace, and interns Name, ->Name, and map->Name. Trailing protocol clauses are the compile error \"defmutable protocol clauses are not supported\"; portable dispatch is installed with extend-type."
+   "defmutable executes the registry helper that validates name and fields, creates the MutableType qualified to the current namespace, and interns Name, ->Name, and map->Name. Trailing protocol clauses fail compilation with the diagnostic defmutable protocol clauses are not supported; portable dispatch is installed with extend-type."
    :field-access
    "field lowers to MutableFieldGet. set! with a field place evaluates receiver then replacement exactly once and lowers to MutableFieldSet, which returns the replacement."
    :identity
@@ -50,5 +60,7 @@ replace_once(VM, "The HBC4 program is retained", "The HBC0 program is retained")
 
 if "HBC4" in read(VM):
     raise SystemExit(f"{VM}: stale HBC4 reference remains")
+if 'compile error "defmutable' in read(VM):
+    raise SystemExit(f"{VM}: unescaped nested defmutable diagnostic remains")
 
 print("Completed named-value protocol and HBC0 follow-up corrections.")
