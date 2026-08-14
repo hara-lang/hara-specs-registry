@@ -1,0 +1,79 @@
+name: Agent finalize std.typed specification
+
+on:
+  push:
+    branches:
+      - agent/std-typed-schema-metadata
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out specification branch
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Finalize reader-safe contract and documentation
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          contract_path = Path("01-lang/008-source-analysis/draft/std-typed.edn")
+          contract = contract_path.read_text()
+          old = ":surface #'qualified/Schema"
+          new = ':surface "#\'qualified/Schema"'
+          if contract.count(old) != 1:
+              raise SystemExit("expected one schema reference surface example")
+          contract_path.write_text(contract.replace(old, new, 1))
+
+          Path("01-lang/008-source-analysis/draft/README.md").write_text(
+              "# Hara source analysis\n\n"
+              "This draft defines the portable, non-evaluating analysis contract used by\n"
+              "`tool.lint`. The checked-in runtime profile is pinned to version\n"
+              "`alpha`; changing the rules or symbol catalog requires changing the\n"
+              "specification version and regenerating the profile.\n\n"
+              "The analyzer consumes recovering `std.block` trees, project structure from\n"
+              "`tool.project`, and portable schema relationships and inference from\n"
+              "`std.typed`. `source-analysis.edn` defines analyzer behaviour and finding\n"
+              "requirements; `std-typed.edn` defines the canonical `^{:schema ...}`\n"
+              "grammar, normalization, assignment, project index, precedence, modes, and\n"
+              "cross-runtime parity contract.\n\n"
+              "Schema metadata is data only. Analysis does not evaluate project code,\n"
+              "instrument runtime calls, expand macros, or load dependency artifacts.\n"
+          )
+          PY
+
+      - name: Regenerate and validate the registry
+        shell: bash
+        run: |
+          npm run build
+          npm run check
+          npm test
+
+      - name: Commit validated specification changes
+        shell: bash
+        run: |
+          rm .github/workflows/agent-finalize-std-typed-spec.yml
+          git config user.name "OpenAI Agent"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No specification changes were produced" >&2
+            exit 1
+          fi
+          git commit -m "Define portable std.typed metadata semantics"
+          git push origin HEAD:${GITHUB_REF_NAME}
