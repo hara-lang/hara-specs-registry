@@ -29,6 +29,7 @@ jobs:
           cp .github/scripts/patch_named_values_language.py /tmp/named-value-contract/
           cp .github/scripts/patch_named_values_vm.py /tmp/named-value-contract/
           cp .github/scripts/patch_named_values_hta.py /tmp/named-value-contract/
+          cp .github/scripts/patch_named_values_followup.py /tmp/named-value-contract/
           git fetch origin main
           git switch -C agent/named-value-contract origin/main
           git clean -fdx
@@ -39,6 +40,7 @@ jobs:
           python /tmp/named-value-contract/patch_named_values_language.py
           python /tmp/named-value-contract/patch_named_values_vm.py
           python /tmp/named-value-contract/patch_named_values_hta.py
+          python /tmp/named-value-contract/patch_named_values_followup.py
 
       - name: Validate source documents
         run: npm test
