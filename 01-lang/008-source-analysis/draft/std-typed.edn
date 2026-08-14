@@ -99,7 +99,7 @@
           :deduplicate true}}
 
   :reference
-  {:surface #'qualified/Schema
+  {:surface "#'qualified/Schema"
    :reader-form (var qualified/Schema)
    :qualification :required
    :target :named-schema-var}

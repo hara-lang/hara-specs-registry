@@ -5,7 +5,7 @@
     "ref": "main",
     "manifestPath": "spec-manifest.json",
     "manifestDigest": "sha256:9da1ea2758fc548af07e1a87ae0bde9115174d4d6cf253c1f9bd1cedb81df344",
-    "catalogueDigest": "sha256:a61522c3982e1f553e27a8670211b79c446a80046915f58377c8156e18867f18",
+    "catalogueDigest": "sha256:92758a9fe4f36ec2f6128d790656d246af988cbbe7ff2bb9bd19ecfc6d705f1a",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 51,
     "ready": 0,
     "executable": 31,
-    "requirements": 314,
+    "requirements": 325,
     "materialized": 51,
     "pinnedSource": 0,
     "layers": [
@@ -755,7 +755,7 @@
       "slug": "tool-source-analysis",
       "coordinate": "tool/source-analysis",
       "title": "Static source analysis for Hara",
-      "summary": "Portable rules and generated-profile inputs for non-evaluating Hara source analysis.",
+      "summary": "Portable rules and generated-profile inputs for non-evaluating Hara source analysis, including canonical ^{:schema ...} metadata collection and checking.",
       "type": "tool/source-analysis-spec",
       "version": "alpha",
       "status": "draft",
@@ -764,7 +764,7 @@
       "classification": "hara",
       "sourcePath": "01-lang/008-source-analysis/draft/source-analysis.edn",
       "documentationPath": "01-lang/008-source-analysis/draft/README.md",
-      "requirements": 8,
+      "requirements": 19,
       "formats": [
         "application/edn"
       ],
