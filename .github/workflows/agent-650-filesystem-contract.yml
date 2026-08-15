@@ -1,0 +1,51 @@
+name: Build mounted filesystem contract
+
+on:
+  push:
+    branches:
+      - agent/650-filesystem-contract-build
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-650-filesystem-contract
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout registry
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update and validate filesystem contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/agent-650-update-filesystem-contract.py
+          npm run build
+          npm run check
+          npm test
+          git diff --check
+          git status --short
+
+      - name: Publish clean registry branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B agent/650-filesystem-contract-current-main origin/main
+          git add -A
+          git diff --cached --check
+          git commit -m "Specify the mounted std.fs contract"
+          git push --force origin HEAD:refs/heads/agent/650-filesystem-contract-current-main
