@@ -46,8 +46,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 26
-  :method-count 244
+  :type-count 27
+  :method-count 255
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -72,7 +72,7 @@
   :global-alias "<Type>"
   :global-aliases
   [Maths Numbers Bits String Bytes Crypto OS Process File Socket Promise Coroutine Arr Obj
-   Runtime Printer Document Edn Json Host Test Regex UUID Error Iter Kernel]
+   Runtime Printer Document Edn Json Host Test Regex UUID Error Base Iter Kernel]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
   :blank-namespaces true
@@ -325,8 +325,11 @@
    :method-classification {:native-only :all}}
   {:name Regex
    :availability :implemented
-   :methods [instance? pattern find?]
-   :method-classification {:foundation-primitive :all}}
+   :methods [instance? compile pattern find? find matches replace split]
+   :method-classification
+   {:hal-wrapper [compile pattern find matches replace split]
+    :foundation-primitive [instance? find?]}
+   :wrapper-source "lib/src/std/foundation.hal"}
   {:name UUID
    :availability :implemented
    :methods [instance?]
@@ -335,17 +338,21 @@
    :availability :implemented
    :methods [new message class]
    :method-classification {:foundation-primitive :all}}
+  {:name Base
+   :availability :implemented
+   :methods [reduce-in reduced reduced? unreduced append-at-count]
+   :method-classification {:native-only :all}}
   {:name Iter
    :availability :implemented
    :methods [iter iter? iter-finite? iter-materialize iter-next? iter-next
-             iter-close iter-map iter-filter iter-take-while iter-drop-while
+             iter-close iter-concat iter-map iter-filter iter-take-while iter-drop-while
              iter-mapcat iter-keep iter-interpose iter-interleave iter-every?
              iter-any? iter-take iter-drop iter-zip iter-cycle
              iter-partition-pair iter-partition-all iter-partition iter-range
              iter-constantly iter-repeatedly iter-iterate]
    :method-classification
    {:foundation-primitive [iter iter? iter-next? iter-next]
-    :native-only [iter-finite? iter-materialize iter-close iter-map
+    :native-only [iter-finite? iter-materialize iter-close iter-concat iter-map
                   iter-filter iter-take-while iter-drop-while iter-mapcat
                   iter-keep iter-interpose iter-interleave iter-every?
                   iter-any? iter-take iter-drop iter-zip iter-cycle
