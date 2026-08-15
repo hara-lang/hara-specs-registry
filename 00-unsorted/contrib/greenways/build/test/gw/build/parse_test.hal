@@ -1,6 +1,5 @@
 (ns gw.build.parse-test
-  (:require [gw.build.parse :as parse]
-            [std.lib.test :as test]))
+  (:require [gw.build.parse :as parse]))
 
 (def valid
   (parse/parse-build
@@ -19,15 +18,14 @@
                 :output "dist/example.hal")
       (publish :now true))))
 
-(test/print-results
- [(test/check "surface forms parse without evaluation"
+[(test-check "surface forms parse without evaluation"
               [(get-in valid [:build :build/id])
                (get-in valid [:build :build/stages 0 :stage/requires])
                (get-in valid [:build :build/stages 0 :stage/checkers])]
               [:example [] [{:checker/id :hal/readable}]])
-  (test/check "semantic failures are structured findings"
+  (test-check "semantic failures are structured findings"
               (vec (map (fn [finding] (:type finding))
                         (:findings invalid)))
               [:greenways/duplicate-key
                :greenways/unknown-form
-               :greenways/no-stages])])
+               :greenways/no-stages])]

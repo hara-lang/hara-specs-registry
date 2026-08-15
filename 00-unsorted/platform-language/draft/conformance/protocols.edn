@@ -25,10 +25,10 @@
   :hidden-protocols []
   :hidden-methods []}
  :inventory
- {:protocol-count 54
-  :method-count 104
-  :public-protocol-count 54
-  :public-method-count 104
+ {:protocol-count 55
+  :method-count 105
+  :public-protocol-count 55
+  :public-method-count 105
   :hidden-protocol-count 0
   :hidden-method-count 0}
  :runtime-modules
@@ -40,15 +40,15 @@
  :conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_conformance.hal"
   :platforms [:rust :truffle]
-  :protocol-count 54
-  :method-count 104
+  :protocol-count 55
+  :method-count 105
   :invocation :direct-canonical-method-var
   :legacy-special-form false}
  :functional-conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
   :case-catalog "specs/00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
   :platforms [:rust :truffle]
-  :method-count 89
+  :method-count 90
   :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
   :error-matching :category-prefix
   :error-message-text :non-normative
@@ -67,13 +67,14 @@
   {:name ICons :methods {cons 2}}
   {:name IContext :methods {call -1}}
   {:name ICoroutine :extends [IClose] :methods {status 1 resume -1}}
+  {:name IStream :extends [IClose] :methods {next 1}}
   {:name IContextLifeCycle
    :methods {has-module? 2 setup-module 2 teardown-module 2
              has-pointer? 2 setup-pointer 2 teardown-pointer 2}}
   {:name ICount :methods {count 1}}
   {:name IDeref :methods {deref 1}}
   {:name IDerefTimeout :methods {deref-timeout 3}}
-  {:name IDeps :methods {get-entry 2 get-deps 2 list-entries 1}}
+  {:name IDeps :methods {dep-get 2 dep-entries 2 dep-keys 1}}
   {:name IDisplay :methods {display 1}}
   {:name IDissoc :methods {dissoc 2}}
   {:name IEmpty :methods {empty 1}}

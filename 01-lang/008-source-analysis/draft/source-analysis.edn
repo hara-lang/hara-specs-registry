@@ -35,6 +35,9 @@
   {:requirement/id :tool.source-analysis/literal-type
    :requirement/level :should
    :requirement/text "Concrete literal argument types are compared with pinned schemas without inferring unknown expressions."}
+  {:requirement/id :tool.source-analysis/redundant-vector-materialization
+   :requirement/level :should
+   :requirement/text "A vec call is reported as redundant only when conservative schema inference proves that its argument is already a persistent vector and collection-result rules preserve that representation and metadata state."}
   {:requirement/id :tool.source-analysis/duplicate-definition
    :requirement/level :must
    :requirement/text "A namespace reports repeated top-level definition names."}
@@ -92,7 +95,7 @@
 
  :analysis/profile
  {:profile/id :tool.lint/hara-v1
-  :profile/version "0.1.0"
+  :profile/version "0.2.0"
   :profile/source-specs
   [{:spec/id :hal/language :spec/version "alpha"}
    {:spec/id :hara/foundation :spec/version "alpha"}
@@ -104,7 +107,13 @@
  :analysis/output
  {:finding/required [:type :level :message :file :row :col :end-row :end-col
                      :start-offset :end-offset :spec/requirement]
+  :inference/required [:file :row :col :end-row :end-col
+                       :start-offset :end-offset
+                       :analysis/schema :analysis/refinements]
+  :inference/order [:start-offset :end-offset]
+  :inference/unknown :included
   :levels [:error :warning]
+  :style-finding-types [:tool.lint/redundant-vec]
   :schema-finding-types
   [:tool.lint/invalid-schema
    :tool.lint/unresolved-schema

@@ -91,7 +91,7 @@
   {:surface/id :foundation/composition
    :surface/domain :function
    :surface/symbols
-   [identity inc dec constantly comp complement partial juxt]
+   [identity call inc dec constantly comp complement partial juxt]
    :surface/classification :portable-hal}
   {:surface/id :foundation/predicates
    :surface/domain :function
@@ -149,14 +149,21 @@
   {:surface/id :foundation/runtime-introspection
    :surface/domain :function
    :surface/symbols
-   [eval read-forms load-string macroexpand macroexpand-all apply-in apply-as
+   [read-forms load-string macroexpand macroexpand-all apply-in apply-as
     invoke-as current-namespace current-symbols ns-state ns-loaded?
-    ns-alias-state ns-name ns-publics ns-aliases resolve var-sym]
+    ns-name ns-publics ns-aliases resolve var-sym]
    :surface/classification :narrow-runtime-primitive}
+  {:surface/id :foundation/environment-native
+   :surface/domain :function
+   :surface/symbols
+   [env-current env-snapshot env-vars env-namespaces env-namespace env-module
+    env-resolve ns-alias-state intern-var eval-in-ns eval]
+   :surface/classification :native-wrapper
+   :surface/native-spec :hara/native}
   {:surface/id :foundation/macros
    :surface/domain :macro
    :surface/symbols
-   [doto if-not when if-let when-let cond-> cond->> with-ns intern-in intern-all
+   [defonce doto if-not when if-let when-let cond-> cond->> with-ns intern-in intern-all
     with:template-meta template-vars template-entries code-line code-column]
    :surface/classification :portable-hal}
   {:surface/id :foundation/templates
@@ -167,6 +174,24 @@
    :surface/domain :constant
    :surface/symbols [E PI *template-meta*]
    :surface/classification :portable-value}]
+
+ :foundation/defonce
+ {:requirement/id :foundation/defonce-preserves-root
+  :requirement/level :must
+  :requirement/text "defonce checks for the qualified Var at runtime, evaluates and defines its initializer only when the Var is absent, and otherwise returns the existing Var without evaluating the initializer."}
+
+ :foundation/collection-results
+ {:shape-preserving
+  [take-while drop-while interpose interleave map filter take drop mapcat keep
+   zip partition-pair sort sort-by drop-last butlast take-last take-nth distinct
+   remove into]
+  :source "The result uses the documented collection argument as its materialization template."
+  :vector-backend "A compact or persistent vector template retains its backend when the result remains within that backend's supported size."
+  :metadata "Template metadata is preserved by shape-preserving materialization."
+  :requirement
+  {:requirement/id :foundation/collection-result-shape
+   :requirement/level :must
+   :requirement/text "Shape-preserving collection functions return the documented input collection kind and metadata rather than Clojure lazy-sequence semantics."}}
 
  :foundation/classification
  {:classification/portable-hal

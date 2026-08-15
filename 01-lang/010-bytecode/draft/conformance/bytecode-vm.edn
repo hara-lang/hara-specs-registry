@@ -24,6 +24,7 @@
 
   ;; ---- arithmetic ----
   {:id :arith/add :source "(+ 19 23)" :expect {:display "42"}}
+  {:id :arith/nested :source "(+ 1 (* 2 3))" :expect {:display "7"}}
   {:id :arith/add-multi :source "(+ 1 2 3 4 5)" :expect {:display "15"}}
   {:id :arith/add-single :source "(+ 7)" :expect {:display "7"}}
   {:id :arith/subtract :source "(- 10 1 2 3)" :expect {:display "4"}}
@@ -105,6 +106,7 @@
   {:id :compile/unbound-in-let :source "(let [x 1] (+ x y))" :expect {:compile-error "unbound symbol"}}
   {:id :def/basic :source "(def answer 42)" :expect {:display "#'user/answer"}}
   {:id :def/readback :source "(do (def answer 42) answer)" :expect {:display "42"}}
+  {:id :def/set-readback :source "(do (def counter 1) (set! counter 42) counter)" :expect {:display "42"}}
   {:id :def/redefine :source "(do (def answer 19) (def answer (+ answer 23)) answer)" :expect {:display "42"}}
   {:id :def/result-is-value :source "(do (def inc1 (fn [x] (+ x 1))) (inc1 41))" :expect {:display "42"}}
   {:id :compile/if-arity-low :source "(if)" :expect {:compile-error "if expects 2 or 3 arguments"}}
@@ -198,6 +200,12 @@
   {:id :named-value/defstruct-constructors
    :source "(do (defstruct Point [x y]) (+ (get (Point 1 2) :x) (get (->Point 3 4) :x) (get (map->Point {:x 5}) :x)))"
    :expect {:display "9"}}
+  {:id :named-value/defstruct-keyword-lookup
+   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9})] [(:x point) (:missing point 7) (:extra point) (get point :x) (type point)]))"
+   :expect {:display "[1 7 nil 1 :user.Point]"}}
+  {:id :named-value/defstruct-map-destructuring
+   :source "(do (defstruct Point [x y]) [(let [{:keys [x y missing] :or {missing 7} :as point} (Point 1 2)] [x y missing (type point)]) ((fn [{:keys [x y]}] [x y]) (Point 3 4))])"
+   :expect {:display "[[1 2 7 :user.Point] [3 4]]"}}
   {:id :named-value/defmutable-constructors
    :source "(do (defmutable Cursor [x y]) (+ (field (Cursor 1 2) :x) (field (->Cursor 3 4) :x) (field (map->Cursor {:x 5}) :x)))"
    :expect {:display "9"}}

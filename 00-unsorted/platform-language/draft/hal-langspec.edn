@@ -618,6 +618,12 @@
    :form/semantics "Returns form without evaluating it."
    :form/evaluation :special
    :form/arity 1}
+  {:form/id :hal.form/comment
+   :form/symbol comment
+   :form/class :special-form
+   :form/shape (quote (comment form*))
+   :form/semantics "Returns nil without resolving, analysing, or evaluating any body form."
+   :form/evaluation :special}
   {:form/id :hal.form/if
    :form/symbol if
    :form/class :special-form
@@ -705,8 +711,8 @@
   {:form/id :hal.form/defmutable
    :form/symbol defmutable
    :form/class :special-form
-   :form/shape (quote (defmutable name [field*]))
-   :form/semantics "Defines a fixed-shape reference-identity mutable named-value descriptor and the Name, ->Name, and map->Name constructors. Declared fields are read with field and replaced with set! field places."
+   :form/shape (quote (defmutable name [field*] protocol-implementation*))
+   :form/semantics "Defines a fixed-shape reference-identity mutable named-value descriptor and the Name, ->Name, and map->Name constructors. Trailing protocol clauses install its initial implementations, while extend-type may add or replace implementations later. Declared fields are read with field and replaced with set! field places."
    :form/evaluation :special}
   {:form/id :hal.form/field
    :form/symbol field

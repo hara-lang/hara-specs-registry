@@ -192,7 +192,7 @@
    :section/forms []}
   {:section/id :package/wasm
    :section/title "WASM package loading"
-   :section/summary "Browser hosts reconcile and cache verified package bytes before starting the WASM runtime."
+   :section/summary "Browser hosts retrieve, verify, cache, and atomically activate exact locked package closures on demand."
    :section/requirements
    [{:requirement/id :wasm/host-resolution
      :requirement/level :must
@@ -202,13 +202,16 @@
      :requirement/text "WASM modules and HTA assets are declared in project.edn and embedded in package.edn, validated before startup, and receive no authority from declaration alone."}
     {:requirement/id :wasm/browser-activation
      :requirement/level :must
-     :requirement/text "Before project evaluation, a browser host resolves the locked graph, verifies signatures and archive digest, validates safe unique archive entries and package.edn, caches bytes by digest, mounts verified roots read-only, validates extension descriptors and assets, and registers required resources atomically."}
+     :requirement/text "When Package/ensure is called, the browser host selects only the target's exact locked transitive closure, verifies signatures and archive digest, validates safe unique archive entries and package.edn, caches bytes by digest, mounts verified roots read-only, validates extension descriptors and assets, and registers the closure atomically."}
     {:requirement/id :wasm/resource-batch
      :requirement/level :must
-     :requirement/text "The browser stages the entire locked graph, rejects duplicate namespaces across packages, and invokes the raw runtime register-resources target exactly once after all archives and extension assets validate."}
+     :requirement/text "The browser stages the entire requested closure, rejects duplicate namespaces across active and staged packages, and invokes the raw runtime activation target only after all archives and extension assets validate."}
     {:requirement/id :wasm/no-network-require
      :requirement/level :must-not
-     :requirement/text "Extension require or project require must not fetch, resolve, verify, or mount packages; failure to activate the complete verified graph leaves no partial graph visible to evaluation."}]
+     :requirement/text "Ordinary require must not fetch, resolve, verify, or mount packages; Package/load explicitly ensures a locked closure before requiring its requested namespace, and failed activation leaves no partial closure visible."}
+    {:requirement/id :wasm/package-unload
+     :requirement/level :must
+     :requirement/text "Package/unload detaches one active package generation, rejects active dependents unless cascade is requested, preserves verified cache entries, and does not invalidate values already captured from that generation."}]
    :section/forms []}
   {:section/id :package/commands
    :section/title "Command interface"

@@ -1,6 +1,5 @@
 (ns gw.build.normalize-test
-  (:require [gw.build.normalize :as normalize]
-            [std.lib.test :as test]))
+  (:require [gw.build.normalize :as normalize]))
 
 (def input
   {:greenways/type :build
@@ -13,16 +12,15 @@
 
 (def canonical (normalize/normalize-build input))
 
-(test/print-results
- [(test/check "normalization supplies canonical defaults"
+[(test-check "normalization supplies canonical defaults"
               [(get canonical :greenways/version)
                (:build/specs canonical)
                (get-in canonical [:build/stages 0 :stage/requires])
                (get-in canonical [:build/stages 0 :stage/checkers])]
               ["0.1.0" [] [] []])
-  (test/check "normalization is idempotent"
+  (test-check "normalization is idempotent"
               (normalize/normalize-build canonical)
               canonical)
-  (test/check "canonical predicate accepts normalized data"
+  (test-check "canonical predicate accepts normalized data"
               (normalize/canonical-build? canonical)
-              true)])
+              true)]

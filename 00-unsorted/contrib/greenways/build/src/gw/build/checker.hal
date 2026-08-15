@@ -2,8 +2,7 @@
   (:require [gw.build.codec :as codec]
             [gw.build.graph :as graph]
             [gw.build.model :as model]
-            [gw.build.normalize :as normalize]
-            [std.foundation.string :as string]))
+            [gw.build.normalize :as normalize]))
 
 (defn- member?
   [value values]
@@ -120,7 +119,7 @@
 (defn- padded-bytes
   [text]
   (let [input (vec (map (fn [value] (unsigned-byte value))
-                        (string/encode text)))
+                        (str/encode-utf8 text)))
         bit-length (* 8 (count input))
         with-marker (conj input 128)
         zero-count (mod (- 56 (mod (count with-marker) 64)) 64)
@@ -196,11 +195,11 @@
 (defn- hex32
   [value]
   (let [digits "0123456789abcdef"]
-    (string/join
+    (str/join
      ""
      (vec
       (map (fn [shift]
-             (string/char-at
+             (str/char-at
               digits
               (mod (/ value
                       (pow-int 16 shift))
@@ -215,7 +214,7 @@
            state +sha256-initial+]
       (if (= offset (count bytes))
         (str "sha256:"
-             (string/join "" (vec (map (fn [value] (hex32 value))
+             (str/join "" (vec (map (fn [value] (hex32 value))
                                        state))))
         (recur (+ offset 64)
                (compress-block state bytes offset))))))
@@ -258,33 +257,33 @@
 (defn valid-repository?
   [value]
   (and (string? value)
-       (= 2 (count (string/split value "/")))
-       (every? (fn [part] (not (string/blank? part)))
-               (string/split value "/"))))
+       (= 2 (count (str/split value "/")))
+       (every? (fn [part] (not (str/blank? part)))
+               (str/split value "/"))))
 
 (defn- hex-character?
   [value]
-  (string/includes? "0123456789abcdefABCDEF" value))
+  (str/includes? "0123456789abcdefABCDEF" value))
 
 (defn valid-commit?
   [value]
   (and (string? value)
-       (= 40 (string/length value))
+       (= 40 (str/length value))
        (every? (fn [index]
-                 (hex-character? (string/char-at value index)))
+                 (hex-character? (str/char-at value index)))
                (range 40))))
 
 (defn valid-source-path?
   [value]
   (and (string? value)
-       (not (string/blank? value))
-       (not (string/starts-with? value "/"))
-       (not (member? ".." (string/split value "/")))))
+       (not (str/blank? value))
+       (not (str/starts-with? value "/"))
+       (not (member? ".." (str/split value "/")))))
 
 (defn valid-entrypoint?
   [value]
   (and (symbol? value)
-       (string/includes? (str value) "/")))
+       (str/includes? (str value) "/")))
 
 (defn validate-checker-identity
   [checker]
@@ -442,7 +441,7 @@
                  :greenways/dependency-cycle
                  :error
                  (str "Stage dependency cycle: "
-                      (string/join " → "
+                      (str/join " → "
                                    (vec (map (fn [stage-id]
                                                (name stage-id))
                                              cycle))))

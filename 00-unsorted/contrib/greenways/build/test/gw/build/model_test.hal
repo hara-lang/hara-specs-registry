@@ -1,6 +1,5 @@
 (ns gw.build.model-test
-  (:require [gw.build.model :as model]
-            [std.lib.test :as test]))
+  (:require [gw.build.model :as model]))
 
 (def example
   (model/build 'example
@@ -8,13 +7,12 @@
                [(model/specification-reference :hal/language "1.0.0")]
                [(model/stage 'output [] :application/service [])]))
 
-(test/print-results
- [(test/check "constructors return portable canonical-shaped data"
+[(test-check "constructors return portable canonical-shaped data"
               [(model/build? example)
                (model/artifact? (:build/artifact example))
                (model/stage? (first (:build/stages example)))]
               [true true true])
-  (test/check "identifiers normalize to keywords"
+  (test-check "identifiers normalize to keywords"
               [(:build/id example)
                (get-in example [:build/stages 0 :stage/id])]
-              [:example :output])])
+              [:example :output])]

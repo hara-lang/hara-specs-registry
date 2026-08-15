@@ -99,10 +99,22 @@
                         :archive-conflict :release-conflict]}
   {:operation/id :hara.package.operation/load
    :operation/role :hara.package.role/runtime
-   :operation/input :hara.package/lock
+   :operation/input [:hara.package/lock :hara.package/namespace]
+   :operation/output :hara.package/namespace
+   :operation/failures [:missing-package :hash-mismatch
+                        :incompatible-hir :capability-denied]}
+  {:operation/id :hara.package.operation/ensure
+   :operation/role :hara.package.role/runtime
+   :operation/input [:hara.package/lock :hara.package/coordinate]
    :operation/output :hara.package/mounted-graph
    :operation/failures [:missing-package :hash-mismatch
-                        :incompatible-hir :capability-denied]}]
+                        :incompatible-hir :capability-denied]}
+  {:operation/id :hara.package.operation/unload
+   :operation/role :hara.package.role/runtime
+   :operation/input [:hara.package/coordinate :hara.package/unload-options]
+   :operation/output :hara.package/unloaded-coordinates
+   :operation/failures [:missing-package :active-dependent
+                        :current-namespace :capability-denied]}]
 
  :platform/invariants
  [{:requirement/id :hara.package/single-authored-manifest

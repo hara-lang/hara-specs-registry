@@ -261,8 +261,6 @@
   "set! targets globals only. The evaluator's promotion of a lexical local into a var is not reproduced; set! on a lexical name is the compile error \"set! targets a global var\"."
   :deferred
   [:binding-and-dynamic-vars
-   :defstruct-protocol-clauses
-   :defmutable-protocol-clauses
    :protocol-based-struct-metadata
    :module-and-namespace-config-forms
    :destructuring-parameters]
@@ -287,12 +285,12 @@
    "Dispatcher arity failures phrase as \"{name} has no arity accepting {n} arguments\" through the shared select_clause boundary."}
   :defstruct
   {:rule
-   "defstruct executes the evaluator's construction through a registry-based helper: validate name/fields, create the StructType qualified to the current namespace, intern Name, ->Name, and map->Name. Trailing protocol clauses are the compile error \"defstruct protocol clauses are not supported\"."
+   "defstruct executes the evaluator's construction through a registry-based helper: validate name/fields, create the StructType qualified to the current namespace, and intern Name, ->Name, and map->Name. Trailing protocol clauses lower to ordered extend-type operations after the constructors are installed."
    :catch-interaction
    "catch_matches matches struct type names with the /{class} suffix rule (milestone 3), so the L0 error/catch-order, error/unmatched-catch, error/finally-normal, and error/finally-unwind cases run verbatim."}
   :defmutable
   {:rule
-   "defmutable executes the registry helper that validates name and fields, creates the MutableType qualified to the current namespace, and interns Name, ->Name, and map->Name. Trailing protocol clauses fail compilation with the diagnostic defmutable protocol clauses are not supported; portable dispatch is installed with extend-type."
+   "defmutable executes the registry helper that validates name and fields, creates the MutableType qualified to the current namespace, and interns Name, ->Name, and map->Name. Trailing protocol clauses lower to ordered extend-type operations after the constructors are installed."
    :field-access
    "field lowers to MutableFieldGet. set! with a field place evaluates receiver then replacement exactly once and lowers to MutableFieldSet, which returns the replacement."
    :identity

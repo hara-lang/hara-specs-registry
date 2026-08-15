@@ -270,8 +270,6 @@
  :excluded
  [{:name load-file :reason :load-string-only}
   {:name requiring-resolve :reason :not-required}
-  {:names [mapv filterv]
-   :reason :collection-operations-preserve-or-materialize-the-input-shape}
   {:pattern "iter-*"
    :reason :implementation-detail-except-iter-next?-and-iter-next}
   {:names [partition-transform partition-all-transform map-transform]

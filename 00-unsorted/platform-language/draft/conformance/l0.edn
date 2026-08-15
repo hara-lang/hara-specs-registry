@@ -505,7 +505,7 @@
    :expect {:value 18 :type :integer}}
   {:id :named-value/defstruct-persistent-map
    :class :named-value
-   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9}) changed (assoc point :x 10) nested (assoc-in changed [:y :nested] 12) plain (dissoc nested :x)] (and (= 1 (:x point)) (nil? (:y point)) (nil? (:extra point)) (= 10 (:x changed)) (= 12 (get (:y nested) :nested)) (instance? Point changed) (= {:y {:nested 12}} plain) (not (instance? Point plain)))))"
+   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9}) changed (assoc point :x 10) nested (assoc-in changed [:y :nested] 12) plain (dissoc nested :x) {:keys [x y missing] :or {missing 7} :as destructured} point] (and (= 1 (:x point)) (= 7 (:missing point 7)) (nil? (:y point)) (nil? (:extra point)) (= 1 x) (nil? y) (= 7 missing) (instance? Point destructured) (= 10 (:x changed)) (= 12 (get (:y nested) :nested)) (instance? Point changed) (= {:y {:nested 12}} plain) (not (instance? Point plain)))))"
    :expect {:value true :type :boolean}}
   {:id :named-value/defmutable-reference
    :class :named-value

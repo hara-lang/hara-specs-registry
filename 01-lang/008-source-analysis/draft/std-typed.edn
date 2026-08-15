@@ -49,7 +49,16 @@
    :requirement/text "Resolved metadata contracts take precedence over pinned profile signatures; profile signatures remain the fallback when metadata is absent or unknown."}
   {:requirement/id :std.typed/portable-parity
    :requirement/level :must
-   :requirement/text "Portable Hara, Rust SchemaType, and JVM HalcSchema consumers agree on normalized forms, inference fixtures, and deterministic error categories."}]
+   :requirement/text "Portable Hara, Rust SchemaType, and JVM HalcSchema consumers agree on normalized forms, inference fixtures, and deterministic error categories."}
+  {:requirement/id :std.typed/extensible-normalization
+   :requirement/level :must
+   :requirement/text "The native Hara normalizer is a multimethod dispatched by normalized input class or composite head, so libraries may register namespaced extension schema forms without replacing built-in normalization."}
+  {:requirement/id :std.typed/extensible-validation
+   :requirement/level :must
+   :requirement/text "Native Hara validation dispatches normalized schemas through a multimethod keyed by :kind, so extension schema forms may define validation without replacing built-in validators."}
+  {:requirement/id :std.typed/schema-deref-shorthand
+   :requirement/level :must
+   :requirement/text "SchemaType implements IDeref and dereferences its normalized schema AST to canonical recursive vector shorthand, independent of the original input spelling."}]
 
  :typed/surface-grammar
  {:primitives
@@ -130,12 +139,20 @@
   :unknown {:kind :unknown :surface :original-form}}
 
  :typed/normalization
- {:result
+ {:dispatch
+  {:mechanism :defmulti
+   :normalized-map :normalized
+   :primitive-keyword :primitive
+   :unsupported-surface :unknown
+   :vector-form :head
+   :fallback :default}
+  :result
   {:success {:schema :normal-form}
    :failure {:error {:code :keyword
                      :message :string
                      :surface :original-form}}}
   :determinism :stable-input-order
+  :validation-dispatch {:mechanism :defmulti :key :kind :fallback :valid}
   :errors
   #{:empty-schema
     :unsupported-value
@@ -213,12 +230,19 @@
    :predicates :bool
    :constructors {:str :str :keyword :keyword :symbol :symbol}
    :calls "A call with a known matching signature infers the declared output; absent, ambiguous, or non-matching calls are unknown."
+   :collection-results
+   "Pinned Foundation collection-result rules transfer the outer collection schema, vector backend, and metadata certainty from an arity-specific source argument. Item schemas are retained only for item-preserving operations."
    :functions "Each defn/defn- arity produces fixed inputs, optional rest input, and a conservative body output."}
-  :unknown-propagation
+ :unknown-propagation
   {:unknown-operand :unknown
    :mixed-incompatible-numeric :unknown
    :unknown-call :unknown
    :mismatch-diagnostic false}
+  :refinements
+  {:vector/backend #{:compact :persistent :unknown}
+   :metadata #{:absent :present :unknown}
+   :join :retain-only-identical-facts
+   :schema-separation "Refinements are analysis facts and do not extend the portable schema surface grammar."}
   :annotation-use
   {:parameters :seed-from-matching-declared-arity
    :return :inferred-separately
@@ -338,8 +362,10 @@
    resolve {:args [schema definitions] :returns :normal-form}
    unresolved-references {:args [schema known-names] :returns :vector-of-symbols}
    project-arities {:args [fn-or-function-schema] :returns :vector-of-fn-normal-forms}}
-  :std.typed.infer
+ :std.typed.infer
   {infer {:args [form context] :returns :normal-form}
+   infer-result {:args [form context]
+                 :returns {:schema :normal-form :refinements :map}}
    infer-function-arity {:args [parameters body declared context]
                          :returns :fn-normal-form}
    join {:args [types] :returns :normal-form}}}

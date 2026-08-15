@@ -1,7 +1,6 @@
 (ns gw.build.report-test
   (:require [gw.build.normalize :as normalize]
-            [gw.build.report :as report]
-            [std.lib.test :as test]))
+            [gw.build.report :as report]))
 
 (def build
   (normalize/normalize-build
@@ -28,8 +27,7 @@
      :col 3
      :message "Unreadable input"}]))
 
-(test/print-results
- [(test/check "a failed stage blocks every dependent stage"
+[(test-check "a failed stage blocks every dependent stage"
               (vec (map (fn [stage]
                           [(:stage/id stage)
                            (:stage/status stage)
@@ -38,14 +36,14 @@
               [[:parse :fail nil]
                [:analyze :blocked [:parse]]
                [:output :blocked [:analyze]]])
-  (test/check "report never converts failed work to success"
+  (test-check "report never converts failed work to success"
               [(:build/status result) (:summary result)]
               [:blocked {:pass 0 :fail 1 :unknown 0 :blocked 2}])
-  (test/check "next actions preserve stable IDs and source locations"
+  (test-check "next actions preserve stable IDs and source locations"
               (:next-actions result)
               [{:action/type :repair
                 :action/requirement :greenways/readable
                 :action/stage :parse
                 :file "build.hal"
                 :row 4
-                :col 3}])])
+                :col 3}])]

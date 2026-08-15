@@ -92,6 +92,10 @@
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IStream :method next :domain :stream
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
   {:protocol IContextLifeCycle :method has-module? :domain :execution-context
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
@@ -128,15 +132,15 @@
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
-  {:protocol IDeps :method get-entry :domain :dependency-graph
+  {:protocol IDeps :method dep-get :domain :dependency-graph
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
-  {:protocol IDeps :method get-deps :domain :dependency-graph
+  {:protocol IDeps :method dep-entries :domain :dependency-graph
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
-  {:protocol IDeps :method list-entries :domain :dependency-graph
+  {:protocol IDeps :method dep-keys :domain :dependency-graph
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
