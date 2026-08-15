@@ -7,6 +7,7 @@ on:
       - "scripts/generate-foundation-annex.py"
       - "scripts/test-generate-foundation-annex.py"
       - "01-lang/005-foundation-annex/**"
+      - "registry-index.json"
       - ".github/workflows/foundation-annex.yml"
   push:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - "scripts/generate-foundation-annex.py"
       - "scripts/test-generate-foundation-annex.py"
       - "01-lang/005-foundation-annex/**"
+      - "registry-index.json"
       - ".github/workflows/foundation-annex.yml"
   workflow_dispatch:
 
@@ -92,21 +94,23 @@ jobs:
             --commit ${{ steps.target.outputs.commit }} \
             --output generated/foundation-api-manifest.json
 
-      - name: Regenerate annex and README
+      - name: Regenerate annex, README, and registry index
         run: |
           python scripts/generate-foundation-annex.py \
             --input generated/foundation-api-manifest.json \
             --annex-output 01-lang/005-foundation-annex/draft/foundation-annex.edn \
             --readme-output 01-lang/005-foundation-annex/draft/README.md
+          npm run registry:generate
           git status --short -- \
             01-lang/005-foundation-annex/draft/foundation-annex.edn \
-            01-lang/005-foundation-annex/draft/README.md
+            01-lang/005-foundation-annex/draft/README.md \
+            registry-index.json
 
       - name: Validate generated boundary and provenance
         run: |
           python - <<'PY'
           import json
-          from pathlib import Path
+          from pathlib import Path, PurePosixPath
 
           manifest = json.loads(Path("generated/foundation-api-manifest.json").read_text())
           target = json.loads(Path("foundation-api-target.json").read_text())
@@ -133,6 +137,13 @@ jobs:
           assert "**5** child namespaces" in readme
           assert "std.foundation.pretty.engine" in readme
           assert len(manifest.get("migrations", [])) >= 11
+          for field in (
+              manifest["inventory"]["path"],
+              manifest["migrationLedger"]["path"],
+          ):
+              value = PurePosixPath(field)
+              assert not value.is_absolute(), field
+              assert ".." not in value.parts, field
           PY
 
       - name: Validate registry structure
@@ -141,6 +152,7 @@ jobs:
           npm run check
 
       - name: Upload generated annex review artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: foundation-annex-generated
@@ -148,5 +160,6 @@ jobs:
             generated/foundation-api-manifest.json
             01-lang/005-foundation-annex/draft/foundation-annex.edn
             01-lang/005-foundation-annex/draft/README.md
+            registry-index.json
           if-no-files-found: error
           retention-days: 30
