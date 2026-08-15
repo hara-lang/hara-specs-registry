@@ -21,15 +21,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Checkout specification registry
+      - name: Checkout specification registry branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Read pinned Hara target
         id: target
@@ -136,7 +139,7 @@ jobs:
           assert manifest["migrationLedger"]["digest"] in annex
           assert "**5** child namespaces" in readme
           assert "std.foundation.pretty.engine" in readme
-          assert len(manifest.get("migrations", [])) >= 11
+          assert len(manifest.get("migrations", [])) == 11
           for field in (
               manifest["inventory"]["path"],
               manifest["migrationLedger"]["path"],
@@ -150,6 +153,33 @@ jobs:
         run: |
           npm test
           npm run check
+
+      - name: Commit generated normative artifacts
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          paths=(
+            01-lang/005-foundation-annex/draft/foundation-annex.edn
+            01-lang/005-foundation-annex/draft/README.md
+            registry-index.json
+          )
+          if git diff --quiet -- "${paths[@]}"; then
+            echo "Generated Foundation annex is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "${paths[@]}"
+          git commit -m "Regenerate Foundation annex from pinned Hara manifest"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+
+      - name: Reject generated drift outside same-repository pull requests
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          git diff --exit-code -- \
+            01-lang/005-foundation-annex/draft/foundation-annex.edn \
+            01-lang/005-foundation-annex/draft/README.md \
+            registry-index.json
 
       - name: Upload generated annex review artifact
         if: always()
