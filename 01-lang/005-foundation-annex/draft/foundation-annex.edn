@@ -1,202 +1,2503 @@
-{:document/id :hara/foundation-annex
+{
+ :document/id :hara/foundation-annex
  :document/type :foundation-annex-spec
  :document/version "alpha"
  :document/status :draft
  :document/title "Hara Foundation library annex"
- :document/summary
- "Portable catalog and behavioral boundary for the public std.foundation.* library namespaces."
-
- :spec/conforms-to
- {:spec/id :hara/foundation-annex-metaspec
-  :spec/version "alpha"}
-
- :annex/scope
- {:scope/namespace-family "std.foundation.*"
-  :scope/includes
-  #{:public-library-namespaces :public-vars :portable-hal-libraries
-    :native-facades :capability-facades :automatic-aliases}
-  :scope/excludes
-  #{:std.foundation-root :std.protocol-family :std.native-family
-    :implementation-helper-namespaces :application-libraries}}
-
- :annex/invariants
- [{:requirement/id :annex/qualified-boundary
-   :requirement/level :must
-   :requirement/text
-   "Every annex Var is owned by one declared std.foundation.* namespace."}
-  {:requirement/id :annex/portable-results
-   :requirement/level :must
-   :requirement/text
-   "Public functions return persistent Hara values or explicitly declared bytes, array, object, promise, coroutine, socket, process, filesystem, or session values."}
-  {:requirement/id :annex/native-facade
-   :requirement/level :must
-   :requirement/text
-   "A native-backed function documents the canonical std.native.* dependency while keeping the native descriptor out of its public return shape."}
-  {:requirement/id :annex/capability-check
-   :requirement/level :must
-   :requirement/text
-   "Capability-backed operations check authority at invocation; requiring the namespace grants none."}
-  {:requirement/id :annex/private-engine
-   :requirement/level :must-not
-   :requirement/text
-   "std.foundation.pretty.engine or another implementation helper becomes public API merely because it is loadable source."}]
-
- :annex/libraries
- [{:library/id :foundation/string
-   :library/namespace std.foundation.string
-   :library/alias str
-   :library/classification :native-facade
-   :library/native std.native.String
-   :library/public-vars
-   [length blank? includes? starts-with? ends-with? char-at slice index-of
-    last-index-of join split split-lines repeat replace replace-first trim
-    trim-left trim-right upper lower capitalize decapitalize pad-left
-    pad-right reverse encode-utf8 decode-utf8 to-fixed]}
-  {:library/id :foundation/bytes
-   :library/namespace std.foundation.bytes
-   :library/alias bytes
-   :library/classification :native-facade
-   :library/native std.native.Bytes
-   :library/public-vars [count get set copy slice u8 s8]}
-  {:library/id :foundation/promise
-   :library/namespace std.foundation.promise
-   :library/alias promise
-   :library/classification :native-and-protocol-facade
-   :library/native std.native.Promise
-   :library/protocol std.protocol.ipromise/IPromise
-   :library/public-vars
-   [run new from all delay state value then catch finally cancel]}
-  {:library/id :foundation/coroutine
-   :library/namespace std.foundation.coroutine
-   :library/alias co
-   :library/classification :native-and-protocol-facade
-   :library/native std.native.Coroutine
-   :library/protocol std.protocol.icoroutine/ICoroutine
-   :library/public-vars [create coroutine? status resume close yield await]}
-  {:library/id :foundation/edn
-   :library/namespace std.foundation.edn
-   :library/alias edn
-   :library/classification :native-facade
-   :library/native std.native.Edn
-   :library/public-vars [read write pretty]}
-  {:library/id :foundation/json
-   :library/namespace std.foundation.json
-   :library/alias json
-   :library/classification :native-facade
-   :library/native std.native.Json
-   :library/public-vars [read write pretty]}
-  {:library/id :foundation/set
-   :library/namespace std.foundation.set
-   :library/alias set
-   :library/classification :portable-hal
-   :library/public-vars
-   [union intersection difference subset? superset? select]}
-  {:library/id :foundation/pretty
-   :library/namespace std.foundation.pretty
-   :library/alias pretty
-   :library/classification :portable-hal
-   :library/private-namespaces [std.foundation.pretty.engine]
-   :library/public-vars [render write]}
-  {:library/id :foundation/file
-   :library/namespace std.foundation.file
-   :library/alias file
-   :library/classification :capability-facade
-   :library/native std.native.File
-   :library/capability :file
-   :library/public-vars [resolve read write exists? list mkdir delete]}
-  {:library/id :foundation/socket
-   :library/namespace std.foundation.socket
-   :library/alias socket
-   :library/classification :capability-facade
-   :library/native std.native.Socket
-   :library/capability :network
-   :library/public-vars [connect listen endpoint events next send close]}
-  {:library/id :foundation/host
-   :library/namespace std.foundation.host
-   :library/alias host
-   :library/classification :capability-facade
-   :library/native std.native.Host
-   :library/capability :host-call
-   :library/public-vars [call describe capabilities capability?]}
-  {:library/id :foundation/kernel
-   :library/namespace std.foundation.kernel
-   :library/alias kernel
-   :library/classification :capability-facade
-   :library/native std.native.Kernel
-   :library/capability :kernel
-   :library/public-vars
-   [session-create session-close session-list session-info session-eval
-    session-namespace session-complete resource-register resource-remove
-    resource-list filesystem-create filesystem-attach filesystem-detach
-    filesystem-info filesystem-close capabilities]}
-  {:library/id :foundation/os
-   :library/namespace std.foundation.os
-   :library/alias os
-   :library/classification :runtime-export-facade
-   :library/capability :process
-   :library/public-vars
-   [platform arch cwd env getenv spawn process? process-alive? process-write
-    process-close-input process-stdout process-stderr process-wait
-    process-kill]}
-  {:library/id :foundation/crypto
-   :library/namespace std.foundation.crypto
-   :library/alias crypto
-   :library/classification :native-facade
-   :library/native std.native.Crypto
-   :library/public-vars [sha256]}]
-
- :annex/aliases
- {:alias/selection :all-public-libraries
-  :alias/configuration :namespace-config-intrinsics
-  :alias/exclusion-effect :remove-automatic-alias-only
-  :alias/explicit-require-after-exclusion true}
-
- :annex/capabilities
- {:capability/file
-  {:capability/operations #{:filesystem-read :filesystem-write}
-   :capability/denial :annex/capability-denied}
-  :capability/network
-  {:capability/operations #{:network-connect :network-listen}
-   :capability/denial :annex/capability-denied}
-  :capability/process
-  {:capability/operations #{:process-spawn :process-control}
-   :capability/denial :annex/capability-denied}
-  :capability/host-call
-  {:capability/operations #{:embedding-declared-services}
-   :capability/denial :annex/capability-denied}
-  :capability/kernel
-  {:capability/operations #{:session-control :resource-control :filesystem-handles}
-   :capability/denial :annex/capability-denied}}
-
- :annex/errors
- [{:error/id :annex/invalid-arity}
-  {:error/id :annex/invalid-argument}
-  {:error/id :annex/capability-denied}
-  {:error/id :annex/unavailable-profile}
-  {:error/id :annex/closed-handle}
-  {:error/id :annex/type-not-transportable}]
-
- :annex/references
- [{:reference/id :annex/source-root
-   :reference/path "../../../../lib/src/std/foundation"
-   :reference/authority :implementation}
-  {:reference/id :annex/test-root
-   :reference/path "../../../../lib/test/std/foundation"
-   :reference/authority :implementation-evidence}
-  {:reference/id :annex/legacy-standard-libraries
-   :reference/path
-   "../../../00-unsorted/platform-language/draft/hal-langspec.edn"
-   :reference/authority :historical}
-  {:reference/id :annex/legacy-native-map
-   :reference/path
-   "../../../00-unsorted/platform-language/draft/conformance/native.edn"
-   :reference/authority :historical}]
-
- :annex/conformance
- [{:conformance/id :annex/library-hal-tests
-   :conformance/path "../../../../lib/test/std/foundation"
-   :conformance/authority :implementation-evidence}
-  {:conformance/id :annex/legacy-runtime-cases
-   :conformance/path
-   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
-   :conformance/authority :migration-evidence}]}
+ :document/summary "Generated catalog of the current std.foundation root and child namespaces, native static objects, automatic aliases, and historical migrations."
+ :spec/conforms-to {:spec/id :hara/foundation-annex-metaspec :spec/version "alpha"}
+ :annex/source {
+                 :source/repository "https://github.com/hara-lang/hara"
+                 :source/ref "209ffd3f8ac596b02290cd73663a75f1918ff436"
+                 :source/commit "209ffd3f8ac596b02290cd73663a75f1918ff436"
+                 :source/manifest-schema 2
+                 :source/surface-digest "sha256:8fdb5fafde7b0c29b1a01b2d7f7f9dfae037aa35ac622a9f277840bd4c8db95e"
+                 :source/migration-digest "sha256:b82361b350af7af09212597e6ac042767cadf52c6c2964fd67da2063ef868437"
+                }
+ :annex/scope {
+                :scope/namespace-family "std.foundation"
+                :scope/includes #{:root-surface :implemented-child-namespaces :aliases :native-static-objects :migration-records}
+                :scope/excludes #{:implementation-helper-namespaces :unregistered-source-files :test-fixtures :planned-unimplemented-libraries}
+               }
+ :annex/invariants [
+                     {
+                        :requirement/id :annex/registered-inventory
+                        :requirement/level :must
+                        :requirement/text "Only namespaces present in Hara's registered standard-library inventory are represented as current Foundation namespaces."
+                       }
+                     {
+                        :requirement/id :annex/root-separate
+                        :requirement/level :must
+                        :requirement/text "The root std.foundation binding surface is represented independently from the child namespace count."
+                       }
+                     {
+                        :requirement/id :annex/native-separate
+                        :requirement/level :must-not
+                        :requirement/text "An alias or native static object is classified as a loadable namespace."
+                       }
+                     {
+                        :requirement/id :annex/migration-separate
+                        :requirement/level :must-not
+                        :requirement/text "A moved or retired name contributes to the current namespace count."
+                       }
+                    ]
+ :annex/root {
+               :root/namespace std.foundation
+               :root/status :implemented
+               :root/source-path "std/foundation.hal"
+               :root/public-bindings [
+                                        {
+                                            :binding/name test-config
+                                            :binding/kind :defn
+                                            :binding/signature "[options]"
+                                            :binding/doc "Validates test options against the runtime-owned Test configuration."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 57
+                                           }
+                                        {
+                                            :binding/name test-result
+                                            :binding/kind :defn
+                                            :binding/doc "Constructs a portable test result, optionally adding outcome details."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 63
+                                           }
+                                        {
+                                            :binding/name test-check
+                                            :binding/kind :defmacro
+                                            :binding/signature "[name actual expected]"
+                                            :binding/doc "Evaluates one lightweight assertion and converts thrown errors into results."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 72
+                                           }
+                                        {
+                                            :binding/name test-passed?
+                                            :binding/kind :defn
+                                            :binding/signature "[result]"
+                                            :binding/doc "Returns true when a portable test result passed."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 87
+                                           }
+                                        {
+                                            :binding/name read-forms
+                                            :binding/kind :defn
+                                            :binding/signature "[path]"
+                                            :binding/doc "Reads every top-level form from a capability-gated HAL source file."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 93
+                                           }
+                                        {
+                                            :binding/name identity
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns its argument unchanged."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 103
+                                           }
+                                        {
+                                            :binding/name inc
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns value + 1."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 108
+                                           }
+                                        {
+                                            :binding/name dec
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns value - 1."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 113
+                                           }
+                                        {
+                                            :binding/name constantly
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns a function that ignores its arguments and always returns value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 118
+                                           }
+                                        {
+                                            :binding/name comp
+                                            :binding/kind :defn
+                                            :binding/doc "Composes two or more functions right-to-left."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 123
+                                           }
+                                        {
+                                            :binding/name complement
+                                            :binding/kind :defn
+                                            :binding/signature "[predicate]"
+                                            :binding/doc "Returns a function returning the logical negation of predicate's result."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 136
+                                           }
+                                        {
+                                            :binding/name partial
+                                            :binding/kind :defn
+                                            :binding/signature "[function & arguments]"
+                                            :binding/doc "Returns a function that calls function with arguments prepended to its own."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 141
+                                           }
+                                        {
+                                            :binding/name juxt
+                                            :binding/kind :defn
+                                            :binding/signature "[& functions]"
+                                            :binding/doc "Returns a function whose result is the vector of each function applied to\n   its arguments."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 148
+                                           }
+                                        {
+                                            :binding/name meta
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns value metadata through IObjType, or nil when none is present."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 162
+                                           }
+                                        {
+                                            :binding/name with-meta
+                                            :binding/kind :defn
+                                            :binding/signature "[value metadata]"
+                                            :binding/doc "Returns value carrying metadata through IObjType."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 168
+                                           }
+                                        {
+                                            :binding/name boolean
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Coerces value to true or false using Hara truthiness."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 178
+                                           }
+                                        {
+                                            :binding/name zero?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value equals 0."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 183
+                                           }
+                                        {
+                                            :binding/name pos?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is greater than 0."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 188
+                                           }
+                                        {
+                                            :binding/name neg?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is less than 0."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 193
+                                           }
+                                        {
+                                            :binding/name even?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is evenly divisible by 2."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 198
+                                           }
+                                        {
+                                            :binding/name odd?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is not evenly divisible by 2."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 203
+                                           }
+                                        {
+                                            :binding/name nil?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is nil."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 208
+                                           }
+                                        {
+                                            :binding/name false?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is exactly false."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 213
+                                           }
+                                        {
+                                            :binding/name true?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value is exactly true."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 218
+                                           }
+                                        {
+                                            :binding/name has?
+                                            :binding/kind :defn
+                                            :binding/signature "[collection key]"
+                                            :binding/doc "Returns true if collection contains key, including when its value is nil."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 223
+                                           }
+                                        {
+                                            :binding/name reset!
+                                            :binding/kind :defn
+                                            :binding/signature "[reference value]"
+                                            :binding/doc "Sets reference to value through IReset and returns value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 233
+                                           }
+                                        {
+                                            :binding/name cas!
+                                            :binding/kind :defn
+                                            :binding/signature "[reference old-value new-value]"
+                                            :binding/doc "Atomically replaces old-value with new-value through ICas."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 239
+                                           }
+                                        {
+                                            :binding/name swap!
+                                            :binding/kind :defn
+                                            :binding/signature "[reference function & arguments]"
+                                            :binding/doc "Atomically applies function to reference through an ICas retry loop."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 245
+                                           }
+                                        {
+                                            :binding/name watch-add
+                                            :binding/kind :defn
+                                            :binding/signature "[reference key function]"
+                                            :binding/doc "Adds a keyed watch callback through IWatch and returns reference."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 256
+                                           }
+                                        {
+                                            :binding/name watch-remove
+                                            :binding/kind :defn
+                                            :binding/signature "[reference key]"
+                                            :binding/doc "Removes keyed watch through IWatch and returns reference."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 262
+                                           }
+                                        {
+                                            :binding/name watch-list
+                                            :binding/kind :defn
+                                            :binding/signature "[reference]"
+                                            :binding/doc "Returns reference's watch iterator through IWatch."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 268
+                                           }
+                                        {
+                                            :binding/name empty?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true if value yields no items."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 278
+                                           }
+                                        {
+                                            :binding/name first
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the first item of value, or nil if value is empty."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 283
+                                           }
+                                        {
+                                            :binding/name second
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the second item of value, or nil if value has fewer than two items."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 290
+                                           }
+                                        {
+                                            :binding/name rest
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns all but the first item of value as a seq, or nil if empty."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 295
+                                           }
+                                        {
+                                            :binding/name not-empty
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns value if it has any items, nil otherwise."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 301
+                                           }
+                                        {
+                                            :binding/name last
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the last item of value, or nil if value is empty."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 306
+                                           }
+                                        {
+                                            :binding/name reverse
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the items of value in reverse order as a list."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 316
+                                           }
+                                        {
+                                            :binding/name get-in
+                                            :binding/kind :defn
+                                            :binding/signature "[value keys]"
+                                            :binding/doc "Returns the value at the end of the key path keys, or nil if absent."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 330
+                                           }
+                                        {
+                                            :binding/name assoc-in
+                                            :binding/kind :defn
+                                            :binding/signature "[value keys new-value]"
+                                            :binding/doc "Returns value with new-value associated at the end of the key path keys,\n   creating intermediate maps as needed."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 341
+                                           }
+                                        {
+                                            :binding/name update
+                                            :binding/kind :defn
+                                            :binding/signature "[value key function & args]"
+                                            :binding/doc "Associates key in value with the result of applying function to the old\n   value and args."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 355
+                                           }
+                                        {
+                                            :binding/name update-in
+                                            :binding/kind :defn
+                                            :binding/signature "[value keys function & args]"
+                                            :binding/doc "Like update, but at the end of the key path keys."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 362
+                                           }
+                                        {
+                                            :binding/name key
+                                            :binding/kind :defn
+                                            :binding/signature "[entry]"
+                                            :binding/doc "Returns the key of a map entry."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 372
+                                           }
+                                        {
+                                            :binding/name val
+                                            :binding/kind :defn
+                                            :binding/signature "[entry]"
+                                            :binding/doc "Returns the value of a map entry."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 377
+                                           }
+                                        {
+                                            :binding/name keys
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns a vector of the map's keys."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 382
+                                           }
+                                        {
+                                            :binding/name vals
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns a vector of the map's values."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 387
+                                           }
+                                        {
+                                            :binding/name range
+                                            :binding/kind :defn
+                                            :binding/doc "Returns a lazy seq of numbers: from 0 upward, below end, or from start\n   below end."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 418
+                                           }
+                                        {
+                                            :binding/name repeat
+                                            :binding/kind :defn
+                                            :binding/doc "Returns a lazy seq of value repeated forever, or amount times."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 434
+                                           }
+                                        {
+                                            :binding/name repeatedly
+                                            :binding/kind :defn
+                                            :binding/doc "Returns a lazy seq of calls to function, forever or amount times."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 441
+                                           }
+                                        {
+                                            :binding/name iterate
+                                            :binding/kind :defn
+                                            :binding/signature "[function seed]"
+                                            :binding/doc "Returns a lazy seq of seed, (function seed), (function (function seed)), …"
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 448
+                                           }
+                                        {
+                                            :binding/name take-while
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly\n   materializes items while predicate holds."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 453
+                                           }
+                                        {
+                                            :binding/name drop-while
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly\n   materializes after dropping items while predicate holds."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 461
+                                           }
+                                        {
+                                            :binding/name partition-all
+                                            :binding/kind :defn
+                                            :binding/doc "Partitions value into groups of at most amount items; unary form returns a\n   transform."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 469
+                                           }
+                                        {
+                                            :binding/name partition
+                                            :binding/kind :defn
+                                            :binding/doc "Partitions value into groups of exactly amount items; unary form returns a\n   transform."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 478
+                                           }
+                                        {
+                                            :binding/name interpose
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly inserts\n   separator between items."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 487
+                                           }
+                                        {
+                                            :binding/name interleave
+                                            :binding/kind :defn
+                                            :binding/signature "[value & rest]"
+                                            :binding/doc "Eagerly returns the first items of each source, then the second items, and\n   so on, stopping at the shortest source."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 495
+                                           }
+                                        {
+                                            :binding/name map
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform. Otherwise eagerly maps function\n   over one or more sources into a vector, stopping at the shortest."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 503
+                                           }
+                                        {
+                                            :binding/name filter
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly keeps\n   items for which predicate returns true."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 513
+                                           }
+                                        {
+                                            :binding/name take
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly returns\n   the first amount items."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 521
+                                           }
+                                        {
+                                            :binding/name drop
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly returns\n   all but the first amount items."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 528
+                                           }
+                                        {
+                                            :binding/name mapcat
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly maps and\n   concatenates."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 535
+                                           }
+                                        {
+                                            :binding/name keep
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns an iterator transform; collection form eagerly returns\n   non-nil mapped results."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 543
+                                           }
+                                        {
+                                            :binding/name cycle
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns a lazy seq repeating the items of value forever."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 551
+                                           }
+                                        {
+                                            :binding/name zip
+                                            :binding/kind :defn
+                                            :binding/signature "[first & rest]"
+                                            :binding/doc "Eagerly returns tuples of the items of each source in parallel, stopping at\n   the shortest source."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 556
+                                           }
+                                        {
+                                            :binding/name partition-pair
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Eagerly returns value partitioned into pairs."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 564
+                                           }
+                                        {
+                                            :binding/name every?
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns a reusable terminal; collection form tests every item."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 569
+                                           }
+                                        {
+                                            :binding/name any?
+                                            :binding/kind :defn
+                                            :binding/doc "Unary form returns a reusable terminal; collection form tests any item."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 575
+                                           }
+                                        {
+                                            :binding/name E
+                                            :binding/kind :def
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 585
+                                           }
+                                        {
+                                            :binding/name PI
+                                            :binding/kind :def
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 587
+                                           }
+                                        {
+                                            :binding/name long
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Converts a numeric value to a signed 64-bit integer by truncating toward zero."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 592
+                                           }
+                                        {
+                                            :binding/name double
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Converts a numeric value to an IEEE-754 double."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 598
+                                           }
+                                        {
+                                            :binding/name bit-and
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Returns the bitwise conjunction of values through the portable Bits boundary."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 604
+                                           }
+                                        {
+                                            :binding/name bit-or
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Returns the bitwise disjunction of values through the portable Bits boundary."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 610
+                                           }
+                                        {
+                                            :binding/name bit-xor
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Returns the bitwise exclusive-or of values through the portable Bits boundary."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 616
+                                           }
+                                        {
+                                            :binding/name bit-not
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the bitwise complement of value through the portable Bits boundary."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 622
+                                           }
+                                        {
+                                            :binding/name bit-shift-left
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Left-shifts the first value by the remaining shift counts."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 628
+                                           }
+                                        {
+                                            :binding/name bit-shift-right
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Right-shifts the first value by the remaining shift counts."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 634
+                                           }
+                                        {
+                                            :binding/name abs
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the absolute magnitude of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 640
+                                           }
+                                        {
+                                            :binding/name acos
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the arc cosine of value in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 646
+                                           }
+                                        {
+                                            :binding/name acosh
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the inverse hyperbolic cosine of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 652
+                                           }
+                                        {
+                                            :binding/name asin
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the arc sine of value in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 658
+                                           }
+                                        {
+                                            :binding/name asinh
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the inverse hyperbolic sine of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 664
+                                           }
+                                        {
+                                            :binding/name atan
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the arc tangent of value in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 670
+                                           }
+                                        {
+                                            :binding/name atan2
+                                            :binding/kind :defn
+                                            :binding/signature "[y x]"
+                                            :binding/doc "Returns the angle for y and x in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 676
+                                           }
+                                        {
+                                            :binding/name atanh
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the inverse hyperbolic tangent of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 682
+                                           }
+                                        {
+                                            :binding/name ceil
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Rounds value upward to the nearest integral number."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 688
+                                           }
+                                        {
+                                            :binding/name cos
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the cosine of value in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 694
+                                           }
+                                        {
+                                            :binding/name cosh
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the hyperbolic cosine of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 700
+                                           }
+                                        {
+                                            :binding/name exp
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns Euler's number raised to value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 706
+                                           }
+                                        {
+                                            :binding/name floor
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Rounds value downward to the nearest integral number."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 712
+                                           }
+                                        {
+                                            :binding/name pow
+                                            :binding/kind :defn
+                                            :binding/signature "[value exponent]"
+                                            :binding/doc "Returns value raised to exponent."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 718
+                                           }
+                                        {
+                                            :binding/name sin
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the sine of value in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 724
+                                           }
+                                        {
+                                            :binding/name sinh
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the hyperbolic sine of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 730
+                                           }
+                                        {
+                                            :binding/name sqrt
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the non-negative square root of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 736
+                                           }
+                                        {
+                                            :binding/name tan
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the tangent of value in radians."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 742
+                                           }
+                                        {
+                                            :binding/name tanh
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns the hyperbolic tangent of value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 748
+                                           }
+                                        {
+                                            :binding/name T
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Ignores its arguments and returns true."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 754
+                                           }
+                                        {
+                                            :binding/name F
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Ignores its arguments and returns false."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 759
+                                           }
+                                        {
+                                            :binding/name NIL
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Ignores its arguments and returns nil."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 764
+                                           }
+                                        {
+                                            :binding/name U
+                                            :binding/kind :defn
+                                            :binding/signature "[function]"
+                                            :binding/doc "Self-application combinator."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 769
+                                           }
+                                        {
+                                            :binding/name Z
+                                            :binding/kind :defn
+                                            :binding/signature "[function]"
+                                            :binding/doc "Eager fixed-point combinator."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 774
+                                           }
+                                        {
+                                            :binding/name Y
+                                            :binding/kind :defn
+                                            :binding/signature "[function]"
+                                            :binding/doc "Classical fixed-point combinator; diverges under ordinary eager use."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 781
+                                           }
+                                        {
+                                            :binding/name min
+                                            :binding/kind :defn
+                                            :binding/signature "[value & values]"
+                                            :binding/doc "Returns the least of value and values under compare."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 792
+                                           }
+                                        {
+                                            :binding/name max
+                                            :binding/kind :defn
+                                            :binding/signature "[value & values]"
+                                            :binding/doc "Returns the greatest of value and values under compare."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 801
+                                           }
+                                        {
+                                            :binding/name sort
+                                            :binding/kind :defn
+                                            :binding/doc "Returns values sorted by comparison (default compare) as a vector. Stable."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 823
+                                           }
+                                        {
+                                            :binding/name sort-by
+                                            :binding/kind :defn
+                                            :binding/doc "Returns values sorted by the results of key-function under comparison\n   (default compare)."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 836
+                                           }
+                                        {
+                                            :binding/name drop-last
+                                            :binding/kind :defn
+                                            :binding/doc "Returns values without its last amount items (default 1) as a vector."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 851
+                                           }
+                                        {
+                                            :binding/name butlast
+                                            :binding/kind :defn
+                                            :binding/signature "[values]"
+                                            :binding/doc "Returns values without its last item."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 860
+                                           }
+                                        {
+                                            :binding/name take-last
+                                            :binding/kind :defn
+                                            :binding/signature "[amount values]"
+                                            :binding/doc "Returns the last amount items of values as a vector."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 865
+                                           }
+                                        {
+                                            :binding/name split-at
+                                            :binding/kind :defn
+                                            :binding/signature "[amount values]"
+                                            :binding/doc "Returns a pair of vector results from take and drop."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 872
+                                           }
+                                        {
+                                            :binding/name split-with
+                                            :binding/kind :defn
+                                            :binding/signature "[predicate values]"
+                                            :binding/doc "Returns vectors containing the longest matching prefix and the remainder."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 879
+                                           }
+                                        {
+                                            :binding/name partition-by
+                                            :binding/kind :defn
+                                            :binding/signature "[function values]"
+                                            :binding/doc "Returns a vector of the runs of items of values for which function returns\n   equal consecutive markers."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 894
+                                           }
+                                        {
+                                            :binding/name take-nth
+                                            :binding/kind :defn
+                                            :binding/signature "[amount values]"
+                                            :binding/doc "Returns every amount-th item as a vector. Throws on non-positive amount."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 914
+                                           }
+                                        {
+                                            :binding/name into
+                                            :binding/kind :defn
+                                            :binding/signature "[destination source]"
+                                            :binding/doc "Returns destination with every item of source conjoined."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 935
+                                           }
+                                        {
+                                            :binding/name distinct
+                                            :binding/kind :defn
+                                            :binding/signature "[values]"
+                                            :binding/doc "Returns the items of values with duplicates removed, preserving order and\n   origin."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 941
+                                           }
+                                        {
+                                            :binding/name distinct?
+                                            :binding/kind :defn
+                                            :binding/signature "[& values]"
+                                            :binding/doc "Returns true if no two of values are equal."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 956
+                                           }
+                                        {
+                                            :binding/name mapv
+                                            :binding/kind :defn
+                                            :binding/signature "[function & collections]"
+                                            :binding/doc "Returns a vector containing function applied across one or more collections."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 969
+                                           }
+                                        {
+                                            :binding/name map-indexed
+                                            :binding/kind :defn
+                                            :binding/signature "[function values]"
+                                            :binding/doc "Returns a vector of function applied to each index and value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 975
+                                           }
+                                        {
+                                            :binding/name ffirst
+                                            :binding/kind :defn
+                                            :binding/signature "[values]"
+                                            :binding/doc "Returns the first item of the first item in values."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 987
+                                           }
+                                        {
+                                            :binding/name remove
+                                            :binding/kind :defn
+                                            :binding/signature "[predicate values]"
+                                            :binding/doc "Returns the values for which predicate is false."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 993
+                                           }
+                                        {
+                                            :binding/name zipmap
+                                            :binding/kind :defn
+                                            :binding/signature "[map-keys map-values]"
+                                            :binding/doc "Returns a map of map-keys to map-values, stopping at the shorter input."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 999
+                                           }
+                                        {
+                                            :binding/name map-keys
+                                            :binding/kind :defn
+                                            :binding/signature "[function value-map]"
+                                            :binding/doc "Returns a map whose keys are (function key), preserving each value.\n   When transformed keys collide, the later entry wins."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1010
+                                           }
+                                        {
+                                            :binding/name map-vals
+                                            :binding/kind :defn
+                                            :binding/signature "[function value-map]"
+                                            :binding/doc "Returns a map with function applied to each value, preserving its keys."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1024
+                                           }
+                                        {
+                                            :binding/name merge-with
+                                            :binding/kind :defn
+                                            :binding/signature "[function & maps]"
+                                            :binding/doc "Merges maps left-to-right, combining duplicate values with\n   (function old new). Nil maps are skipped."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1037
+                                           }
+                                        {
+                                            :binding/name group-by
+                                            :binding/kind :defn
+                                            :binding/signature "[function values]"
+                                            :binding/doc "Returns a map of (function value) to vectors of the values producing it."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1060
+                                           }
+                                        {
+                                            :binding/name frequencies
+                                            :binding/kind :defn
+                                            :binding/signature "[values]"
+                                            :binding/doc "Returns a map of each distinct item of values to its occurrence count."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1072
+                                           }
+                                        {
+                                            :binding/name union
+                                            :binding/kind :defn
+                                            :binding/signature "[& sets]"
+                                            :binding/doc "Returns a set containing every value in sets."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1086
+                                           }
+                                        {
+                                            :binding/name intersection
+                                            :binding/kind :defn
+                                            :binding/signature "[first-set & sets]"
+                                            :binding/doc "Returns the values present in every set."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1092
+                                           }
+                                        {
+                                            :binding/name difference
+                                            :binding/kind :defn
+                                            :binding/signature "[first-set & sets]"
+                                            :binding/doc "Returns values in first-set absent from every remaining set."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1104
+                                           }
+                                        {
+                                            :binding/name subset?
+                                            :binding/kind :defn
+                                            :binding/signature "[left right]"
+                                            :binding/doc "Returns true when every value in left is present in right."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1110
+                                           }
+                                        {
+                                            :binding/name superset?
+                                            :binding/kind :defn
+                                            :binding/signature "[left right]"
+                                            :binding/doc "Returns true when every value in right is present in left."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1116
+                                           }
+                                        {
+                                            :binding/name hierarchical-top
+                                            :binding/kind :defn
+                                            :binding/signature "[index]"
+                                            :binding/doc "Returns the root node of a descendant hierarchy."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1122
+                                           }
+                                        {
+                                            :binding/name hierarchical-sort
+                                            :binding/kind :defn
+                                            :binding/signature "[index]"
+                                            :binding/doc "Prunes a descendant hierarchy into its direct dependency graph."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1133
+                                           }
+                                        {
+                                            :binding/name topological-top
+                                            :binding/kind :defn
+                                            :binding/signature "[graph]"
+                                            :binding/doc "Returns graph nodes which are not dependencies of another node."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1154
+                                           }
+                                        {
+                                            :binding/name find-cycle
+                                            :binding/kind :defn
+                                            :binding/signature "[graph]"
+                                            :binding/doc "Returns one closed cycle path from graph, or nil."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1181
+                                           }
+                                        {
+                                            :binding/name topological-sort
+                                            :binding/kind :defn
+                                            :binding/signature "[graph]"
+                                            :binding/doc "Returns graph nodes in dependency order and throws on a cycle."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1187
+                                           }
+                                        {
+                                            :binding/name topological-sort-order-by-deps
+                                            :binding/kind :defn
+                                            :binding/signature "[graph sorted-values]"
+                                            :binding/doc "Stably sorts each dependency level by dependency count and node identity."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1224
+                                           }
+                                        {
+                                            :binding/name form?
+                                            :binding/kind :defn
+                                            :binding/signature "[value]"
+                                            :binding/doc "Returns true when value is a persistent Hara source form."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1248
+                                           }
+                                        {
+                                            :binding/name walk
+                                            :binding/kind :defn
+                                            :binding/signature "[inner outer form]"
+                                            :binding/doc "Traverses persistent data while preserving collection kinds and metadata."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1254
+                                           }
+                                        {
+                                            :binding/name postwalk
+                                            :binding/kind :defn
+                                            :binding/signature "[function form]"
+                                            :binding/doc "Performs a depth-first post-order traversal."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1284
+                                           }
+                                        {
+                                            :binding/name prewalk
+                                            :binding/kind :defn
+                                            :binding/signature "[function form]"
+                                            :binding/doc "Performs a depth-first pre-order traversal."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1290
+                                           }
+                                        {
+                                            :binding/name prewalk-replace
+                                            :binding/kind :defn
+                                            :binding/signature "[replacements form]"
+                                            :binding/doc "Recursively replaces keys found in replacements before descending."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1296
+                                           }
+                                        {
+                                            :binding/name postwalk-replace
+                                            :binding/kind :defn
+                                            :binding/signature "[replacements form]"
+                                            :binding/doc "Recursively replaces keys found in replacements after descending."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1304
+                                           }
+                                        {
+                                            :binding/name macroexpand
+                                            :binding/kind :defn
+                                            :binding/signature "[form]"
+                                            :binding/doc "Repeatedly applies macroexpand-1 until the form is stable. Throws after\n   1000 expansion steps."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1315
+                                           }
+                                        {
+                                            :binding/name macroexpand-all
+                                            :binding/kind :defn
+                                            :binding/signature "[form]"
+                                            :binding/doc "Fully expands form, descending into subforms. Quote bodies are preserved;\n   syntax-quote templates expand only their unquoted parts."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1371
+                                           }
+                                        {
+                                            :binding/name case
+                                            :binding/kind :defmacro
+                                            :binding/signature "[value & clauses]"
+                                            :binding/doc "Selects the expression paired with the matching constant, or the optional default."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1475
+                                           }
+                                        {
+                                            :binding/name some->
+                                            :binding/kind :defmacro
+                                            :binding/signature "[value & forms]"
+                                            :binding/doc "Threads a non-nil value through forms as their first argument."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1481
+                                           }
+                                        {
+                                            :binding/name some->>
+                                            :binding/kind :defmacro
+                                            :binding/signature "[value & forms]"
+                                            :binding/doc "Threads a non-nil value through forms as their last argument."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1486
+                                           }
+                                        {
+                                            :binding/name apply-in
+                                            :binding/kind :defn
+                                            :binding/signature "[value runtime args]"
+                                            :binding/doc "Invokes value in runtime after IApplicable input and output transforms."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1495
+                                           }
+                                        {
+                                            :binding/name apply-as
+                                            :binding/kind :defn
+                                            :binding/signature "[value args]"
+                                            :binding/doc "Invokes value using its default IApplicable runtime."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1503
+                                           }
+                                        {
+                                            :binding/name invoke-as
+                                            :binding/kind :defn
+                                            :binding/signature "[value & args]"
+                                            :binding/doc "Invokes value using its default IApplicable runtime and arguments."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1509
+                                           }
+                                        {
+                                            :binding/name doto
+                                            :binding/kind :defmacro
+                                            :binding/signature "[value & forms]"
+                                            :binding/doc "Evaluates value once, invokes each form with it inserted first, and returns\n   the original value."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1526
+                                           }
+                                        {
+                                            :binding/name if-not
+                                            :binding/kind :defmacro
+                                            :binding/signature "[test then & alternative]"
+                                            :binding/doc "Evaluates then when test is false, otherwise the optional alternative."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1536
+                                           }
+                                        {
+                                            :binding/name when
+                                            :binding/kind :defmacro
+                                            :binding/signature "[test & body]"
+                                            :binding/doc "Evaluates body when test is truthy, otherwise returns nil."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1541
+                                           }
+                                        {
+                                            :binding/name if-let
+                                            :binding/kind :defmacro
+                                            :binding/signature "[binding then & alternative]"
+                                            :binding/doc "Binds name to expression; evaluates then when the value is truthy,\n   otherwise the optional alternative."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1546
+                                           }
+                                        {
+                                            :binding/name when-let
+                                            :binding/kind :defmacro
+                                            :binding/signature "[binding & body]"
+                                            :binding/doc "Binds name to expression; when the value is truthy, evaluates body."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1555
+                                           }
+                                        {
+                                            :binding/name cond->
+                                            :binding/kind :defmacro
+                                            :binding/signature "[value & clauses]"
+                                            :binding/doc "Threads value through each step whose condition holds, inserting it as the\n   first argument."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1563
+                                           }
+                                        {
+                                            :binding/name cond->>
+                                            :binding/kind :defmacro
+                                            :binding/signature "[value & clauses]"
+                                            :binding/doc "Threads value through each step whose condition holds, inserting it as the\n   last argument."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1569
+                                           }
+                                        {
+                                            :binding/name with-ns
+                                            :binding/kind :defmacro
+                                            :binding/signature "[namespace & forms]"
+                                            :binding/doc "Evaluates body forms in an existing namespace and restores the caller."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1575
+                                           }
+                                        {
+                                            :binding/name intern-in
+                                            :binding/kind :defmacro
+                                            :binding/signature "[ns? & syms]"
+                                            :binding/doc "Copies selected Vars into a namespace as its public façade."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1580
+                                           }
+                                        {
+                                            :binding/name intern-all
+                                            :binding/kind :defmacro
+                                            :binding/signature "[& namespaces]"
+                                            :binding/doc "Copies every public Var from each source namespace into the current namespace."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1597
+                                           }
+                                        {
+                                            :binding/name *template-meta*
+                                            :binding/kind :def
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1612
+                                           }
+                                        {
+                                            :binding/name with:template-meta
+                                            :binding/kind :defmacro
+                                            :binding/signature "[metadata & body]"
+                                            :binding/doc "Binds template metadata for the duration of body."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1614
+                                           }
+                                        {
+                                            :binding/name template-meta
+                                            :binding/kind :defn
+                                            :binding/signature "[]"
+                                            :binding/doc "Returns metadata supplied to the active template expansion."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1621
+                                           }
+                                        {
+                                            :binding/name template-vars
+                                            :binding/kind :defmacro
+                                            :binding/signature "[spec & entries]"
+                                            :binding/doc "Evaluates template forms for named source Vars."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1627
+                                           }
+                                        {
+                                            :binding/name template-entries
+                                            :binding/kind :defmacro
+                                            :binding/signature "[spec & entries]"
+                                            :binding/doc "Evaluates template forms for literal entries."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1643
+                                           }
+                                        {
+                                            :binding/name template-ensure
+                                            :binding/kind :defn
+                                            :binding/signature "[symbols variables]"
+                                            :binding/doc "Returns generated template Vars after the caller has materialized them."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1653
+                                           }
+                                        {
+                                            :binding/name code-line
+                                            :binding/kind :defmacro
+                                            :binding/signature "[]"
+                                            :binding/doc "Expands to the line number of the invocation form."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1659
+                                           }
+                                        {
+                                            :binding/name code-column
+                                            :binding/kind :defmacro
+                                            :binding/signature "[]"
+                                            :binding/doc "Expands to the column number of the invocation form."
+                                            :binding/source-path "std/foundation.hal"
+                                            :binding/source-line 1663
+                                           }
+                                       ]
+               :root/profiles [:jvm :rust :wasm]
+              }
+ :annex/libraries [
+                    {
+                       :library/id :foundation/bytes
+                       :library/namespace std.foundation.bytes
+                       :library/alias bytes
+                       :library/classification :native-facade
+                       :library/status :implemented
+                       :library/source-path "std/foundation/bytes.hal"
+                       :library/profiles [:jvm :rust :wasm]
+                       :library/public-vars [count get set copy slice u8 s8]
+                       :library/public-bindings [
+                                                    {
+                                                         :binding/name count
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns the number of bytes in value."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 32
+                                                        }
+                                                    {
+                                                         :binding/name get
+                                                         :binding/kind :defn
+                                                         :binding/doc "Returns a byte at index, or fallback when the indexed form supplies one."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 38
+                                                        }
+                                                    {
+                                                         :binding/name set
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value index item]"
+                                                         :binding/doc "Returns value with item written at index."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 47
+                                                        }
+                                                    {
+                                                         :binding/name copy
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns an independent byte-buffer copy of value."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 53
+                                                        }
+                                                    {
+                                                         :binding/name slice
+                                                         :binding/kind :defn
+                                                         :binding/doc "Returns the bytes from start up to optional end."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 59
+                                                        }
+                                                    {
+                                                         :binding/name u8
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Coerces value to its unsigned eight-bit representation."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 68
+                                                        }
+                                                    {
+                                                         :binding/name s8
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Coerces value to its signed eight-bit representation."
+                                                         :binding/source-path "std/foundation/bytes.hal"
+                                                         :binding/source-line 74
+                                                        }
+                                                   ]
+                      }
+                    {
+                       :library/id :foundation/coroutine
+                       :library/namespace std.foundation.coroutine
+                       :library/alias co
+                       :library/classification :native-and-protocol-facade
+                       :library/status :implemented
+                       :library/source-path "std/foundation/coroutine.hal"
+                       :library/profiles [:jvm :rust :wasm]
+                       :library/public-vars [create coroutine? status resume close yield await]
+                       :library/public-bindings [
+                                                    {
+                                                         :binding/name create
+                                                         :binding/kind :defn
+                                                         :binding/signature "[function]"
+                                                         :binding/doc "Creates a suspended coroutine from function."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 40
+                                                        }
+                                                    {
+                                                         :binding/name coroutine?
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns true when value is a coroutine."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 46
+                                                        }
+                                                    {
+                                                         :binding/name status
+                                                         :binding/kind :defn
+                                                         :binding/signature "[coroutine]"
+                                                         :binding/doc "Returns coroutine's scheduler state."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 52
+                                                        }
+                                                    {
+                                                         :binding/name resume
+                                                         :binding/kind :defn
+                                                         :binding/signature "[coroutine & arguments]"
+                                                         :binding/doc "Advances coroutine, supplying optional resume arguments."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 58
+                                                        }
+                                                    {
+                                                         :binding/name close
+                                                         :binding/kind :defn
+                                                         :binding/signature "[coroutine]"
+                                                         :binding/doc "Closes coroutine and releases its scheduler state."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 64
+                                                        }
+                                                    {
+                                                         :binding/name yield
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Suspends the current coroutine with value."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 70
+                                                        }
+                                                    {
+                                                         :binding/name await
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise]"
+                                                         :binding/doc "Suspends until promise settles, then returns or throws its result."
+                                                         :binding/source-path "std/foundation/coroutine.hal"
+                                                         :binding/source-line 76
+                                                        }
+                                                   ]
+                      }
+                    {
+                       :library/id :foundation/pretty
+                       :library/namespace std.foundation.pretty
+                       :library/alias pretty
+                       :library/classification :portable-hal
+                       :library/status :implemented
+                       :library/source-path "std/foundation/pretty.hal"
+                       :library/profiles [:jvm :rust :wasm]
+                       :library/public-vars [
+                                                default-options
+                                                CanonicalVisitor
+                                                PrettyVisitor
+                                                canonical-printer
+                                                pretty-printer
+                                                format-doc-edn
+                                                format-doc
+                                                render
+                                                write
+                                                pprint-str
+                                                pprint
+                                               ]
+                       :library/public-bindings [
+                                                    {
+                                                         :binding/name default-options
+                                                         :binding/kind :def
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 3
+                                                        }
+                                                    {
+                                                         :binding/name CanonicalVisitor
+                                                         :binding/kind :defstruct
+                                                         :binding/signature "[options]"
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 8
+                                                        }
+                                                    {
+                                                         :binding/name PrettyVisitor
+                                                         :binding/kind :defstruct
+                                                         :binding/signature "[options]"
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 9
+                                                        }
+                                                    {
+                                                         :binding/name canonical-printer
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 139
+                                                        }
+                                                    {
+                                                         :binding/name pretty-printer
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 145
+                                                        }
+                                                    {
+                                                         :binding/name format-doc-edn
+                                                         :binding/kind :defn
+                                                         :binding/signature "[visitor value]"
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 151
+                                                        }
+                                                    {
+                                                         :binding/name format-doc
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 154
+                                                        }
+                                                    {
+                                                         :binding/name render
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 168
+                                                        }
+                                                    {
+                                                         :binding/name write
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 172
+                                                        }
+                                                    {
+                                                         :binding/name pprint-str
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 176
+                                                        }
+                                                    {
+                                                         :binding/name pprint
+                                                         :binding/kind :defn
+                                                         :binding/source-path "std/foundation/pretty.hal"
+                                                         :binding/source-line 183
+                                                        }
+                                                   ]
+                      }
+                    {
+                       :library/id :foundation/promise
+                       :library/namespace std.foundation.promise
+                       :library/alias promise
+                       :library/classification :native-and-protocol-facade
+                       :library/status :implemented
+                       :library/source-path "std/foundation/promise.hal"
+                       :library/profiles [:jvm :rust :wasm]
+                       :library/public-vars [run new from all delay state value then catch finally cancel]
+                       :library/public-bindings [
+                                                    {
+                                                         :binding/name run
+                                                         :binding/kind :defn
+                                                         :binding/signature "[function]"
+                                                         :binding/doc "Runs function asynchronously and returns its promise."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 41
+                                                        }
+                                                    {
+                                                         :binding/name new
+                                                         :binding/kind :defn
+                                                         :binding/signature "[executor]"
+                                                         :binding/doc "Creates a promise controlled by executor."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 47
+                                                        }
+                                                    {
+                                                         :binding/name from
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns a settled promise containing value."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 53
+                                                        }
+                                                    {
+                                                         :binding/name all
+                                                         :binding/kind :defn
+                                                         :binding/signature "[values]"
+                                                         :binding/doc "Returns a promise of all values after every input succeeds."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 59
+                                                        }
+                                                    {
+                                                         :binding/name delay
+                                                         :binding/kind :defn
+                                                         :binding/signature "[milliseconds function]"
+                                                         :binding/doc "Runs function after milliseconds and returns its promise."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 65
+                                                        }
+                                                    {
+                                                         :binding/name state
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise]"
+                                                         :binding/doc "Returns promise's scheduler state."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 71
+                                                        }
+                                                    {
+                                                         :binding/name value
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise]"
+                                                         :binding/doc "Returns promise's settled value or provider-specific failure."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 77
+                                                        }
+                                                    {
+                                                         :binding/name then
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise function]"
+                                                         :binding/doc "Chains function after promise succeeds."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 83
+                                                        }
+                                                    {
+                                                         :binding/name catch
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise function]"
+                                                         :binding/doc "Chains function after promise fails."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 89
+                                                        }
+                                                    {
+                                                         :binding/name finally
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise function]"
+                                                         :binding/doc "Chains cleanup function after promise settles."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 95
+                                                        }
+                                                    {
+                                                         :binding/name cancel
+                                                         :binding/kind :defn
+                                                         :binding/signature "[promise]"
+                                                         :binding/doc "Requests best-effort cancellation of promise."
+                                                         :binding/source-path "std/foundation/promise.hal"
+                                                         :binding/source-line 101
+                                                        }
+                                                   ]
+                      }
+                    {
+                       :library/id :foundation/string
+                       :library/namespace std.foundation.string
+                       :library/alias str
+                       :library/classification :native-facade
+                       :library/status :implemented
+                       :library/source-path "std/foundation/string.hal"
+                       :library/profiles [:jvm :rust :wasm]
+                       :library/public-vars [
+                                                length
+                                                blank?
+                                                includes?
+                                                starts-with?
+                                                ends-with?
+                                                char-at
+                                                slice
+                                                index-of
+                                                last-index-of
+                                                join
+                                                split
+                                                split-lines
+                                                repeat
+                                                replace
+                                                replace-first
+                                                trim
+                                                trim-left
+                                                trim-right
+                                                trim-newlines
+                                                upper-case
+                                                lower-case
+                                                upper
+                                                lower
+                                                capital-case
+                                                capitalize
+                                                decapitalize
+                                                pad-left
+                                                pad-right
+                                                reverse
+                                                encode-utf8
+                                                decode-utf8
+                                                tag
+                                                escape
+                                                caseless=
+                                                replace-at
+                                                insert-at
+                                                camel-case
+                                                pascal-case
+                                                snake-case
+                                                spear-case
+                                                dot-case
+                                                to-fixed
+                                               ]
+                       :library/public-bindings [
+                                                    {
+                                                         :binding/name length
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns the portable character count of value."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 10
+                                                        }
+                                                    {
+                                                         :binding/name blank?
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns true when value is nil, empty, or contains only whitespace."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 16
+                                                        }
+                                                    {
+                                                         :binding/name includes?
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value part]"
+                                                         :binding/doc "Returns true when value contains part."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 24
+                                                        }
+                                                    {
+                                                         :binding/name starts-with?
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value part]"
+                                                         :binding/doc "Returns true when value begins with part."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 30
+                                                        }
+                                                    {
+                                                         :binding/name ends-with?
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value part]"
+                                                         :binding/doc "Returns true when value ends with part."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 36
+                                                        }
+                                                    {
+                                                         :binding/name char-at
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value index]"
+                                                         :binding/doc "Returns the character at index as a one-character string."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 42
+                                                        }
+                                                    {
+                                                         :binding/name slice
+                                                         :binding/kind :defn
+                                                         :binding/doc "Returns the portion of value from start up to optional end."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 48
+                                                        }
+                                                    {
+                                                         :binding/name index-of
+                                                         :binding/kind :defn
+                                                         :binding/doc "Returns the first index of part at or after optional offset."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 57
+                                                        }
+                                                    {
+                                                         :binding/name last-index-of
+                                                         :binding/kind :defn
+                                                         :binding/doc "Returns the last index of part, optionally bounded by offset."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 66
+                                                        }
+                                                    {
+                                                         :binding/name join
+                                                         :binding/kind :defn
+                                                         :binding/signature "[separator values]"
+                                                         :binding/doc "Joins values into one string, placing separator between adjacent items."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 75
+                                                        }
+                                                    {
+                                                         :binding/name split
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value separator]"
+                                                         :binding/doc "Splits value around separator and returns the resulting strings."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 81
+                                                        }
+                                                    {
+                                                         :binding/name split-lines
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Splits value at portable line boundaries."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 87
+                                                        }
+                                                    {
+                                                         :binding/name repeat
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value count]"
+                                                         :binding/doc "Returns value repeated count times."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 93
+                                                        }
+                                                    {
+                                                         :binding/name replace
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value match replacement]"
+                                                         :binding/doc "Replaces every occurrence of match in value with replacement."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 99
+                                                        }
+                                                    {
+                                                         :binding/name replace-first
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value match replacement]"
+                                                         :binding/doc "Replaces the first occurrence of match in value with replacement."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 105
+                                                        }
+                                                    {
+                                                         :binding/name trim
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Removes leading and trailing whitespace from value."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 111
+                                                        }
+                                                    {
+                                                         :binding/name trim-left
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Removes leading whitespace from value."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 117
+                                                        }
+                                                    {
+                                                         :binding/name trim-right
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Removes trailing whitespace from value."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 123
+                                                        }
+                                                    {
+                                                         :binding/name trim-newlines
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Removes trailing newline and carriage-return characters from value."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 129
+                                                        }
+                                                    {
+                                                         :binding/name upper-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns value converted to uppercase."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 142
+                                                        }
+                                                    {
+                                                         :binding/name lower-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns value converted to lowercase."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 148
+                                                        }
+                                                    {
+                                                         :binding/name upper
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Compatibility alias for upper-case."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 154
+                                                        }
+                                                    {
+                                                         :binding/name lower
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Compatibility alias for lower-case."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 160
+                                                        }
+                                                    {
+                                                         :binding/name capital-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Uppercases the first character and lowercases the remainder."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 166
+                                                        }
+                                                    {
+                                                         :binding/name capitalize
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Uppercases value's first character according to the native contract."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 178
+                                                        }
+                                                    {
+                                                         :binding/name decapitalize
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Lowercases value's first character according to the native contract."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 184
+                                                        }
+                                                    {
+                                                         :binding/name pad-left
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value length padding]"
+                                                         :binding/doc "Prepends padding until value reaches length."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 190
+                                                        }
+                                                    {
+                                                         :binding/name pad-right
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value length padding]"
+                                                         :binding/doc "Appends padding until value reaches length."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 196
+                                                        }
+                                                    {
+                                                         :binding/name reverse
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Returns value with its portable character order reversed."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 202
+                                                        }
+                                                    {
+                                                         :binding/name encode-utf8
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Encodes value as UTF-8 bytes."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 208
+                                                        }
+                                                    {
+                                                         :binding/name decode-utf8
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Decodes UTF-8 bytes into a string."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 214
+                                                        }
+                                                    {
+                                                         :binding/name tag
+                                                         :binding/kind :defn
+                                                         :binding/doc "Returns portable tag text and concatenates additional values without a separator."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 238
+                                                        }
+                                                    {
+                                                         :binding/name escape
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value replacements]"
+                                                         :binding/doc "Replaces each one-character string found in replacements."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 251
+                                                        }
+                                                    {
+                                                         :binding/name caseless=
+                                                         :binding/kind :defn
+                                                         :binding/signature "[left right]"
+                                                         :binding/doc "Returns true when values are equal after lowercase conversion."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 267
+                                                        }
+                                                    {
+                                                         :binding/name replace-at
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value index replacement]"
+                                                         :binding/doc "Replaces the character at a portable Unicode index."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 274
+                                                        }
+                                                    {
+                                                         :binding/name insert-at
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value index replacement]"
+                                                         :binding/doc "Inserts replacement at a portable Unicode index."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 282
+                                                        }
+                                                    {
+                                                         :binding/name camel-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Converts spaces, underscores, hyphens, and camel humps to camelCase."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 351
+                                                        }
+                                                    {
+                                                         :binding/name pascal-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Converts spaces, underscores, hyphens, and camel humps to PascalCase."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 364
+                                                        }
+                                                    {
+                                                         :binding/name snake-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Converts spaces, hyphens, and camel humps to snake_case."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 374
+                                                        }
+                                                    {
+                                                         :binding/name spear-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Converts spaces, underscores, and camel humps to spear-case."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 380
+                                                        }
+                                                    {
+                                                         :binding/name dot-case
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value]"
+                                                         :binding/doc "Converts spaces, underscores, hyphens, and camel humps to dot.case."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 386
+                                                        }
+                                                    {
+                                                         :binding/name to-fixed
+                                                         :binding/kind :defn
+                                                         :binding/signature "[value precision]"
+                                                         :binding/doc "Formats numeric value with exactly precision fractional digits."
+                                                         :binding/source-path "std/foundation/string.hal"
+                                                         :binding/source-line 392
+                                                        }
+                                                   ]
+                      }
+                   ]
+ :annex/aliases [
+                  {
+                     :alias/name bytes
+                     :alias/target std.foundation.bytes
+                     :alias/kind :namespace-alias
+                     :alias/automatic true
+                     :alias/profiles [:jvm :rust :wasm]
+                    }
+                  {
+                     :alias/name co
+                     :alias/target std.foundation.coroutine
+                     :alias/kind :namespace-alias
+                     :alias/automatic true
+                     :alias/profiles [:jvm :rust :wasm]
+                    }
+                  {
+                     :alias/name pretty
+                     :alias/target std.foundation.pretty
+                     :alias/kind :namespace-alias
+                     :alias/automatic true
+                     :alias/profiles [:jvm :rust :wasm]
+                    }
+                  {
+                     :alias/name promise
+                     :alias/target std.foundation.promise
+                     :alias/kind :namespace-alias
+                     :alias/automatic true
+                     :alias/profiles [:jvm :rust :wasm]
+                    }
+                  {
+                     :alias/name str
+                     :alias/target std.foundation.string
+                     :alias/kind :namespace-alias
+                     :alias/automatic true
+                     :alias/profiles [:jvm :rust :wasm]
+                    }
+                 ]
+ :annex/native-objects [
+                         {
+                            :native/name Arr
+                            :native/internal-namespace std.native.Arr
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Bits
+                            :native/internal-namespace std.native.Bits
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Bytes
+                            :native/internal-namespace std.native.Bytes
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Coroutine
+                            :native/internal-namespace std.native.Coroutine
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Crypto
+                            :native/internal-namespace std.native.Crypto
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Document
+                            :native/internal-namespace std.native.Document
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Edn
+                            :native/internal-namespace std.native.Edn
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Error
+                            :native/internal-namespace std.native.Error
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name File
+                            :native/internal-namespace std.native.File
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Host
+                            :native/internal-namespace std.native.Host
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Iter
+                            :native/internal-namespace std.native.Iter
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Json
+                            :native/internal-namespace std.native.Json
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Kernel
+                            :native/internal-namespace std.native.Kernel
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Maths
+                            :native/internal-namespace std.native.Maths
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Numbers
+                            :native/internal-namespace std.native.Numbers
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Obj
+                            :native/internal-namespace std.native.Obj
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Printer
+                            :native/internal-namespace std.native.Printer
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Promise
+                            :native/internal-namespace std.native.Promise
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Regex
+                            :native/internal-namespace std.native.Regex
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Runtime
+                            :native/internal-namespace std.native.Runtime
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Socket
+                            :native/internal-namespace std.native.Socket
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name String
+                            :native/internal-namespace std.native.String
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name Test
+                            :native/internal-namespace std.native.Test
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                         {
+                            :native/name UUID
+                            :native/internal-namespace std.native.UUID
+                            :native/status :implemented
+                            :native/profiles [:jvm :rust :wasm]
+                           }
+                        ]
+ :annex/migrations [
+                     {
+                        :migration/id :foundation-migration/component
+                        :migration/former-name std.foundation.component
+                        :migration/status :moved
+                        :migration/require-rewrite "Replace the old dependency with std.lib.component."
+                        :migration/call-rewrite "Replace std.foundation.component/... with std.lib.component/...."
+                        :migration/evidence [
+                                                "core/rust/standard-library.namespaces"
+                                                "core/lib/src/std/lib/component.hal"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :namespace :replacement/name std.lib.component}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/crypto
+                        :migration/former-name std.foundation.crypto
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; Crypto is a built-in static object."
+                        :migration/call-rewrite "Replace std.foundation.crypto/... with Crypto/... and use verified std.crypto.* libraries for higher-level algorithms."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/rust/src/kernel/generated.rs"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name Crypto}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/edn
+                        :migration/former-name std.foundation.edn
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; Edn is a built-in static object."
+                        :migration/call-rewrite "Replace std.foundation.edn/... with Edn/...."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/java/src/main/java/hara/truffle/NativeEdnLibraryProvider.java"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name Edn}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/file
+                        :migration/former-name std.foundation.file
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; use File for current native primitives and require std.fs only after it is present in the selected release."
+                        :migration/call-rewrite "Replace std.foundation.file/... with File/...; migrate higher-level portable operations to std.fs as that library lands."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/java/src/main/java/hara/truffle/NativeFileLibraryProvider.java"
+                                                "core/rust/standard-library.namespaces"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name File}
+                        :migration/planned-replacement {
+                                                           :replacement/kind :namespace
+                                                           :replacement/name std.fs
+                                                           :replacement/status :planned
+                                                          }
+                        :migration/tracking ["#644" "#649" "hara-lang/hara-specs-registry#12"]
+                       }
+                     {
+                        :migration/id :foundation-migration/host
+                        :migration/former-name std.foundation.host
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; Host is a built-in static object."
+                        :migration/call-rewrite "Replace std.foundation.host/... with Host/...."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/rust/src/kernel/generated.rs"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name Host}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/json
+                        :migration/former-name std.foundation.json
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; Json is a built-in static object."
+                        :migration/call-rewrite "Replace std.foundation.json/... with Json/...."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/rust/src/kernel/generated.rs"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name Json}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/kernel
+                        :migration/former-name std.foundation.kernel
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; Kernel is a built-in static object."
+                        :migration/call-rewrite "Replace std.foundation.kernel/... with Kernel/...."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/rust/src/kernel/generated.rs"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name Kernel}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/os
+                        :migration/former-name std.foundation.os
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency and use the OS/Process boundary supported by the runtime profile."
+                        :migration/call-rewrite "Replace std.foundation.os/... with OS/... where available; retain runtime-native Process handling for process values."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/java/src/main/java/hara/truffle/NativeOsLibraryProvider.java"
+                                                "core/rust/src/native_process.rs"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name OS}
+                        :migration/profile-notes {
+                                                     :profile/jvm "Provided by std.native.OS."
+                                                     :profile/rust "Process handles use std.native.Process; complete OS/static-object parity remains under cross-runtime validation."
+                                                     :profile/wasm "Availability is host-capability dependent."
+                                                    }
+                        :migration/tracking ["#644" "#648" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/pretty-engine
+                        :migration/former-name std.foundation.pretty.engine
+                        :migration/status :retired
+                        :migration/require-rewrite "Require std.foundation.pretty rather than its former implementation helper."
+                        :migration/call-rewrite "Use the public std.foundation.pretty API; internal engine functions are not a compatibility promise."
+                        :migration/evidence [
+                                                "core/lib/src/std/foundation/pretty.hal"
+                                                "core/rust/standard-library.namespaces"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :namespace :replacement/name std.foundation.pretty}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/set
+                        :migration/former-name std.foundation.set
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; retained set operations resolve from std.foundation."
+                        :migration/call-rewrite "Replace std.foundation.set/union and related calls with std.foundation/union or referred root operations."
+                        :migration/evidence [
+                                                "core/lib/src/std/foundation.hal"
+                                                "core/rust/standard-library.namespaces"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :namespace-root :replacement/name std.foundation}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                     {
+                        :migration/id :foundation-migration/socket
+                        :migration/former-name std.foundation.socket
+                        :migration/status :moved
+                        :migration/require-rewrite "Remove the old dependency; Socket is a built-in static object."
+                        :migration/call-rewrite "Replace std.foundation.socket/... with Socket/...."
+                        :migration/evidence [
+                                                "core/lib/src/code/translate/rules.hal"
+                                                "core/rust/src/kernel/generated.rs"
+                                               ]
+                        :migration/profiles [:jvm :rust :wasm]
+                        :migration/replacement {:replacement/kind :native-static-object :replacement/name Socket}
+                        :migration/tracking ["#644" "#649"]
+                       }
+                    ]
+ :annex/capabilities {
+                       :capability/file {:capability/native-object File :capability/authority :filesystem}
+                       :capability/network {:capability/native-object Socket :capability/authority :network}
+                       :capability/process {
+                                              :capability/native-objects [OS Process]
+                                              :capability/authority :process
+                                             }
+                       :capability/host-call {:capability/native-object Host :capability/authority :host-call}
+                       :capability/kernel {:capability/native-object Kernel :capability/authority :kernel}
+                      }
+ :annex/errors [
+                 {:error/id :annex/invalid-arity}
+                 {:error/id :annex/invalid-argument}
+                 {:error/id :annex/capability-denied}
+                 {:error/id :annex/unavailable-profile}
+                 {:error/id :annex/closed-handle}
+                 {:error/id :annex/type-not-transportable}
+                ]
+ :annex/references [
+                     {
+                        :reference/id :annex/api-manifest
+                        :reference/path "generated/foundation-api-manifest.json"
+                        :reference/authority :generated-source
+                       }
+                     {
+                        :reference/id :annex/registered-inventory
+                        :reference/path "core/rust/standard-library.namespaces"
+                        :reference/authority :implementation
+                       }
+                     {
+                        :reference/id :annex/migration-ledger
+                        :reference/path "core/spec/std/foundation-migrations.json"
+                        :reference/authority :implementation
+                       }
+                     {
+                        :reference/id :annex/metaspec
+                        :reference/path "../metaspec/foundation-annex-metaspec.edn"
+                        :reference/authority :normative-schema
+                       }
+                    ]
+ :annex/conformance [
+                      {
+                         :conformance/id :annex/manifest-generation
+                         :conformance/path "scripts/generate-foundation-annex.py"
+                         :conformance/authority :generator
+                        }
+                      {
+                         :conformance/id :annex/registry-validation
+                         :conformance/path "scripts/validate-registry.mjs"
+                         :conformance/authority :registry
+                        }
+                     ]
+ :annex/generation {
+                     :generation/tool "generate-foundation-annex"
+                     :generation/tool-version "1"
+                     :generation/manifest-schema 2
+                     :generation/surface-digest "sha256:8fdb5fafde7b0c29b1a01b2d7f7f9dfae037aa35ac622a9f277840bd4c8db95e"
+                     :generation/migration-digest "sha256:b82361b350af7af09212597e6ac042767cadf52c6c2964fd67da2063ef868437"
+                    }
+}

@@ -5,7 +5,7 @@
     "ref": "main",
     "manifestPath": "spec-manifest.json",
     "manifestDigest": "sha256:9da1ea2758fc548af07e1a87ae0bde9115174d4d6cf253c1f9bd1cedb81df344",
-    "catalogueDigest": "sha256:852b9484bfde7d389aa6ffedc035da53dd46f98b55338bc5e25b088039ea8724",
+    "catalogueDigest": "sha256:622e1845b5d37bb4c783ba9bb14aca8cce5c4eaf04bdd4b59246e4d9b629aa95",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 51,
     "ready": 0,
     "executable": 31,
-    "requirements": 331,
+    "requirements": 335,
     "materialized": 51,
     "pinnedSource": 0,
     "layers": [
@@ -414,7 +414,7 @@
       "slug": "hara-foundation-annex-metaspec",
       "coordinate": "hara/foundation-annex-metaspec",
       "title": "Hara Foundation annex specification meta-spec",
-      "summary": "Defines the machine-readable contract for public std.foundation.* library namespaces.",
+      "summary": "Defines the machine-readable contract for the current std.foundation surface, native capability objects, aliases, and migration records.",
       "type": "hara/metaspec",
       "version": "alpha",
       "status": "draft",
@@ -423,7 +423,7 @@
       "classification": "hara",
       "sourcePath": "01-lang/005-foundation-annex/metaspec/foundation-annex-metaspec.edn",
       "documentationPath": "01-lang/005-foundation-annex/metaspec/README.md",
-      "requirements": 6,
+      "requirements": 11,
       "formats": [
         "application/edn"
       ],
@@ -476,7 +476,7 @@
       "slug": "hara-foundation-annex",
       "coordinate": "hara/foundation-annex",
       "title": "Hara Foundation library annex",
-      "summary": "Portable catalog and behavioral boundary for the public std.foundation.* library namespaces.",
+      "summary": "Generated catalog of the current std.foundation root and child namespaces, native static objects, automatic aliases, and historical migrations.",
       "type": "foundation-annex-spec",
       "version": "alpha",
       "status": "draft",
@@ -485,7 +485,7 @@
       "classification": "hara",
       "sourcePath": "01-lang/005-foundation-annex/draft/foundation-annex.edn",
       "documentationPath": "01-lang/005-foundation-annex/draft/README.md",
-      "requirements": 5,
+      "requirements": 4,
       "formats": [
         "application/edn"
       ],
