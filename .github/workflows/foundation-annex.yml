@@ -1,0 +1,152 @@
+name: Foundation annex generation
+
+on:
+  pull_request:
+    paths:
+      - "foundation-api-target.json"
+      - "scripts/generate-foundation-annex.py"
+      - "scripts/test-generate-foundation-annex.py"
+      - "01-lang/005-foundation-annex/**"
+      - ".github/workflows/foundation-annex.yml"
+  push:
+    branches: [main]
+    paths:
+      - "foundation-api-target.json"
+      - "scripts/generate-foundation-annex.py"
+      - "scripts/test-generate-foundation-annex.py"
+      - "01-lang/005-foundation-annex/**"
+      - ".github/workflows/foundation-annex.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout specification registry
+        uses: actions/checkout@v4
+
+      - name: Read pinned Hara target
+        id: target
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          target = json.loads(Path("foundation-api-target.json").read_text())
+          repository = target["repository"]
+          commit = target["commit"]
+          schema = target["manifestSchemaVersion"]
+          if repository != "hara-lang/hara":
+              raise SystemExit(f"unsupported Foundation source repository: {repository}")
+          if len(commit) != 40 or any(ch not in "0123456789abcdef" for ch in commit):
+              raise SystemExit(f"Foundation source target is not immutable: {commit}")
+          if schema != 2:
+              raise SystemExit(f"unsupported Foundation manifest schema: {schema}")
+          print(f"repository={repository}")
+          print(f"commit={commit}")
+          PY
+
+      - name: Checkout pinned Hara source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.target.outputs.repository }}
+          ref: ${{ steps.target.outputs.commit }}
+          path: .hara-foundation-source
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Hara Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .hara-foundation-source/core/rust
+
+      - name: Test annex generation
+        run: |
+          python scripts/test-generate-foundation-annex.py
+          python -m py_compile \
+            scripts/generate-foundation-annex.py \
+            scripts/test-generate-foundation-annex.py
+
+      - name: Generate pinned schema-v2 manifest
+        run: |
+          python .hara-foundation-source/scripts/generate_foundation_api_manifest.py \
+            --root .hara-foundation-source \
+            --repository https://github.com/${{ steps.target.outputs.repository }} \
+            --ref ${{ steps.target.outputs.commit }} \
+            --commit ${{ steps.target.outputs.commit }} \
+            --output generated/foundation-api-manifest.json
+
+      - name: Regenerate annex and README
+        run: |
+          python scripts/generate-foundation-annex.py \
+            --input generated/foundation-api-manifest.json \
+            --annex-output 01-lang/005-foundation-annex/draft/foundation-annex.edn \
+            --readme-output 01-lang/005-foundation-annex/draft/README.md
+          git status --short -- \
+            01-lang/005-foundation-annex/draft/foundation-annex.edn \
+            01-lang/005-foundation-annex/draft/README.md
+
+      - name: Validate generated boundary and provenance
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("generated/foundation-api-manifest.json").read_text())
+          target = json.loads(Path("foundation-api-target.json").read_text())
+          expected = [
+              "std.foundation",
+              "std.foundation.bytes",
+              "std.foundation.coroutine",
+              "std.foundation.pretty",
+              "std.foundation.promise",
+              "std.foundation.string",
+          ]
+          current = [
+              item["name"]
+              for item in manifest["namespaces"]
+              if item.get("group") == "foundation"
+          ]
+          annex = Path("01-lang/005-foundation-annex/draft/foundation-annex.edn").read_text()
+          readme = Path("01-lang/005-foundation-annex/draft/README.md").read_text()
+          assert manifest["schemaVersion"] == target["manifestSchemaVersion"] == 2
+          assert manifest["source"]["commit"] == target["commit"]
+          assert current == expected
+          assert manifest["surfaceDigest"] in annex
+          assert manifest["migrationLedger"]["digest"] in annex
+          assert "**5** child namespaces" in readme
+          assert "std.foundation.pretty.engine" in readme
+          assert len(manifest.get("migrations", [])) >= 11
+          PY
+
+      - name: Validate registry structure
+        run: |
+          npm test
+          npm run check
+
+      - name: Upload generated annex review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: foundation-annex-generated
+          path: |
+            generated/foundation-api-manifest.json
+            01-lang/005-foundation-annex/draft/foundation-annex.edn
+            01-lang/005-foundation-annex/draft/README.md
+          if-no-files-found: error
+          retention-days: 30
