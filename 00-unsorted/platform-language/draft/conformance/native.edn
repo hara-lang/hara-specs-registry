@@ -46,8 +46,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 30
-  :method-count 282
+  :type-count 34
+  :method-count 360
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -71,8 +71,9 @@
   :canonical-method-namespace "std.native.<Type>"
   :global-alias "<Type>"
   :global-aliases
-  [Maths Numbers Bits String Bytes Crypto OS Process File Socket Promise Coroutine Stream Arr Obj
-   Runtime Env Printer Document Edn Json Host Test Regex UUID Error Result Base Iter Kernel]
+  [Maths Numbers Bits Kernel Env Package String Bytes Crypto OS Process File Socket
+   Promise Coroutine Stream Duplex Arr Obj Runtime Printer Document Edn Json Host Test
+   RegExp UUID Result Schema Error Base Algo Iter]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
   :blank-namespaces true
@@ -214,6 +215,17 @@
              resource-list filesystem-create filesystem-attach filesystem-detach
              filesystem-info filesystem-close capabilities]
    :method-classification {:native-only :all}}
+  {:name Env
+   :availability :implemented
+   :methods [current snapshot vars namespaces namespace module resolve alias-state
+             intern-var eval-in eval]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/foundation.hal"}
+  {:name Package
+   :availability :capability-gated
+   :methods [catalog find ensure load unload state]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/lib/package.hal"}
   {:name String
    :availability :implemented
    :methods [length blank? includes? starts-with? ends-with? char-at slice
@@ -262,7 +274,7 @@
    :preferred-path-library std.fs.path}
   {:name Socket
    :availability :capability-gated
-   :methods [connect listen endpoint events next receive-stream duplex send close]
+   :methods [connect listen endpoint events next send close receive-stream duplex]
    :method-classification {:native-only :all}
    :server-streaming
    {:listen {:arguments [host port options callback]
@@ -304,8 +316,9 @@
   {:name Stream
    :availability :implemented
    :methods [generate next instance?]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/lib/stream.hal"}
+   :method-classification {:hal-wrapper [generate]
+                           :native-only [next instance?]}
+   :wrapper-source "lib/src/std/foundation.hal"}
   {:name Duplex
    :availability :implemented
    :methods [create receive send close instance?]
@@ -326,17 +339,6 @@
    :availability :implemented
    :methods [load-string macroexpand-1 gensym var-sym]
    :method-classification {:foundation-primitive :all}}
-  {:name Env
-   :availability :implemented
-   :methods [current snapshot vars namespaces namespace module resolve alias-state
-             intern-var eval-in eval]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/foundation.hal"}
-  {:name Package
-   :availability :capability-gated
-   :methods [catalog find ensure load unload state]
-   :method-classification {:hal-wrapper :all}
-   :wrapper-source "lib/src/std/lib/package.hal"}
   {:name Printer
    :availability :implemented
    :methods [p println]
@@ -360,9 +362,9 @@
    :method-classification {:native-only :all}}
   {:name Test
    :availability :implemented
-   :methods [catalog config context events result passed?]
+   :methods [catalog config context events run result passed?]
    :method-classification {:native-only :all}}
-  {:name Regex
+  {:name RegExp
    :availability :implemented
    :methods [instance? compile pattern find? find matches replace split]
    :method-classification
@@ -373,23 +375,36 @@
    :availability :implemented
    :methods [instance?]
    :method-classification {:foundation-primitive :all}}
+  {:name Result
+   :availability :implemented
+   :methods [create synchronize instance? success? error? status data
+             error-value context with-context]
+   :method-classification {:native-only :all}}
+  {:name Schema
+   :availability :implemented
+   :methods [instance? kind form ast origin]
+   :method-classification {:native-only :all}}
   {:name Error
    :availability :implemented
    :methods [new message class]
    :method-classification {:foundation-primitive :all}}
-  {:name Result
-   :availability :implemented
-   :methods [success error synchronize result? success? error? status data
-             error-value context with-context]
-   :method-classification {:native-only :all}}
   {:name Base
    :availability :implemented
-   :methods [list vector pair tup hash-map hash-set atom pointer symbol keyword
-             reduced reduced? unreduced]
-   :method-classification
-   {:foundation-primitive [list vector pair tup hash-map hash-set atom pointer symbol keyword]
-    :hal-wrapper [reduced reduced? unreduced]}
+   :methods [list vector vec set pair tuple hash-map hash-set atom pointer symbol
+             keyword reduced reduced? unreduced nil? not-nil? boolean? false? true?
+             string? char? number? integer? decimal? long? double? keyword? symbol?
+             pointer? atom? fn? bytes? array? object? list? pair? vector? tuple?
+             map? map-entry? set? sequential? satisfies? type instance? schema
+             schema-of]
+   :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
+  {:name Algo
+   :availability :implemented
+   :methods [deque ordered-map ordered-set priority-map queue sorted-map sorted-set
+             trie deque? ordered-map? ordered-set? priority-map? queue? sorted-map?
+             sorted-set? trie?]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/lib/collection.hal"}
   {:name Iter
    :availability :implemented
    :methods [iter iter? iter-finite? iter-materialize iter-next? iter-next
@@ -411,6 +426,5 @@
  [{:type Random :reason :no-agreed-portable-surface}
   {:type UUID :methods [new random] :reason :not-implemented-on-both-runtimes}
   {:type OS :reason :runtime-parity-incomplete}
-  {:type Process :reason :runtime-parity-incomplete}
   {:type Wrapped :reason :runtime-value-not-yet-implemented}
   {:type Var :reason :var-operation-parity-incomplete}]}

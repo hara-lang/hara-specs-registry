@@ -124,8 +124,8 @@
    :native/symbol Host :native/namespace std.native.Host
    :native/availability :capability-gated :native/capability :host-call
    :native/methods [call describe capabilities capability?]}
-  {:native/id :std.native/regex
-   :native/symbol Regex :native/namespace std.native.Regex
+  {:native/id :std.native/regexp
+   :native/symbol RegExp :native/namespace std.native.RegExp
    :native/availability :portable :native/methods [instance?]}
   {:native/id :std.native/uuid
    :native/symbol UUID :native/namespace std.native.UUID

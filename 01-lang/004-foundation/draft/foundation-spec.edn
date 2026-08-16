@@ -73,6 +73,34 @@
   {:aliases/spec :hara/native
    :aliases/selection :all}}
 
+ :foundation/namespaces
+ {:namespaces/status :accepted
+  :namespaces/closed true
+  :namespaces/extra-namespaces :forbidden
+  :namespaces/production
+  {std.foundation :foundation-root
+   std.foundation.bytes :foundation-library
+   std.foundation.coroutine :foundation-library
+   std.foundation.pretty :foundation-library
+   std.foundation.promise :foundation-library
+   std.foundation.string :foundation-library}
+  :namespaces/development-only [std.foundation.bootstrap]
+  :namespaces/former-children
+  [{:namespace std.foundation.set :target std.foundation :target/kind :foundation-root}
+   {:namespace std.foundation.component :target std.lib.component :target/kind :portable-library}
+   {:namespace std.foundation.pretty.engine :target std.foundation.pretty :target/kind :foundation-library}
+   {:namespace std.foundation.crypto :target Crypto :target/kind :native-static-object}
+   {:namespace std.foundation.edn :target Edn :target/kind :native-static-object}
+   {:namespace std.foundation.file :target File :target/kind :native-static-object}
+   {:namespace std.foundation.host :target Host :target/kind :native-static-object}
+   {:namespace std.foundation.json :target Json :target/kind :native-static-object}
+   {:namespace std.foundation.kernel :target Kernel :target/kind :native-static-object}
+   {:namespace std.foundation.os :target OS :target/kind :native-static-object}
+   {:namespace std.foundation.socket :target Socket :target/kind :native-static-object}]
+  :namespaces/evidence
+  {:runtime/bootstrap "core/rust/bootstrap.namespaces"
+   :runtime/migrations "core/spec/std/foundation-migrations.json"}}
+
  :foundation/surface
  [{:surface/id :foundation/protocol-aliases
    :surface/domain :protocol
