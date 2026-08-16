@@ -258,7 +258,7 @@
   {:section/id :hal/collections-iteration
    :section/title "Collections and iteration"
    :section/summary
-   "Persistent collection families preserve their identity and updates, while lazy traversal is expressed through closeable iterators."
+   "Persistent collection families preserve their identity and updates, while lazy traversal is expressed through reusable Seq values and closeable iterators."
    :section/requirements
    [{:requirement/id :collection/persistent-update
      :requirement/level :must
@@ -271,12 +271,20 @@
     {:requirement/id :sequence/optional-non-empty
      :requirement/level :must
      :requirement/text
-     "A HAL Seq is a non-empty lazy sequence cell and a one-shot iterator. Every Seq satisfies both seq? and iter?, and every value satisfying seq? has a first element. seq and rest return nil when no cell exists; there is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct empty representations; iter converts nil to an exhausted iterator and vec materializes each as an empty vector."
+     "A HAL Seq is a non-empty, reusable frozen view over a traversal source. A Seq satisfies seq? but not iter?; iter creates an independent cursor over the view. first and rest observe cached sequence cells without consuming them, while seq and rest return nil when no cell exists. There is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct empty representations; iter converts each traversable value to a cursor and vec materializes each empty representation as an empty vector. Display realizes no more than eleven cells and renders at most the first ten, followed by ... when more values exist."
      :requirement/evidence
      [{:suite :hal/l0
        :cases [:sequence/empty-is-nil
+               :sequence/empty-first-last
                :sequence/non-empty-rest
-               :sequence/is-iterator]}]}
+               :sequence/frozen-view]}]}
+    {:requirement/id :sequence/source-sensitive-transform
+     :requirement/level :must
+     :requirement/text
+     "Single-pass streaming transforms select their result mode from the primary source. A Seq produces a reusable lazy Seq, an Iterator produces a consumptive lazy Iterator, and a persistent collection is eagerly materialized using its collection-family behavior. For multi-source transforms, the first collection argument is primary. Empty Seq results are nil, while empty Iterator results remain exhausted Iterators. Qualified Iter/iter-* operations always retain their raw Iterator contract."
+     :requirement/evidence
+     [{:suite :hal/l0
+       :cases [:sequence/source-sensitive-transforms]}]}
     {:requirement/id :sequence/prepend
      :requirement/level :must
      :requirement/text
@@ -284,6 +292,7 @@
      :requirement/evidence
      [{:suite :hal/l0
        :cases [:sequence/lazy-cons
+               :sequence/cons-representation-independent
                :sequence/reject-conj]}]}
     {:requirement/id :iterator/exact-observation
      :requirement/level :must
@@ -481,10 +490,10 @@
     {:requirement/id :namespace/referred-var-ownership
      :requirement/level :must
      :requirement/text
-     "A referred Var belongs to its defining namespace and cannot be replaced by def, defn, set!, or declare in the receiving namespace. A namespace must omit the name, including through :require :exclude, before defining a local replacement. declare supplies forward visibility only."
+     "A referred Var belongs to its defining namespace. Definition forms and declare create a receiving-namespace Var that shadows an automatically referred name without changing the source Var; mutation forms such as set! cannot mutate the referred Var. declare supplies forward visibility only."
      :requirement/evidence
      [{:suite :hal/modules
-       :cases [:namespace/referred-var-protected
+       :cases [:namespace/referred-var-shadowed
                :namespace/callable-var-precedence]}]}
     {:requirement/id :namespace/facade-vars
      :requirement/level :must

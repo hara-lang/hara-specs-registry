@@ -39,6 +39,14 @@
    :requirement/level :must-not
    :requirement/text
    "A promoted generated file contains edits which are not reproducible from the catalog and migrator."}
+  {:requirement/id :migration/immutable-input
+   :requirement/level :must
+   :requirement/text
+   "A migration records checksums for its authoritative source and test inputs and does not modify those inputs."}
+  {:requirement/id :migration/semantic-recipe
+   :requirement/level :may
+   :requirement/text
+   "A catalog target may select source and test semantic recipes when a structural rewrite cannot express the native design; those recipes remain deterministic migrator inputs."}
   {:requirement/id :migration/frozen-core
    :requirement/level :must
    :requirement/text

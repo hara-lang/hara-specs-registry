@@ -71,12 +71,12 @@
    :scenario :current-alias
    :source "(ns conformance.current-alias-reserved (:require [std.foundation.string :as -]))"
    :expect {:error-contains "Namespace alias is reserved: -"}}
-  {:id :namespace/referred-var-protected
+  {:id :namespace/referred-var-shadowed
    :area :namespace
    :scenario :ownership
    :setup "(ns conformance.protected)"
-   :source "(declare count)"
-   :expect {:error-contains "Cannot replace referred Var without ns omission"}}
+   :source "(do (declare identity) (defn identity [value] 42) [(identity 0) (std.foundation/identity 0)])"
+   :expect {:display "[42 0]"}}
   {:id :namespace/use-declaration
    :area :namespace
    :scenario :use

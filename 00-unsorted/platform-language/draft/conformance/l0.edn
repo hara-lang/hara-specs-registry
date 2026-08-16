@@ -225,17 +225,33 @@
    :class :collection
    :source "(and (nil? (seq nil)) (nil? (seq [])) (nil? (rest nil)) (nil? (rest [])) (nil? (rest [1])))"
    :expect {:value true :type :boolean}}
+  {:id :sequence/empty-first-last
+   :class :collection
+   :source "(and (nil? (first '())) (nil? (first (vec []))) (nil? (last '())) (nil? (last (vec []))))"
+   :expect {:value true :type :boolean}}
   {:id :sequence/non-empty-rest
    :class :collection
    :source "(and (seq? (rest [1 2])) (= [2] (vec (rest [1 2]))) (= [] (vec (rest [1]))))"
    :expect {:value true :type :boolean}}
-  {:id :sequence/is-iterator
+  {:id :sequence/frozen-view
    :class :collection
-   :source "(let [value (seq [1])] (and (seq? value) (iter? value) (= 1 (iter-next value))))"
+   :source "(let [value (seq [1 2 3]) left (iter value) right (iter value)] (and (seq? value) (not (iter? value)) (= 1 (first value)) (= 1 (first value)) (= 1 (iter-next left)) (= 1 (iter-next right)) (= 2 (iter-next left)) (= 2 (iter-next right))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/source-sensitive-transforms
+   :class :collection
+   :source "(load-resource \"std/foundation.hal\") (let [lazy (drop 1 (iterate inc 0)) cursor (drop 1 (iter [1 2 3]))] (and (seq? lazy) (= 1 (first lazy)) (= 1 (first lazy)) (iter? cursor) (= 2 (iter-next cursor)) (vector? (drop 1 [1 2 3])) (seq? (map + (seq [1]) [2])) (vector? (map + [1] (seq [2]))) (= 2 (->> (iterate inc 0) (drop 1) (take-while (fn [value] (< value 5))) (filter (fn [value] (= 0 (mod value 2)))) first))))"
    :expect {:value true :type :boolean}}
   {:id :sequence/lazy-cons
    :class :collection
    :source "(and (= [0 2] (vec (cons 0 (rest [1 2])))) (= [0 1 1 1] (vec (Iter/iter-take 4 (cons 0 (repeat 1))))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/cons-representation-independent
+   :class :collection
+   :source "(let [compact [1 2] tree (vec [1 2])] (and (= '(0 1 2) (cons 0 compact)) (= '(0 1 2) (cons 0 tree))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/list-conj-order
+   :class :collection
+   :source "(= '(2 1) (conj '(1) 2))"
    :expect {:value true :type :boolean}}
   {:id :sequence/reject-conj
    :class :collection
