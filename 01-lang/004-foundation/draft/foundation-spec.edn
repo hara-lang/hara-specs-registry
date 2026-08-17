@@ -294,6 +294,36 @@
    "../../../../lib/src/std/fs/path.hal"
    "../../../../lib/src/std/fs/walk.hal"]}
 
+ :foundation/portable-sandbox
+ {:sandbox/status :draft
+  :sandbox/not-root-referred true
+  :sandbox/native-spec :hara/native
+  :sandbox/native-type :std.native/sandbox
+  :sandbox/namespace std.sandbox
+  :sandbox/classification :portable-hal-over-capability-native
+  :sandbox/functions [open eval call cancel status close]
+  :sandbox/effect-model
+  {:open :promise
+   :eval :cancellable-promise
+   :call :cancellable-promise
+   :cancel :promise
+   :status :synchronous-snapshot
+   :close :promise}
+  :sandbox/requirements
+  [{:requirement/id :sandbox/not-auto-referred
+    :requirement/level :must
+    :requirement/text
+    "std.sandbox is an explicitly required qualified library and contributes no aliases or functions to std.foundation."}
+   {:requirement/id :sandbox/no-foundation-duplicates
+    :requirement/level :must
+    :requirement/text
+    "The existing std.foundation/env-* functions and :env/* snapshot keys remain unchanged; no runtime-* or sandbox lifecycle duplicates are added to std.foundation."}
+   {:requirement/id :sandbox/thin-facade
+    :requirement/level :must
+    :requirement/text
+    "std.sandbox delegates to std.native.Sandbox without widening grants, exposing provider objects, or adding backend-specific semantics."}]
+  :sandbox/source "../../../../lib/src/std/sandbox.hal"}
+
  :foundation/errors
  [{:error/id :foundation/invalid-arity}
   {:error/id :foundation/invalid-argument}

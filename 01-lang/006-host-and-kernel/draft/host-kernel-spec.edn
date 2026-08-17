@@ -15,7 +15,8 @@
   #{:kernel-identity :session-identity :session-lifecycle :grant-resolution
     :provider-dispatch :host-descriptor :settlement-semantics
     :host-error-codes :resource-registry :session-transfer-rules
-    :embedding-wire-contract :boundary-map}
+    :sandbox-spec :sandbox-lifecycle :sandbox-provider-registry
+    :sandbox-settlement :embedding-wire-contract :boundary-map}
   :scope/excludes
   #{:guest-descriptor-surface :foundation-facades :substrate-transport
     :provider-implementations :product-shell-interfaces}}
@@ -56,7 +57,19 @@
   {:requirement/id :host-kernel/atomic-resources
    :requirement/level :must
    :requirement/text
-   "Resource registration is atomic per batch: a failed batch registers no resources."}]
+   "Resource registration is atomic per batch: a failed batch registers no resources."}
+  {:requirement/id :host-kernel/private-sandbox-session
+   :requirement/level :must
+   :requirement/text
+   "A sandbox owns one private Session that is never inserted into the ordinary Session registry or returned by session enumeration."}
+  {:requirement/id :host-kernel/restricted-sandbox-runtime
+   :requirement/level :must
+   :requirement/text
+   "A sandbox Runtime cannot resolve or inspect Kernel, Sandbox, parent Session or Runtime identity, mounts, development resources, providers, privileged native descriptors, or parent and application namespaces."}
+  {:requirement/id :host-kernel/sealed-sandbox-inputs
+   :requirement/level :must
+   :requirement/text
+   "Sandbox specifications and bundles are immutable portable data. Provider objects, paths, processes, sockets, file descriptors, Vars, functions, mutable values, and live handles never enter a SandboxSpec."}]
 
  :host-kernel/kernel
  {:kernel/identity :kernel/id
@@ -66,6 +79,16 @@
   "A kernel owns a set of sessions and the resource registry they share. It is the unit of resource accounting; it is not itself an authority boundary. The guest-visible Kernel descriptor and its capability id are owned by 003-native; this layer owns what its methods enforce."
   :kernel/grants
   #{:session-control :resource-control :filesystem-handles}
+  :kernel/registries
+  [SessionRegistry MountRegistry DevelopmentResourceCatalog BundleCatalog
+   SandboxProviderRegistry SandboxRegistry]
+  :kernel/registry-separation
+  {:ordinary-sessions SessionRegistry
+   :mount-attachments MountRegistry
+   :mutable-development-sources DevelopmentResourceCatalog
+   :immutable-digest-bundles BundleCatalog
+   :trusted-provider-factories SandboxProviderRegistry
+   :opaque-live-sandboxes SandboxRegistry}
   :kernel/enforcement
   {:session-control
    "session-create, session-close, session-list, session-info, session-eval, session-namespace, session-complete"
@@ -83,6 +106,98 @@
   :session/close :revoke-all-session-grants
   :session/transfer
   "Values cross between sessions only through an explicit transfer that rejects live values. Portable data moves; authority never does."}
+
+ :host-kernel/sandboxes
+ {:sandbox/descriptor :std.native.Sandbox
+  :sandbox/capability :sandbox
+  :sandbox/grants #{:sandbox-control}
+  :sandbox/public-lifecycle [open eval call cancel status close]
+  :sandbox/id
+  {:representation :opaque-positive-process-local-id
+   :forbidden-meanings [:host-path :process-id :socket :file-descriptor :session-id]}
+  :sandbox/evaluation-id
+  {:visibility :internal
+   :allocation :one-per-eval-or-call
+   :purpose :shared-explicit-and-promise-cancellation}
+  :sandbox/spec
+  {:protocol "hara.sandbox/0-alpha"
+   :exact-keys
+   [:protocol :provider :runtime :entry-namespace :bundles :mount
+    :provider-options :limits]
+   :provider :registered-provider-name
+   :runtime :registered-runtime-profile
+   :entry-namespace :symbol
+   :bundles [{:digest :sha256-string :format :registered-bundle-format}]
+   :mount #{:opaque-session-mount-id nil}
+   :provider-options :provider-validated-immutable-map
+   :limits
+   {:source-bytes :positive-integer
+    :result-bytes :positive-integer
+    :output-bytes :positive-integer
+    :evaluation-ms :positive-integer
+    :memory-bytes :positive-integer
+    :active-evaluations 1}
+   :unknown-keys :reject
+   :freeze-before-registration true
+   :forbidden-values
+   [:host-path :process-id :socket :file-descriptor :provider-object
+    :application-handle :var :function :promise :stream :mutable-value
+    :live-handle]}
+  :sandbox/provider
+  {:registration :trusted-kernel-embedding-only
+   :selection :spec-provider-name
+   :open-input :resolved-frozen-spec
+   :backend-responsibilities
+   [:launch :supervision :limits :transport :cancellation :termination]
+   :application-semantics :forbidden}
+  :sandbox/private-session
+  {:ordinary-enumeration false
+   :runtime-profile :sandbox-restricted
+   :namespace-registry :new-empty-runtime-local-registry
+   :development-resource-propagation false
+   :mount-attachment-owner :sandbox-id
+   :release-on [:open-failure :cancel :provider-failure :close]}
+  :sandbox/call
+  {:callable :qualified-symbol
+   :arguments :immutable-portable-vector
+   :invocation :resolved-var-value-call
+   :source-concatenation false}
+  :sandbox/concurrency
+  {:active-evaluations 1
+   :second-evaluation :sandbox/busy}
+  :sandbox/status
+  {:public-keys
+   [:sandbox/id :sandbox/provider :sandbox/state :sandbox/secure
+    :sandbox/evaluation-active :sandbox/error]
+   :states [:open :running :cancelling :cancelled :failed]
+   :forbidden-keys
+   [:session/id :process/id :socket/path :file-descriptor :host/path
+    :runtime :provider-instance]}
+  :sandbox/terminal-events
+  [:cancelled :timeout :transport-failed :provider-failed :limit-exceeded
+   :result-not-transferable]
+  :sandbox/terminal-reuse false
+  :sandbox/close
+  {:active-evaluation :cancel-and-wait
+   :provider-resource-release true
+   :mount-detach true
+   :private-session-release true
+   :registry-removal true
+   :subsequent-operations :sandbox/not-found}}
+
+ :host-kernel/sandbox-settlement
+ {:settlement/success :raw-portable-value
+  :settlement/hara-result :unchanged-value
+  :settlement/failure :rejected-promise
+  :settlement/value :ex-info
+  :settlement/code-key :error/code
+  :settlement/cancellable-methods [eval call]
+  :settlement/cancellation
+  {:promise-hook :same-internal-evaluation-id
+   :explicit-cancel :same-internal-evaluation-id
+   :idle-result false
+   :first-request-starts-termination true
+   :later-requests-observe-terminal-result true}}
 
  :host-kernel/grants
  {:grant/sources [:project/capabilities :embedding-policy]
@@ -128,9 +243,20 @@
  :host-kernel/errors
  {:error/codes
   [:host/unavailable :host/capability-unavailable :host/capability-denied
-   :host/method-unavailable :host/call-failed :host/call-cancelled]
+   :host/method-unavailable :host/call-failed :host/call-cancelled
+   :sandbox/invalid-spec :sandbox/provider-not-found
+   :sandbox/provider-unavailable :sandbox/bundle-not-found
+   :sandbox/bundle-digest-mismatch :sandbox/mount-not-found
+   :sandbox/not-found :sandbox/busy :sandbox/cancelled :sandbox/timeout
+   :sandbox/limit-exceeded :sandbox/evaluation-failed
+   :sandbox/result-not-transferable :sandbox/transport-failed
+   :sandbox/provider-failed]
   :error/boundary-rule
-  "Capability checks at the guest method boundary raise the :native/* errors owned by 003-native. Rejections produced inside provider dispatch settle as rejected promises carrying the :host/* ex-info codes owned by this layer. A call that passes the guest boundary and fails in dispatch never rethrows as :native/capability-denied."}
+  "Capability checks at the guest method boundary raise the :native/* errors owned by 003-native. Rejections produced inside provider dispatch settle as rejected promises carrying the :host/* or :sandbox/* ex-info codes owned by this layer. A call that passes the guest boundary and fails in dispatch never rethrows as :native/capability-denied."
+  :error/sandbox-metadata
+  [:sandbox/id :sandbox/provider :sandbox/limit :sandbox/state]
+  :error/host-internals-forbidden
+  [:host/path :process/id :socket/path :file-descriptor :provider-instance]}
 
  :host-kernel/embeddings
  {:embedding/browser
@@ -147,7 +273,18 @@
    :embedding/same-contract true
    :embedding/filesystem :host-confined-root
    :embedding/socket :native-provider
-   :embedding/unavailable-result :rejected-promise}}
+   :embedding/unavailable-result :rejected-promise}
+  :embedding/secure-linux-sandbox
+  {:embedding/provider :hoplite-process
+   :embedding/security-boundary :separate-process
+   :embedding/required-controls
+   [:peer-credentials :mode-0600-endpoint :preopened-capabilities
+    :resource-limits :no-new-privileges :seccomp :kill-and-reap]
+   :embedding/secure-claim :all-controls-installed
+   :embedding/other-platforms :provider-unavailable}
+  :embedding/in-process-sandbox
+  {:embedding/purpose :cross-runtime-conformance
+   :embedding/secure false}}
 
  :host-kernel/boundaries
  [{:boundary/neighbor :hal/language
@@ -165,13 +302,13 @@
   {:boundary/neighbor :hara/native
    :boundary/layer "003-native"
    :boundary/neighbor-owns
-   "The guest-visible Host and Kernel descriptors, their method names and arities, the capability id catalog (:file :network :kernel :host-call), check-time, runtime profiles, and the :native/* error ids."
+   "The guest-visible Host, Kernel, and Sandbox descriptors, their method names and arities, the capability id catalog (:file :network :kernel :sandbox :host-call), check-time, runtime profiles, and the :native/* error ids."
    :boundary/this-layer-owns
    "The enforcement semantics behind the capability-gated methods: grant resolution, dispatch, settlement, and the :host/* error codes."}
   {:boundary/neighbor :hara/foundation-annex
    :boundary/layer "005-foundation-annex"
    :boundary/neighbor-owns
-   "The std.foundation.host and std.foundation.kernel capability facades and their public Vars."
+   "The std.foundation.host and std.foundation.kernel capability facades, plus the explicitly required std.sandbox facade and their public Vars."
    :boundary/this-layer-owns
    "What those facades observe: session-granted capabilities, descriptor contents, and dispatch outcomes. Facade namespaces never widen a grant."}
   {:boundary/neighbor :hara/substrate
@@ -236,4 +373,16 @@
    "Rejected Host promises preserve ex-info identity and one of the normative :host/* error codes through catch, deref, and session evaluation."}
   {:conformance/id :host/atomic-resources
    :conformance/assert
-   "A failed batch registers no resources."}]}
+   "A failed batch registers no resources."}
+  {:conformance/id :sandbox/private-session
+   :conformance/assert
+   "Opening a sandbox creates a private Session that never appears in ordinary Session enumeration and is released on every terminal path."}
+  {:conformance/id :sandbox/restricted-runtime
+   :conformance/assert
+   "Sandboxed code cannot resolve Kernel, Sandbox, privileged native descriptors, provider bindings, parent identity, mounts, development resources, or parent and application namespaces."}
+  {:conformance/id :sandbox/cancellable-lifecycle
+   :conformance/assert
+   "Java and Rust agree for open, eval, value-call, explicit cancel, Promise cancel, status, and close, including cancellation races and terminal cleanup."}
+  {:conformance/id :sandbox/secure-provider
+   :conformance/assert
+   "The Hoplite provider reports secure only on Linux after peer authentication, pre-opened capability confinement, resource limits, no-new-privileges, seccomp, and deterministic kill-and-reap are active; unsupported platforms fail closed."}]}

@@ -15,7 +15,8 @@
   :scope/namespace-family "std.native.*"
   :scope/includes
   #{:native-type-descriptors :native-method-vars :runtime-profiles
-    :capability-checks :portable-argument-shapes :portable-result-shapes}
+    :capability-checks :portable-argument-shapes :portable-result-shapes
+    :managed-sandbox-descriptor}
   :scope/excludes
   #{:general-host-interop :host-class-lookup :reflection :foundation-wrappers
     :implementation-helper-types :implicit-authority}}
@@ -68,6 +69,10 @@
     session-namespace session-complete resource-register resource-remove
     resource-list filesystem-create filesystem-attach filesystem-detach
     filesystem-info filesystem-close capabilities]}
+  {:native/id :std.native/sandbox
+   :native/symbol Sandbox :native/namespace std.native.Sandbox
+   :native/availability :capability-gated :native/capability :sandbox
+   :native/methods [open eval call cancel status close]}
   {:native/id :std.native/string
    :native/symbol String :native/namespace std.native.String
    :native/availability :portable
@@ -246,6 +251,8 @@
     :capability/grants #{:network-connect :network-listen}}
    {:capability/id :kernel
     :capability/grants #{:session-control :resource-control :filesystem-handles}}
+   {:capability/id :sandbox
+    :capability/grants #{:sandbox-control}}
    {:capability/id :host-call
     :capability/grants #{:embedding-declared-services}}]
   :capability/check-time :method-invocation
@@ -263,6 +270,14 @@
   {:profile/required-types :all
    :profile/host-language :rust
    :profile/host-services :embedding-provided}
+  :profile/sandbox-restricted
+  {:profile/purpose :managed-sandbox-child
+   :profile/required-types :portable-pure-subset
+   :profile/forbidden-types
+   [Kernel Sandbox Package Crypto OS Process File Socket Host]
+   :profile/host-services :explicit-narrow-provider-only
+   :profile/development-resources false
+   :profile/parent-runtime-visible false}
   :profile/parity-rule
   "Portable methods have equal observable results; capability-backed methods may differ only in granted authority and declared host availability."}
 

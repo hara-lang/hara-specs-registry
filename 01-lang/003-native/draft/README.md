@@ -6,9 +6,13 @@ The authoritative document is
 [`native-spec.edn`](native-spec.edn). It conforms to the
 [`Hara native-boundary meta-spec`](../metaspec/README.md).
 
-This layer owns 21 guest-visible native descriptors and their canonical
+This layer owns 22 guest-visible native descriptors and their canonical
 `std.native.Type/method` Vars. It defines capability checks and runtime-profile
 parity without exposing general Java, Rust, JavaScript, or host reflection.
+
+`std.native.Sandbox` is capability-gated. It exposes only the provider-neutral
+open, eval, value-call, cancel, status, and close lifecycle; provider
+registration and backend handles remain trusted embedding concerns.
 
 HAL wrappers are outside this layer. `std.native.String/trim` belongs here;
 `std.foundation.string/trim` belongs to the Foundation annex.
