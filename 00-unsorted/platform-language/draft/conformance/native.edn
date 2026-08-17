@@ -46,8 +46,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 33
-  :method-count 360
+  :type-count 34
+  :method-count 366
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -71,7 +71,7 @@
   :canonical-method-namespace "std.native.<Type>"
   :global-alias "<Type>"
   :global-aliases
-  [Maths Numbers Bits Kernel Package String Bytes Crypto OS Process File Socket
+  [Maths Numbers Bits Kernel Sandbox Package String Bytes Crypto OS Process File Socket
    Promise Coroutine Stream Duplex Arr Obj Runtime Printer Document Edn Json Host Test
    RegExp UUID Result Schema Error Base Algo Iter]
   :identity :same-native-type-object
@@ -215,6 +215,11 @@
              resource-list filesystem-create filesystem-attach filesystem-detach
              filesystem-info filesystem-close capabilities]
    :method-classification {:native-only :all}}
+  {:name Sandbox
+   :availability :capability-gated
+   :methods [open eval call cancel status close]
+   :method-classification {:hal-wrapper :all}
+   :wrapper-source "lib/src/std/sandbox.hal"}
   {:name Package
    :availability :capability-gated
    :methods [catalog find ensure load unload state]
