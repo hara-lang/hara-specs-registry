@@ -488,13 +488,67 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/010-bytecode/draft/conformance/bytecode-vm-suspension.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/conformance/hbc0-golden.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/conformance/hbc0-malformed.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/hbc0-wire.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/hbc-machine.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/hbc-suspension.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/hbc-backend-profiles.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/010-bytecode/draft/hal-bytecode-vm.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/010-bytecode/draft/hal-bytecode-vm-suspension.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/010-bytecode/draft/rust-tracing-jit.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/tool-vm-provider.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

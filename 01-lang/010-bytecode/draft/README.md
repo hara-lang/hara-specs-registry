@@ -4,7 +4,20 @@ Status: **draft**
 
 Target version: **alpha**
 
-The authoritative contract is the document set:
+The authoritative portable contract is split by responsibility:
+
+- [`hbc0-wire.edn`](hbc0-wire.edn) — exact authenticated HBC0 envelope,
+  payload ordering, scalar encodings, opcode ids, deterministic encoding, and
+  fail-closed decoding;
+- [`hbc-machine.edn`](hbc-machine.edn) — backend-neutral synchronous stack,
+  frame, global, closure, exception, validation, and observable execution laws;
+- [`hbc-suspension.edn`](hbc-suspension.edn) — the process-local `await`,
+  `yield`, cancellation, Promise settlement, and resumption extension;
+- [`hbc-backend-profiles.edn`](hbc-backend-profiles.edn) — exact Rust stack VM,
+  optional derived Rust tiers, Java reference-machine, and reserved future
+  Truffle Bytecode DSL profiles.
+
+The earlier implementation documents remain evidence and history:
 
 - [`hal-bytecode-vm.edn`](hal-bytecode-vm.edn) — staged Rust VM core,
   instructions, frames, globals, artifacts, validation, and synchronous
@@ -13,9 +26,10 @@ The authoritative contract is the document set:
   process-local suspension extension for `await`, `yield`, async result
   Promises, cancellation, exception resumption, and host interop.
 
-The suspension extension supersedes the base document's stale future note
-where the implemented `Await` and `Yield` behavior is concerned. It does not
-turn a parked machine into a portable or durable artifact.
+These implementation documents do not override the portable wire or machine
+contracts. The suspension extension supersedes the base document's stale
+future note where the implemented `Await` and `Yield` behavior is concerned.
+It does not turn a parked machine into a portable or durable artifact.
 
 ## Scope
 
@@ -68,3 +82,8 @@ defines the host-driven suspension matrix. It covers settled and pending
 `yield`/resume values, async result Promises, cancellation propagation, and
 native/browser host-Promise lanes. Rust integration and VM unit tests are the
 current consumers.
+
+[`conformance/hbc0-golden.edn`](conformance/hbc0-golden.edn) and
+[`conformance/hbc0-malformed.edn`](conformance/hbc0-malformed.edn) provide the
+shared canonical bytes and fail-before-mutation vectors for Rust, Java, and
+`tool.vm/conform`.
