@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:291f983bf417a48cd5d494a49ae4d832a5c0ffad61482efb9ac07064a53ae777",
-    "catalogueDigest": "sha256:f56ce144040bdc7a37a8c56f76e552945e4e72737bd3fc877bce7f78090e5d7c",
+    "manifestDigest": "sha256:5164633a15103b2f24fa5e289fc9c6a882742e702a758d2a889f53c791338d7a",
+    "catalogueDigest": "sha256:5045b072572d89ef0d9686b27c9b9080a644372efc923f8458ae2fb6625778cc",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -13,12 +13,12 @@
     }
   },
   "summary": {
-    "specifications": 57,
-    "draft": 57,
+    "specifications": 58,
+    "draft": 58,
     "ready": 0,
     "executable": 31,
     "requirements": 344,
-    "materialized": 57,
+    "materialized": 58,
     "pinnedSource": 0,
     "layers": [
       "00-unsorted",
@@ -805,6 +805,37 @@
         "repository": "hara-lang/hara-specs-registry",
         "ref": "main",
         "path": "01-lang/010-bytecode/draft/hbc0-wire.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hal/hbx0-wire",
+      "slug": "hal-hbx0-wire",
+      "coordinate": "hal/hbx0-wire",
+      "title": "HBX0 deterministic executable-package wire format",
+      "summary": "Authenticated, deterministic packaging of already-produced HBC0 modules. HBX0 is a container and never a compiler or VM instruction format.",
+      "type": "portable-format-spec",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/hbx0-wire.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/hbx0-wire.edn"
       },
       "documentation": {
         "repository": "hara-lang/hara-specs-registry",

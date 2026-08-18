@@ -9,6 +9,8 @@ The authoritative portable contract is split by responsibility:
 - [`hbc0-wire.edn`](hbc0-wire.edn) — exact authenticated HBC0 envelope,
   payload ordering, scalar encodings, opcode ids, deterministic encoding, and
   fail-closed decoding;
+- [`hbx0-wire.edn`](hbx0-wire.edn) — deterministic authenticated packaging of
+  validated HBC0 modules, with shared golden and malformed corpora;
 - [`hbc-machine.edn`](hbc-machine.edn) — backend-neutral synchronous stack,
   frame, global, closure, exception, validation, and observable execution laws;
 - [`hbc-suspension.edn`](hbc-suspension.edn) — the process-local `await`,
@@ -87,3 +89,7 @@ current consumers.
 [`conformance/hbc0-malformed.edn`](conformance/hbc0-malformed.edn) provide the
 shared canonical bytes and fail-before-mutation vectors for Rust, Java, and
 `tool.vm/conform`.
+
+[`conformance/hbx0-golden.edn`](conformance/hbx0-golden.edn) and
+[`conformance/hbx0-malformed.edn`](conformance/hbx0-malformed.edn) pin package
+determinism and shared Rust/Java rejection categories for `tool.package`.
