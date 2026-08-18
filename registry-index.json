@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:9da1ea2758fc548af07e1a87ae0bde9115174d4d6cf253c1f9bd1cedb81df344",
-    "catalogueDigest": "sha256:6d3ed2919ce77e1f7ab24d230ca53433a71e9b62f577fbba23df7a8a93a61fa0",
+    "manifestDigest": "sha256:291f983bf417a48cd5d494a49ae4d832a5c0ffad61482efb9ac07064a53ae777",
+    "catalogueDigest": "sha256:f56ce144040bdc7a37a8c56f76e552945e4e72737bd3fc877bce7f78090e5d7c",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -13,12 +13,12 @@
     }
   },
   "summary": {
-    "specifications": 51,
-    "draft": 51,
+    "specifications": 57,
+    "draft": 57,
     "ready": 0,
     "executable": 31,
     "requirements": 344,
-    "materialized": 51,
+    "materialized": 57,
     "pinnedSource": 0,
     "layers": [
       "00-unsorted",
@@ -686,6 +686,192 @@
         "repository": "hara-lang/hara-specs-registry",
         "ref": "main",
         "path": "01-lang/002-protocol/metaspec/README.md"
+      }
+    },
+    {
+      "id": "hal/tool-vm-provider",
+      "slug": "hal-tool-vm-provider",
+      "coordinate": "hal/tool-vm-provider",
+      "title": "Hara VM tooling provider boundary",
+      "summary": "Private runtime-provider contract beneath the public tool.vm, tool.vm.halc, and tool.vm.hbc namespaces. It exposes portable artifact operations through ordinary Hara values while keeping compiler, interpreter, Truffle, Graal, and machine state private.",
+      "type": "runtime-provider-spec",
+      "version": "0.1.0-draft",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/tool-vm-provider.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/tool-vm-provider.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hal/hbc-backend-profiles",
+      "slug": "hal-hbc-backend-profiles",
+      "coordinate": "hal/hbc-backend-profiles",
+      "title": "HBC backend execution profiles",
+      "summary": "No summary has been published for this specification.",
+      "type": "implementation-profile-registry",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/hbc-backend-profiles.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/hbc-backend-profiles.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hal/hbc-machine",
+      "slug": "hal-hbc-machine",
+      "coordinate": "hal/hbc-machine",
+      "title": "HBC synchronous machine semantics",
+      "summary": "Backend-neutral observable semantics for an authenticated and structurally validated HBC program. Implementations need not share internal frames, slots, dispatch code, or optimization tiers.",
+      "type": "portable-machine-spec",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/hbc-machine.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/hbc-machine.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hal/hbc0-wire",
+      "slug": "hal-hbc0-wire",
+      "coordinate": "hal/hbc0-wire",
+      "title": "HBC0 portable executable-module wire format",
+      "summary": "Runtime-neutral, deterministic and authenticated encoding of a validated Hara bytecode program. This document is the codec contract; execution semantics are owned by :hal/hbc-machine.",
+      "type": "portable-format-spec",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/hbc0-wire.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/hbc0-wire.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hal/hbc-suspension",
+      "slug": "hal-hbc-suspension",
+      "coordinate": "hal/hbc-suspension",
+      "title": "Process-local HBC suspension and resumption",
+      "summary": "No summary has been published for this specification.",
+      "type": "portable-machine-extension",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/hbc-suspension.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/hbc-suspension.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hal/bytecode-vm-suspension",
+      "slug": "hal-bytecode-vm-suspension",
+      "coordinate": "hal/bytecode-vm-suspension",
+      "title": "Rust HAL bytecode VM suspension and resumability",
+      "summary": "Process-local suspension contract for the Rust bytecode VM: await, yield, async function results, cancellation, exception resumption, host Promise interop, and coexistence with the tree evaluator. This extends the staged VM implementation contract without making continuations portable artifacts.",
+      "type": "runtime-implementation-spec-extension",
+      "version": "alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/010-bytecode/draft/hal-bytecode-vm-suspension.edn",
+      "documentationPath": "01-lang/010-bytecode/draft/README.md",
+      "requirements": 0,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": false,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/hal-bytecode-vm-suspension.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/010-bytecode/draft/README.md"
       }
     },
     {
