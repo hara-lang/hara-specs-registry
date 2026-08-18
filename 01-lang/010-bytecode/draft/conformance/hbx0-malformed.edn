@@ -1,11 +1,21 @@
 {:corpus/id :hal/hbx0-malformed
  :corpus/spec :hal/hbx0-wire
  :corpus/version "0-alpha"
+ :encoding :lowercase-hex
+ :golden/empty "48425830df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b8111900000000"
  :cases
- [{:id :bad-magic :mutation :replace-magic :error :hbx/invalid-header}
-  {:id :bad-checksum :mutation :flip-payload-byte :error :hbx/checksum-mismatch}
-  {:id :truncated-field :mutation :truncate :error :hbx/truncated}
-  {:id :trailing-bytes :mutation :append-byte :error :hbx/trailing-bytes}
+ [{:id :bad-magic
+   :artifact/hex "58425830df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b8111900000000"
+   :mutation :replace-magic :error :hbx/invalid-header}
+  {:id :bad-checksum
+   :artifact/hex "48425830de3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b8111900000000"
+   :mutation :flip-checksum-byte :error :hbx/checksum-mismatch}
+  {:id :truncated-header
+   :artifact/hex "48425830"
+   :mutation :truncate :error :hbx/invalid-header}
+  {:id :trailing-bytes
+   :artifact/hex "484258308855508aade16ec573d21e6a485dfd0a7624085c1a14b5ecdd6485de0c6839a40000000000"
+   :mutation :append-authenticated-byte :error :hbx/trailing-bytes}
   {:id :invalid-utf8 :mutation :corrupt-resource-utf8 :error :hbx/invalid-utf8}
   {:id :invalid-eager :mutation :set-eager-2 :error :hbx/invalid-eager}
   {:id :duplicate-module :mutation :duplicate-resource :error :hbx/duplicate-module}
