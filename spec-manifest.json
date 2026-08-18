@@ -506,7 +506,25 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/010-bytecode/draft/conformance/hbx0-golden.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/conformance/hbx0-malformed.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/010-bytecode/draft/hbc0-wire.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/010-bytecode/draft/hbx0-wire.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

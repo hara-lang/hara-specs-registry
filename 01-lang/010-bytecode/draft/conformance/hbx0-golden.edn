@@ -1,0 +1,19 @@
+{:corpus/id :hal/hbx0-golden
+ :corpus/spec :hal/hbx0-wire
+ :corpus/version "0-alpha"
+ :cases
+ [{:id :empty
+   :modules []
+   :property [:deterministic :round-trip :rust-java]}
+  {:id :single-eager
+   :modules [{:resource "example/main"
+              :namespace-form "(ns example.main)"
+              :source-digest :sha256-32
+              :dependencies []
+              :eager true
+              :artifact :valid-hbc0}]
+   :property [:deterministic :round-trip :rust-java]}
+  {:id :ordered-dependencies
+   :modules [{:resource "example/base" :dependencies [] :artifact :valid-hbc0}
+             {:resource "example/main" :dependencies ["example/base"] :artifact :valid-hbc0}]
+   :property [:canonical-order :byte-identical :rust-java]}]}

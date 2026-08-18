@@ -1,0 +1,14 @@
+{:corpus/id :hal/hbx0-malformed
+ :corpus/spec :hal/hbx0-wire
+ :corpus/version "0-alpha"
+ :cases
+ [{:id :bad-magic :mutation :replace-magic :error :hbx/invalid-header}
+  {:id :bad-checksum :mutation :flip-payload-byte :error :hbx/checksum-mismatch}
+  {:id :truncated-field :mutation :truncate :error :hbx/truncated}
+  {:id :trailing-bytes :mutation :append-byte :error :hbx/trailing-bytes}
+  {:id :invalid-utf8 :mutation :corrupt-resource-utf8 :error :hbx/invalid-utf8}
+  {:id :invalid-eager :mutation :set-eager-2 :error :hbx/invalid-eager}
+  {:id :duplicate-module :mutation :duplicate-resource :error :hbx/duplicate-module}
+  {:id :duplicate-dependency :mutation :duplicate-dependency :error :hbx/duplicate-dependency}
+  {:id :dependency-after-module :mutation :reverse-dependent-pair :error :hbx/dependency-order}
+  {:id :invalid-hbc :mutation :corrupt-nested-artifact :error :hbx/invalid-hbc}]}
