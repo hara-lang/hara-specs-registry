@@ -1,0 +1,198 @@
+name: Materialize Foundation collection contract
+
+on:
+  push:
+    branches:
+      - agent/foundation-666-spec-contract
+    paths:
+      - .github/workflows/agent-666-foundation-contract.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout specification branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/foundation-666-spec-contract
+          fetch-depth: 0
+
+      - name: Materialize normative collection semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          spec_path = Path("01-lang/004-foundation/draft/foundation-spec.edn")
+          source = spec_path.read_text()
+
+          old_surface = """  {:surface/id :foundation/collections
+   :surface/domain :function
+   :surface/symbols
+   [first second rest not-empty last reverse get-in assoc-in update update-in
+    key val keys vals min max sort sort-by drop-last butlast take-last
+    split-at split-with partition-by take-nth into distinct zipmap map-keys
+    map-vals merge-with group-by frequencies]
+   :surface/classification :portable-hal}"""
+          new_surface = """  {:surface/id :foundation/collections
+   :surface/domain :function
+   :surface/symbols
+   [reduce reduce-in concat first second rest not-empty last reverse get-in
+    assoc-in update update-in key val keys vals min max sort sort-by drop-last
+    butlast take-last split-at split-with partition-by take-nth into distinct
+    zipmap map-keys map-vals merge-with group-by frequencies]
+   :surface/classification :portable-hal}"""
+          if old_surface not in source:
+              raise SystemExit("Foundation collection surface changed before #666 materialization")
+          source = source.replace(old_surface, new_surface, 1)
+
+          start = source.index(" :foundation/collection-results\n")
+          end = source.index("\n\n :foundation/classification", start)
+          contract = r''' :foundation/collection-results
+ {:collection/architecture
+  {:collection/reduce-in
+   {:collection/status :public-portable-hal
+    :collection/protocols
+    [std.protocol.ireduce/IReduce
+     std.protocol.itomutable/IToMutable
+     std.protocol.itopersistent/IToPersistent]
+    :collection/native-base-method :forbidden}
+   :collection/mapv
+   {:collection/status :removed
+    :collection/executable-definition :forbidden
+    :collection/executable-call :forbidden}}
+
+  :collection/first-source
+  {:collection/rule
+   "Every source-sensitive transform and every multi-source transform derives result family, eager/lazy mode, and metadata from the first source only."
+   :collection/eager-first-sources
+   [:persistent-collection :array :object]
+   :collection/lazy-first-sources
+   [:explicit-seq :iterator :string :bytes :unsupported-iterable]
+   :collection/multi-source [concat interleave map zip]
+   :collection/zero-source-concat :empty-lazy-sequence
+   :collection/source-mutation :forbidden}
+
+  :collection/eager-rebuild
+  {:collection/list-order :source-traversal-order
+   :collection/tuple-overflow {:collection/maximum-width 8
+                               :collection/result :vector}
+   :collection/map-result-members :entry-shaped
+   :collection/set-result-members :deduplicated
+   :collection/metadata :preserve-first-source}
+
+  :collection/result-exceptions
+  {:collection/partition-outer
+   {:collection/eager-source :vector
+    :collection/lazy-source :lazy-sequence}
+   :collection/split :vector-pair
+   :collection/sort :vector}
+
+  :collection/reduction
+  {:collection/reduced :stop-immediately
+   :collection/iterator-close :always-close-owned-remaining-iterators
+   :collection/unreduced :exactly-once
+   :collection/metadata :preserve-accumulator-metadata
+   :collection/mutable-accumulator :finalize-to-persistent}
+
+  :collection/requirements
+  [{:requirement/id :foundation/reduce-in-portable
+    :requirement/level :must
+    :requirement/text
+    "reduce-in remains a public portable HAL function composed from IReduce, IToMutable, and IToPersistent; no Base/reduce-in or std.native.Base/reduce-in method exists."}
+   {:requirement/id :foundation/mapv-removed
+    :requirement/level :must-not
+    :requirement/text
+    "Executable HAL source defines or invokes mapv; callers use map when first-source family is intended and vec around map only when a vector is an explicit schema boundary."}
+   {:requirement/id :foundation/first-source-results
+    :requirement/level :must
+    :requirement/text
+    "Persistent collections, arrays, and objects rebuild eagerly without source mutation; explicit seqs and iterators, strings, bytes, and otherwise unsupported iterables remain lazy. Multi-source operations and concat use the first source, while zero-source concat returns an empty lazy sequence."}
+   {:requirement/id :foundation/result-family-details
+    :requirement/level :must
+    :requirement/text
+    "Lists retain traversal order, tuple results wider than eight become vectors, map transforms accept only entry-shaped members, sets deduplicate, partition outer containers are vectors for eager sources and lazy sequences for lazy sources, split returns a vector pair, and sort returns a vector."}
+   {:requirement/id :foundation/reduction-lifecycle
+    :requirement/level :must
+    :requirement/text
+    "Every reduction path stops on reduced, closes owned remaining iterators on completion or failure, unwraps a reduced value exactly once, preserves accumulator metadata, and finalizes mutable accumulators."}]}
+'''
+          source = source[:start] + contract + source[end:]
+          spec_path.write_text(source)
+
+          gates_path = Path("01-lang/004-foundation/draft/conformance/source-gates.edn")
+          gates = gates_path.read_text()
+          gate_marker = "  {:rule/id :hara.source/lang-canonical-root"
+          if gate_marker not in gates:
+              raise SystemExit("Foundation source gate insertion marker changed")
+          gate_rules = r'''  {:rule/id :hara.source/no-foundation-mapv
+   :rule/severity :error
+   :rule/path-pattern "^core/(lib/(src|src-lang|test|test-lang)|rust/hal-src)/.*\\.hal$"
+   :rule/pattern "(?m)(^|[\\s(\\[])(std\\.foundation/)?mapv(?=[\\s)\\]])"
+   :rule/message "Executable native-HAL source must not define or invoke std.foundation/mapv; historical specification prose outside executable HAL roots is allowed."}
+
+  {:rule/id :hara.source/no-native-reduce-in
+   :rule/severity :error
+   :rule/path-pattern "^core/.*"
+   :rule/pattern "(std\\.native\\.)?Base/reduce-in"
+   :rule/message "reduce-in is portable HAL over collection protocols and must not become a Base native method."}
+
+'''
+          gates_path.write_text(gates.replace(gate_marker, gate_rules + gate_marker, 1))
+
+          readme_path = Path("01-lang/004-foundation/draft/README.md")
+          readme = readme_path.read_text()
+          section = '''
+## Collection architecture locked by #666
+
+`reduce-in` is a public portable HAL composition over `IReduce`,
+`IToMutable`, and `IToPersistent`; it is not a `Base` method. `mapv` is removed
+from executable HAL. Source-sensitive operations use the first source to select
+result family and eager/lazy mode, with the explicit partition, split, sort,
+and reduction lifecycle exceptions recorded in `foundation-spec.edn`.
+'''
+          if "## Collection architecture locked by #666" not in readme:
+              readme_path.write_text(readme.rstrip() + "\n" + section)
+          PY
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Validate registry and generated index
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run registry:generate
+          npm test
+          npm run check
+          python3 - <<'PY'
+          from pathlib import Path
+          spec = Path("01-lang/004-foundation/draft/foundation-spec.edn").read_text()
+          gates = Path("01-lang/004-foundation/draft/conformance/source-gates.edn").read_text()
+          assert ":collection/status :public-portable-hal" in spec
+          assert ":collection/native-base-method :forbidden" in spec
+          assert ":collection/status :removed" in spec
+          assert ":shape-preserving" not in spec
+          assert ":rule/id :hara.source/no-foundation-mapv" in gates
+          assert ":rule/id :hara.source/no-native-reduce-in" in gates
+          PY
+
+      - name: Publish validated specification branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/agent-666-foundation-contract.yml
+          git config user.name "OpenAI Agent"
+          git config user.email "openai-agent@users.noreply.github.com"
+          git add -A
+          git commit -m "Specify Foundation first-source collection semantics"
+          git push origin HEAD:agent/foundation-666-spec-contract
