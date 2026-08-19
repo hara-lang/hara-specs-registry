@@ -115,17 +115,57 @@
    :class :runtime
    :source "(loop [left 1 right 2] (recur 3))"
    :expect {:error :recur}}
-  {:id :error/catch-guest-value
+  {:id :error/catch-exception-value
    :class :error
-   :source "(try (throw 41) (catch Exception error (+ error 1)))"
+   :source "(try (throw (ex :test/failure {:value 41})) (catch error (+ (:value (ex-data error)) 1)))"
    :expect {:value 42 :type :integer}}
   {:id :error/catch-order
    :class :error
-   :source "(do (defstruct Problem [value]) (try (throw (Problem 42)) (catch Other error 0) (catch Problem error (:value error))))"
+   :source "(try (throw (ex :test/selected {:value 42})) (catch :test/other error 0) (catch :test/selected error (:value (ex-data error))))"
    :expect {:value 42 :type :integer}}
+  {:id :error/catch-code
+   :class :error
+   :source "(try (throw (ex :test/selected {:value 42})) (catch :test/selected error (:value (ex-data error))))"
+   :expect {:value 42 :type :integer}}
+  {:id :error/catch-code-vector
+   :class :error
+   :source "(try (throw (ex :test/selected {:value 42})) (catch [:test/other :test/selected] error (:value (ex-data error))))"
+   :expect {:value 42 :type :integer}}
+  {:id :error/exception-message-fallback
+   :class :error
+   :source "(ex-message (ex :failure/code {}))"
+   :expect {:value ":failure/code" :type :string}}
+  {:id :error/exception-provenance-line
+   :class :error
+   :source "(try\n  (throw (ex :test/provenance {}))\n  (catch error (:line (:ex/created-at (ex-provenance error)))))"
+   :expect {:value 2 :type :integer}}
+  {:id :error/exception-provenance-throw-column
+   :class :error
+   :source "(try\n  (throw (ex :test/provenance {}))\n  (catch error (:column (first (:ex/throws (ex-provenance error))))))"
+   :expect {:value 3 :type :integer}}
+  {:id :error/exception-provenance-throw-count
+   :class :error
+   :source "(try (throw (ex :test/provenance {})) (catch error (count (:ex/throws (ex-provenance error)))))"
+   :expect {:value 1 :type :integer}}
+  {:id :error/exception-provenance-rethrow-count
+   :class :error
+   :source "(try (try (throw (ex :test/provenance {})) (catch error (throw error))) (catch error (count (:ex/throws (ex-provenance error)))))"
+   :expect {:value 2 :type :integer}}
+  {:id :error/exception-cause
+   :class :error
+   :source "(let [cause (ex :test/cause {}) wrapped (ex :test/wrapped {:ex/cause cause})] (str (:ex/code (ex-data (ex-cause wrapped)))))"
+   :expect {:value ":test/cause" :type :string}}
+  {:id :error/exception-reject-arbitrary-throw
+   :class :error
+   :source "(throw 42)"
+   :expect {:error :invalid-throw :message "throw expects an Exception value created by ex"}}
+  {:id :error/exception-reject-reserved-code
+   :class :error
+   :source "(ex :test/failure {:ex/code :test/other})"
+   :expect {:error :invalid-exception :message "ex attributes must not contain :ex/code"}}
   {:id :error/unmatched-catch
    :class :error
-   :source "(do (defstruct Problem [value]) (try (throw (Problem 42)) (catch Other error 0)))"
+   :source "(try (throw (ex :test/selected {})) (catch :test/other error 0))"
    :expect {:error :uncaught}}
   {:id :error/finally-normal
    :class :error
@@ -133,7 +173,7 @@
    :expect {:value 41 :type :integer}}
   {:id :error/finally-unwind
    :class :error
-   :source "(do (def cleaned 0) (try (throw 41) (catch Exception error (+ error cleaned)) (finally (set! cleaned (+ cleaned 1)))) (+ 40 cleaned))"
+   :source "(do (def cleaned 0) (try (throw (ex :test/failure {:value 41})) (catch error (+ (:value (ex-data error)) cleaned)) (finally (set! cleaned (+ cleaned 1)))) (+ 40 cleaned))"
    :expect {:value 41 :type :integer}}
   {:id :runtime/letfn
    :class :runtime
