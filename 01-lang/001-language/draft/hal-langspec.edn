@@ -56,7 +56,7 @@
    [{:requirement/id :reader/edn-profile
      :requirement/level :must
      :requirement/text
-     "The reader accepts nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, binary64 floating-point numbers, lists, vectors, maps, and sets."
+     "The reader accepts nil, booleans, strings, characters, symbols, keywords, signed arbitrary-precision integers, floating-point numbers, lists, vectors, maps, and sets."
      :requirement/evidence
      [{:conformance/suite :hal/reader
        :conformance/cases
@@ -65,12 +65,12 @@
     {:requirement/id :reader/restricted-numbers
      :requirement/level :must-not
      :requirement/text
-     "The Hara EDN profile does not accept ratios, N-suffixed arbitrary-precision integers, M-suffixed exact decimals, or unsuffixed integers outside the signed 64-bit range."
+     "The Hara EDN profile does not accept ratios or the legacy N and M numeric suffixes. Arbitrary-precision integers use the ordinary suffixless integer syntax."
      :requirement/evidence
      [{:conformance/suite :hal/reader
        :conformance/cases
-       [:unsupported-ratio :positive-integer-overflow
-        :negative-integer-overflow]}]}
+       [:unsupported-ratio :unsupported-bigint
+        :unsupported-big-decimal]}]}
     {:requirement/id :reader/delimiters
      :requirement/level :must
      :requirement/text
@@ -83,7 +83,7 @@
   {:section/id :hal.data/scalars
    :section/title "Scalar values"
    :section/summary
-   "Scalar values are nil, booleans, strings, characters, symbols, keywords, signed 64-bit integers, and binary64 floating-point numbers."
+   "Scalar values are nil, booleans, strings, characters, symbols, keywords, signed arbitrary-precision integers, and floating-point numbers."
    :section/requirements
    [{:requirement/id :value/scalar-identity
      :requirement/level :must

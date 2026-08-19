@@ -111,15 +111,15 @@
    [{:requirement/id :reader/edn-profile
      :requirement/level :must
      :requirement/text
-     "The Hara EDN profile retains the core EDN data forms, accepts signed 64-bit integers and binary64 floating-point values by default, accepts arbitrary-precision integers and exact decimals with explicit N and M suffixes, and rejects ratios and unsuffixed integer overflow."
+     "The Hara EDN profile retains the core EDN data forms, accepts suffixless signed arbitrary-precision integers and floating-point values, rejects the legacy N and M numeric suffixes, and rejects ratios."
      :requirement/evidence
      [{:suite :hal/reader
        :cases [:numbers
                :integer-boundaries
-               :positive-integer-overflow
-               :negative-integer-overflow
-               :explicit-bigint
-               :big-decimal]}]}
+               :positive-arbitrary-precision-integer
+               :negative-arbitrary-precision-integer
+               :unsupported-bigint
+               :unsupported-big-decimal]}]}
     {:requirement/id :reader/forms
      :requirement/level :must
      :requirement/text

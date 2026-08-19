@@ -38,20 +38,24 @@
   {:id :integer-boundaries
    :source "[-9223372036854775808 9223372036854775807]"
    :readable "[-9223372036854775808 9223372036854775807]"}
-  {:id :positive-integer-overflow :source "9223372036854775808" :error "Invalid number"}
-  {:id :negative-integer-overflow :source "-9223372036854775809" :error "Invalid number"}
-  {:id :unsupported-bigint :source "42N" :error "Invalid number"}
-  {:id :unsupported-zero-bigint :source "0N" :error "Invalid number"}
-  {:id :unsupported-positive-zero-bigint :source "+0N" :error "Invalid number"}
-  {:id :unsupported-negative-zero-bigint :source "-0N" :error "Invalid number"}
-  {:id :unsupported-zero-bigdec :source "0M" :error "Invalid number"}
+  {:id :positive-arbitrary-precision-integer
+   :source "9223372036854775808"
+   :readable "9223372036854775808"}
+  {:id :negative-arbitrary-precision-integer
+   :source "-9223372036854775809"
+   :readable "-9223372036854775809"}
+  {:id :unsupported-bigint :source "42N" :error "Legacy numeric suffixes N and M"}
+  {:id :unsupported-zero-bigint :source "0N" :error "Legacy numeric suffixes N and M"}
+  {:id :unsupported-positive-zero-bigint :source "+0N" :error "Legacy numeric suffixes N and M"}
+  {:id :unsupported-negative-zero-bigint :source "-0N" :error "Legacy numeric suffixes N and M"}
+  {:id :unsupported-zero-bigdec :source "0M" :error "Legacy numeric suffixes N and M"}
   {:id :hex-integers :source "[0x0 0x2A -0x2A +0X2a]" :readable "[0 42 -42 42]"}
   {:id :octal-integers :source "[00 052 -052 +077]" :readable "[0 42 -42 63]"}
   {:id :radix-integers :source "[2r101010 8r52 16r2a 36r16 -2r101010]" :readable "[42 42 42 42 -42]"}
   {:id :floating-point
    :source "[0.0 1. 1e2 -1.25e-2]"
    :readable "[0.0 1.0 100.0 -0.0125]"}
-  {:id :unsupported-big-decimal :source "1.25M" :error "Invalid number"}
+  {:id :unsupported-big-decimal :source "1.25M" :error "Legacy numeric suffixes N and M"}
   {:id :character-singletons :source "[\\a \\0 \\λ \\雪]" :readable "[\\a \\0 \\λ \\雪]"}
   {:id :symbol-shapes :source "[+ - * ? ! foo.bar foo-bar foo? foo! a/b a/b/c]" :readable "[+ - * ? ! foo.bar foo-bar foo? foo! a/b a/b/c]"}
   {:id :keyword-shapes :source "[:+ :- :* :? :! :foo.bar :foo-bar :foo? :foo! :a/b]" :readable "[:+ :- :* :? :! :foo.bar :foo-bar :foo? :foo! :a/b]"}
@@ -97,7 +101,7 @@
   {:id :invalid-radix-digit :source "2r2" :error "under radix 2"}
   {:id :invalid-octal :source "078" :error "Invalid number"}
   {:id :invalid-exponent :source "1e" :error "Invalid number"}
-  {:id :invalid-bigint :source "1.0N" :error "Invalid number"}
+  {:id :invalid-bigint :source "1.0N" :error "Legacy numeric suffixes N and M"}
   {:id :empty-keyword :source ":" :error "cannot be empty"}
   {:id :leading-slash-keyword :source ":/name" :error "start with a slash"}
   {:id :trailing-slash-keyword :source ":name/" :error "end with a slash"}
