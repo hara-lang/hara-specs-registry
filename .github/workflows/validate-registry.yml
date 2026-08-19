@@ -25,13 +25,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Validate registry and generated index
         shell: bash
         run: |
           set -euo pipefail
-          npm ci
           npm run registry:generate
           npm test
           npm run check
