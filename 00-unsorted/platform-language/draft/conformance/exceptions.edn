@@ -1,0 +1,126 @@
+{:spec/version "0.0.0-alpha"
+ :spec/status :draft
+ :syntax :edn
+ :purpose :portable-exception-contract
+ :suite :hal/exceptions
+
+ :constructor
+ {:form "(ex code data)"
+  :arity 2
+  :code {:type :namespaced-keyword
+         :stored-as :ex/code
+         :reserved-in-data true}
+  :data {:type :map
+         :optional
+         {:ex/message :string
+          :ex/class :namespaced-keyword
+          :ex/context :map
+          :ex/cause :exception}}}
+
+ :semantic-class
+ {:accessor ex-class
+  :absent nil
+  :shape :namespaced-keyword
+  :comparison :flat-equality
+  :uses [:grouping :filtering :reporting :serialization]
+  :catch-selection false
+  :ordinary-values :rejected
+  :malformed-legacy-values :rejected}
+
+ :native-type
+ {:accessor ex-native-type
+  :portability :local-diagnostic
+  :shared-expected-values :forbidden
+  :excluded-from
+  [:ex-data :catch-selection :portable-serialization :provenance]
+  :runtime-expectations
+  {:jvm "hara.lang.base.Ex$Info"
+   :rust "ExceptionInfo"}}
+
+ :causes
+ {:exception :preserve-identity
+  :host-error
+  {:normalization-code :host/native-error
+   :stored-fields [:ex/code :ex/message]
+   :live-object-stored false
+   :native-type-stored false
+   :semantic-class nil
+   :provenance :independent}}
+
+ :catch
+ {:selectors [:namespaced-keyword :non-empty-vector :unconditional]
+  :comparison-key :ex/code
+  :class-selection false
+  :order :source
+  :unconditional-position :last}
+
+ :preservation
+ [:ex-data :cause :rethrow :provenance :promise
+  :hta-value :host-boundary]
+
+ :shared-cases
+ [{:id :exception/construction
+   :source "(let [e (ex :file/not-found {:ex/class :ex.class/io :ex/message \"File was not found\" :file/path \"/tmp/missing\"})] [(:ex/code (ex-data e)) (ex-class e) (ex-message e)])"
+   :expect {:portable-value [:file/not-found :ex.class/io "File was not found"]}}
+  {:id :exception/absent-class
+   :source "(ex-class (ex :test/failure {}))"
+   :expect {:portable-value nil}}
+  {:id :exception/reject-class
+   :source "(ex :test/failure {:ex/class :io})"
+   :expect {:error :invalid-exception
+            :message ":ex/class must be a namespaced keyword"}}
+  {:id :exception/reject-reserved-code
+   :source "(ex :test/failure {:ex/code :test/other})"
+   :expect {:error :invalid-exception
+            :message "ex attributes must not contain :ex/code"}}
+  {:id :exception/semantic-class
+   :source "(ex-class (ex :test/failure {:ex/class :ex.class/state}))"
+   :expect {:portable-value :ex.class/state}}
+  {:id :exception/legacy-class
+   :source "(ex-class (ex-info \"legacy\" {:ex/class :ex.class/legacy}))"
+   :expect {:portable-value :ex.class/legacy}}
+  {:id :exception/malformed-legacy-class
+   :source "(ex-class (ex-info \"legacy\" {:ex/class :legacy}))"
+   :expect {:error :invalid-exception
+            :message ":ex/class must be a namespaced keyword"}}
+  {:id :exception/class-is-not-catch-selector
+   :source "(try (throw (ex :test/failure {:ex/class :ex.class/io})) (catch :ex.class/io e 0) (catch e 42))"
+   :expect {:portable-value 42}}
+  {:id :exception/cause-identity
+   :source "(let [cause (ex :test/cause {:ex/class :ex.class/state}) wrapped (ex :test/wrapped {:ex/cause cause})] (and (= cause (ex-cause wrapped)) (= :ex.class/state (ex-class (ex-cause wrapped)))))"
+   :expect {:portable-value true}}
+  {:id :exception/rethrow
+   :source "(try (try (throw (ex :test/failure {:ex/class :ex.class/state})) (catch e (throw e))) (catch e (ex-class e)))"
+   :expect {:portable-value :ex.class/state}}
+  {:id :exception/promise
+   :source "(ex-class (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))))"
+   :expect {:portable-value :ex.class/state}}
+  {:id :exception/hta-round-trip
+   :runtime-harness :hta
+   :expect {:class :ex.class/state
+            :native-type-absent true}}
+  {:id :exception/host-round-trip
+   :runtime-harness :host-boundary
+   :expect {:class :ex.class/state
+            :native-type-absent true}}
+  {:id :exception/host-cause-normalization
+   :runtime-harness :host-error
+   :expect {:code :host/native-error
+            :class nil
+            :portable-keys #{:ex/code :ex/message}}
+  {:id :exception/cause-independent-provenance
+   :runtime-harness :host-error
+   :expect {:independent true}}
+  {:id :diagnostic/native-type-excluded
+   :runtime-harness :portable-projection
+   :expect {:forbidden-keys #{:ex/native-type :native-type}}]
+
+ :runtime-specific
+ {:jvm
+  [{:id :diagnostic/native-type-jvm
+    :source "(ex-native-type (ex :test/failure {}))"
+    :expect {:local-diagostic "hara.lang.base.Ex$Info"}}]
+  :rust
+  [{*id :diagnostic/native-type-rust
+    :source "(ex-native-type (ex :test/failure {}))"
+    :expect {:local-diagostic "ExceptionInfo"}}]}}
