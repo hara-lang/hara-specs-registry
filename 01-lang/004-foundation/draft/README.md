@@ -33,4 +33,5 @@ fresh-context `ns-publics` comparison for JVM, Rust, and Wasm.
 `IToMutable`, and `IToPersistent`; it is not a `Base` method. `mapv` is removed
 from executable HAL. Source-sensitive operations use the first source to select
 result family and eager/lazy mode, with the explicit partition, split, sort,
-and reduction lifecycle exceptions recorded in `foundation-spec.edn`.
+and reduction lifecycle exceptions recorded in `foundation-spec.edn`. These
+rules are normative for runtime and native-HAL conformance work.
