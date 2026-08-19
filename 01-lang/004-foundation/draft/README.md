@@ -26,3 +26,11 @@ the existing `env-*` names remain the portable Runtime wrappers.
 
 The surface catalog is a draft baseline. Candidate promotion requires an exact
 fresh-context `ns-publics` comparison for JVM, Rust, and Wasm.
+
+## Collection architecture locked by #666
+
+`reduce-in` is a public portable HAL composition over `IReduce`,
+`IToMutable`, and `IToPersistent`; it is not a `Base` method. `mapv` is removed
+from executable HAL. Source-sensitive operations use the first source to select
+result family and eager/lazy mode, with the explicit partition, split, sort,
+and reduction lifecycle exceptions recorded in `foundation-spec.edn`.

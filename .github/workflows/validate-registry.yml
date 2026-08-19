@@ -7,60 +7,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/foundation-666-spec-contract
-          fetch-depth: 0
-
-      - name: Materialize Foundation collection contract
-        run: python3 scripts/materialize-foundation-666.py
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-
-      - name: Validate registry and generated index
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run registry:generate
-          npm test
-          npm run check
-          python3 - <<'PY'
-          from pathlib import Path
-          spec = Path("01-lang/004-foundation/draft/foundation-spec.edn").read_text()
-          gates = Path("01-lang/004-foundation/draft/conformance/source-gates.edn").read_text()
-          assert ":collection/status :public-portable-hal" in spec
-          assert ":collection/native-base-method :forbidden" in spec
-          assert ":collection/status :removed" in spec
-          assert ":shape-preserving" not in spec
-          assert ":rule/id :hara.source/no-foundation-mapv" in gates
-          assert ":rule/id :hara.source/no-native-reduce-in" in gates
-          PY
-
-      - name: Publish validated specification product
-        shell: bash
-        run: |
-          set -euo pipefail
-          git checkout origin/main -- .github/workflows/validate-registry.yml
-          rm .github/workflows/agent-666-foundation-contract.yml
-          rm scripts/materialize-foundation-666.py
-          git config user.name "OpenAI Agent"
-          git config user.email "openai-agent@users.noreply.github.com"
-          git add -- \
-            01-lang/004-foundation/draft/foundation-spec.edn \
-            01-lang/004-foundation/draft/conformance/source-gates.edn \
-            01-lang/004-foundation/draft/README.md \
-            registry-index.json \
-            .github/workflows/validate-registry.yml \
-            .github/workflows/agent-666-foundation-contract.yml \
-            scripts/materialize-foundation-666.py
-          git commit -m "Specify Foundation first-source collection semantics"
-          git push origin HEAD:agent/foundation-666-spec-contract
+          node-version: 20
+      - run: npm test
+      - run: npm run check
