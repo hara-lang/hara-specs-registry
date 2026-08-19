@@ -107,20 +107,20 @@
    :runtime-harness :host-error
    :expect {:code :host/native-error
             :class nil
-            :portable-keys #{:ex/code :ex/message}}
+            :portable-keys #{:ex/code :ex/message}}}
   {:id :exception/cause-independent-provenance
    :runtime-harness :host-error
    :expect {:independent true}}
   {:id :diagnostic/native-type-excluded
    :runtime-harness :portable-projection
-   :expect {:forbidden-keys #{:ex/native-type :native-type}}]
+   :expect {:forbidden-keys #{:ex/native-type :native-type}}}]
 
  :runtime-specific
  {:jvm
   [{:id :diagnostic/native-type-jvm
     :source "(ex-native-type (ex :test/failure {}))"
-    :expect {:local-diagostic "hara.lang.base.Ex$Info"}}]
+    :expect {:local-diagnostic "hara.lang.base.Ex$Info"}}]
   :rust
-  [{*id :diagnostic/native-type-rust
+  [{:id :diagnostic/native-type-rust
     :source "(ex-native-type (ex :test/failure {}))"
-    :expect {:local-diagostic "ExceptionInfo"}}]}}
+    :expect {:local-diagnostic "ExceptionInfo"}}]}}
