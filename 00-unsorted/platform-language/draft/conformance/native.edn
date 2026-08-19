@@ -3,6 +3,21 @@
  :syntax :edn
  :purpose :native-runtime-boundary
 
+ :language-builtins
+ {:status :accepted
+  :purpose :cross-runtime-accounting
+  :native-type false
+  :namespace nil
+  :evaluation [quote syntax-quote do if let letfn binding loop recur throw try fn]
+  :definitions [def declare var set! defmacro defstruct defmutable defprotocol
+                extend-type defmulti defmethod]
+  :namespaces [ns ns+ require alias]
+  :interop [new field .]
+  :rules
+  ["Builtins are evaluator and compiler forms, not Vars on a std.native.Builtins object."
+   "The accounting inventory is identical across conforming runtimes."
+   "Ordinary callable fundamentals belong to std.native.Base or canonical HAL source."]}
+
  :naming
  {:type-object "std.native.<Type>"
   :method-var "std.native.<Type>/<method>"
@@ -47,7 +62,7 @@
  {:status :accepted
   :closed true
   :type-count 34
-  :method-count 366
+  :method-count 364
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -386,7 +401,7 @@
    :method-classification {:native-only :all}}
   {:name Schema
    :availability :implemented
-   :methods [instance? kind form ast origin]
+   :methods [compile of instance? kind form ast origin]
    :method-classification {:native-only :all}}
   {:name Error
    :availability :implemented
@@ -394,12 +409,11 @@
    :method-classification {:foundation-primitive :all}}
   {:name Base
    :availability :implemented
-   :methods [list vector vec set pair tuple hash-map hash-set atom pointer symbol
-             keyword reduced reduced? unreduced nil? not-nil? boolean? false? true?
+   :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
+             keyword reduced apply not boolean compare reduced? nil? boolean?
              string? char? number? integer? decimal? long? double? keyword? symbol?
-             pointer? atom? fn? bytes? array? object? list? pair? vector? tuple?
-             map? map-entry? set? sequential? satisfies? type instance? schema
-             schema-of]
+             pointer? atom? function? bytes? array? object? list? cons? vector? tuple?
+             map? set? sequential? satisfies? type instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Algo
