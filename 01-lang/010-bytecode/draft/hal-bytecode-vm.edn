@@ -287,7 +287,7 @@
   {:rule
    "defstruct executes the evaluator's construction through a registry-based helper: validate name/fields, create the StructType qualified to the current namespace, and intern Name, ->Name, and map->Name. Trailing protocol clauses lower to ordered extend-type operations after the constructors are installed."
    :catch-interaction
-   "catch_matches matches struct type names with the /{class} suffix rule (milestone 3), so the L0 error/catch-order, error/unmatched-catch, error/finally-normal, and error/finally-unwind cases run verbatim."}
+   "catch_matches matches struct type names with the /{class} suffix rule (milestone 3), so the core-language error/catch-order, error/unmatched-catch, error/finally-normal, and error/finally-unwind cases run verbatim."}
   :defmutable
   {:rule
    "defmutable executes the registry helper that validates name and fields, creates the MutableType qualified to the current namespace, and interns Name, ->Name, and map->Name. Trailing protocol clauses lower to ordered extend-type operations after the constructors are installed."
@@ -432,7 +432,7 @@
  :vm/conformance
  {:portable-language
   {:owners ["specs/01-lang/001-language/draft/conformance"
-            "specs/00-unsorted/platform-language/draft/conformance"]
+            "specs/01-lang/001-language/draft/conformance"]
    :consumers [:java-truffle :rust-evaluator :rust-bytecode-vm]
    :rule "Java consumes portable language cases, never Rust VM structural cases."}
   :rust-vm-structural

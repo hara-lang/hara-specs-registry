@@ -264,11 +264,11 @@
  :protocol/references
  [{:reference/id :protocol/legacy-catalog
    :reference/path
-   "../../../00-unsorted/platform-language/draft/conformance/protocols.edn"
+   "../../../01-lang/001-language/draft/conformance/protocols.edn"
    :reference/authority :historical}
   {:reference/id :protocol/legacy-method-cases
    :reference/path
-   "../../../00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
+   "../../../01-lang/001-language/draft/conformance/protocol-method-cases.edn"
    :reference/authority :historical}
   {:reference/id :protocol/rust-registry
    :reference/path "../../../../rust/src/core.rs"
@@ -280,9 +280,9 @@
  :protocol/conformance
  [{:conformance/id :protocol/legacy-method-evidence
    :conformance/path
-   "../../../00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
+   "../../../01-lang/001-language/draft/conformance/protocol-method-cases.edn"
    :conformance/authority :migration-evidence}
   {:conformance/id :protocol/legacy-runtime-evidence
    :conformance/path
-   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
+   "../../../01-lang/001-language/draft/conformance/core.edn"
    :conformance/authority :migration-evidence}]}

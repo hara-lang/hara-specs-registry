@@ -1,4 +1,4 @@
-# HAL data language specification
+# HAL core language specification
 
 Status: **draft**  
 Target version: **1.0.0**
@@ -11,8 +11,9 @@ The document conforms to the
 
 ## Scope
 
-This specification defines the small, host-neutral data language shared by HAL
-source and the Hara EDN profile:
+This specification owns the host-neutral HAL core language: its shared data
+profile plus evaluation, functions, bindings, definitions, errors, iteration,
+namespaces, and modules. The data layer includes:
 
 - nil and booleans;
 - strings and characters;
@@ -24,15 +25,24 @@ source and the Hara EDN profile:
 - structural equality, hashing, and metadata;
 - UTF-8 reading and canonical readable representations.
 
-It does not define evaluation, functions, bindings, iteration, protocols,
-modules, standard libraries, host capabilities, or runtime implementation.
-Those contracts belong to the platform layer.
+The core contract also defines portable evaluation and the `(ns ...)` and
+`(ns+ ...)` forms. `ns` selects a named definition scope; `ns+` reconfigures
+the current scope without accepting a name. Namespace `:config` supports
+`:blank`, `:override`, `:expose`, and `:intrinsics`, whose portable options are
+`:exclude` and `:alias`.
+
+Protocol, Native, and Foundation semantics remain normatively owned by their
+numbered specifications. Their executable inventories and parity corpora are
+co-located here so every runtime consumes one language-conformance tree.
+Host capabilities and runtime implementation remain outside this document.
 
 ## Executable evidence
 
-[`conformance/reader.edn`](conformance/reader.edn) is the shared reader and
-canonical-representation corpus.
+The central [`conformance/`](conformance/) directory contains the core and
+reader corpora, module cases, the Protocol/Native/Foundation inventories, and
+the JVM Truffle, Rust evaluator, Rust bytecode, and WebAssembly parity inputs.
+The primary core contract is [`conformance/core.edn`](conformance/core.edn).
 
-The previous broad language and runtime contract is preserved under
-[`../../../00-unsorted/platform-language/`](../../../00-unsorted/platform-language/)
-until its platform concerns are classified.
+The previous broad platform-language document remains a migration source under
+[`../../../00-unsorted/platform-language/`](../../../00-unsorted/platform-language/);
+its executable corpora have moved here.

@@ -3,8 +3,8 @@
  :syntax :edn
  :purpose :foundation-surface-control
  :source-material "specs/99-archive/planning/foundation/foundation.edn"
- :protocol-contract "specs/00-unsorted/platform-language/draft/conformance/protocols.edn"
- :public-method-case-catalog "specs/00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
+ :protocol-contract "specs/01-lang/001-language/draft/conformance/protocols.edn"
+ :public-method-case-catalog "specs/01-lang/001-language/draft/conformance/protocol-method-cases.edn"
 
  ;; This is the editable control document for the public Foundation surface.
  ;; Runtime code and parity tests are downstream artifacts of accepted entries.
@@ -109,8 +109,8 @@
   :none "No canonical clojure.core equivalent is claimed."}
 
  :function-contracts
- {:hara-specific "specs/00-unsorted/platform-language/draft/conformance/functions.edn"
-  :clojure-inspired "specs/00-unsorted/platform-language/draft/conformance/clojure-functions.edn"
+ {:hara-specific "specs/01-lang/001-language/draft/conformance/functions.edn"
+  :clojure-inspired "specs/01-lang/001-language/draft/conformance/clojure-functions.edn"
   :rule
   "This grouped surface is the consolidated callable contract. The focused
    files retain per-function rationale, Clojure relations, and exclusions."}

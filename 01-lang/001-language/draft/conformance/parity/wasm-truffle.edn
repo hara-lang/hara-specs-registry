@@ -1,5 +1,5 @@
 {:spec/version "0.0.0-alpha"
- :language "hara-l0"
+ :language "hara-core"
  :seed 20260723
  :curated 256
  :generated 768

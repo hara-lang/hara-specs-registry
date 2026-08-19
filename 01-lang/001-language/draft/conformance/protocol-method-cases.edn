@@ -4,7 +4,7 @@
  :purpose :per-method-functional-conformance
  :platforms [:rust :truffle]
  :fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
- :method-count 89
+ :method-count 105
  :error-contract
  {:matching :category-prefix
   :message-text :non-normative
@@ -153,6 +153,66 @@
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
   {:protocol IEmpty :method empty :domain :collection
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodable :method encode-with :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :not-applicable :reason :universal-native-adapter}}
+  {:protocol IEncode :method encode :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-nil :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-boolean :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-number :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-character :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-string :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-keyword :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-symbol :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-seq :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-vector :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-map :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-set :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-tagged :domain :encoding
+   :success {:case :actual-use-case :fixture-result :success}
+   :limit {:case :missing-receiver :category :protocol/arity}
+   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+  {:protocol IEncodeVisitor :method visit-unknown :domain :encoding
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
    :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}

@@ -48,6 +48,16 @@
   "Ordinary non-blank namespaces may resolve Type as an alias for std.native.Type."
   :naming/no-host-name-semantics true}
 
+ :native/language-builtins
+ {:builtins/status :internal-runtime-accounting
+  :builtins/native-type false
+  :builtins/namespace false
+  :builtins/var false
+  :builtins/contract
+  "Builtins names evaluator, compiler, definition, namespace, and interop forms; callable fundamentals are exposed by Base or canonical HAL source."
+  :builtins/conformance
+  "../../001-language/draft/conformance/native.edn"}
+
  :native/types
  [{:native/id :std.native/maths
    :native/symbol Maths :native/namespace std.native.Maths
@@ -138,6 +148,15 @@
   {:native/id :std.native/error
    :native/symbol Error :native/namespace std.native.Error
    :native/availability :portable :native/methods [new message class]}
+  {:native/id :std.native/base
+   :native/symbol Base :native/namespace std.native.Base
+   :native/availability :portable
+   :native/methods
+   [list vector vec set tuple hash-map hash-set atom pointer symbol keyword
+    reduced apply not boolean compare reduced? nil? boolean? string? char?
+    number? integer? long? double? keyword? symbol? pointer? atom? function?
+    bytes? array? object? list? cons? vector? tuple? map? set? sequential?
+    satisfies? type instance?]}
   {:native/id :std.native/iter
    :native/symbol Iter :native/namespace std.native.Iter
    :native/availability :portable
@@ -293,7 +312,7 @@
  :native/references
  [{:reference/id :native/legacy-catalog
    :reference/path
-   "../../../00-unsorted/platform-language/draft/conformance/native.edn"
+   "../../../01-lang/001-language/draft/conformance/native.edn"
    :reference/authority :historical}
   {:reference/id :native/rust-catalog
    :reference/path "../../../../rust/src/core.rs"
@@ -305,9 +324,9 @@
  :native/conformance
  [{:conformance/id :native/legacy-inventory
    :conformance/path
-   "../../../00-unsorted/platform-language/draft/conformance/native.edn"
+   "../../../01-lang/001-language/draft/conformance/native.edn"
    :conformance/authority :migration-evidence}
   {:conformance/id :native/legacy-runtime-cases
    :conformance/path
-   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
+   "../../../01-lang/001-language/draft/conformance/core.edn"
    :conformance/authority :migration-evidence}]}

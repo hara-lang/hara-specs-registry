@@ -200,61 +200,61 @@
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/clojure-functions.edn",
+      "path": "01-lang/001-language/draft/conformance/clojure-functions.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/foundation.edn",
+      "path": "01-lang/001-language/draft/conformance/foundation.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/functions.edn",
+      "path": "01-lang/001-language/draft/conformance/functions.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/l0.edn",
+      "path": "01-lang/001-language/draft/conformance/core.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/modules.edn",
+      "path": "01-lang/001-language/draft/conformance/modules.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/native.edn",
+      "path": "01-lang/001-language/draft/conformance/native.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/parity/jvm-truffle.edn",
+      "path": "01-lang/001-language/draft/conformance/parity/jvm-truffle.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/parity/wasm-truffle.edn",
+      "path": "01-lang/001-language/draft/conformance/parity/wasm-truffle.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn",
+      "path": "01-lang/001-language/draft/conformance/protocol-method-cases.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"
     },
     {
-      "path": "00-unsorted/platform-language/draft/conformance/protocols.edn",
+      "path": "01-lang/001-language/draft/conformance/protocols.edn",
       "kind": "edn",
       "classification": "hara",
       "owner": "hara-lang"

@@ -1,6 +1,6 @@
 {:spec/version "0.0.0-alpha"
  :language "hara"
- :engines [:jvm-interpreter :truffle]
+ :engines [:jvm-interpreter :truffle :rust-evaluator :rust-bytecode]
  :cases
  [{:id :value/nil
    :classification :portable
@@ -17,6 +17,9 @@
   {:id :function/variadic
    :classification :portable
    :source "((fn [x & xs] (+ x (count xs))) 40 1 2)"}
+  {:id :function/anonymous-multi-arity
+   :classification :portable
+   :source "((fn ([value] value) ([left right] (+ left right))) 19 23)"}
   {:id :function/apply
    :classification :portable
    :source "(apply (fn [a b c] (+ a b c)) [1 2 3])"}
@@ -60,8 +63,10 @@
    :classification :portable
    :source "(iter-next (iter [1 2]))"}
   {:id :module/classpath
-   :classification :portable
-   :source "(do (require \"hara/l0-resource.hal\") l0-resource-answer)"}
+   :classification :capability-specific
+   :capability :host/jvm-classpath
+   :reason "String require loads a JVM classpath resource rather than a portable namespace."
+   :source "(do (require \"hara/core-language-resource.hal\") core-language-resource-answer)"}
   {:id :mutable/array
    :classification :portable
    :source "(array 1 2)"}
@@ -114,8 +119,10 @@
    :classification :portable
    :source "(std.native.Iter/iter-close (iter [1]))"}
   {:id :module/load-resource
-   :classification :portable
-   :source "(load-resource \"hara/l0-resource.hal\")"}
+   :classification :capability-specific
+   :capability :host/jvm-classpath
+   :reason "The hara/core-language-resource.hal fixture is supplied by the JVM test classpath."
+   :source "(load-resource \"hara/core-language-resource.hal\")"}
   {:id :mutable/array-count
    :classification :portable
    :source "(count (array 1 2 3))"}

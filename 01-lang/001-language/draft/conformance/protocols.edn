@@ -46,9 +46,9 @@
   :legacy-special-form false}
  :functional-conformance
  {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
-  :case-catalog "specs/00-unsorted/platform-language/draft/conformance/protocol-method-cases.edn"
+  :case-catalog "specs/01-lang/001-language/draft/conformance/protocol-method-cases.edn"
   :platforms [:rust :truffle]
-  :method-count 90
+  :method-count 105
   :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
   :error-matching :category-prefix
   :error-message-text :non-normative

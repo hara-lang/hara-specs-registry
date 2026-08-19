@@ -1,5 +1,5 @@
 {:spec/version "0.0.0-alpha"
- :language "hara-l0"
+ :language "hara-core"
  :intentional-differences
  #{:no-iseq-requirement
    :no-ratios
@@ -49,7 +49,7 @@
    :expect {:value 42 :type :integer}}
   {:id :compiler/defn
    :class :compiler
-   :source "(ns l0.defn (:config {:blank true}) (:require [std.foundation :refer :all :exclude [inc]])) (defn inc [x] (+ x 1)) (inc 41)"
+   :source "(ns conformance.core.defn (:config {:blank true}) (:require [std.foundation :refer :all :exclude [inc]])) (defn inc [x] (+ x 1)) (inc 41)"
    :expect {:value 42 :type :integer}}
   {:id :function/closure-capture
    :class :function
@@ -117,15 +117,55 @@
    :expect {:error :recur}}
   {:id :error/catch-guest-value
    :class :error
-   :source "(try (throw 41) (catch Exception error (+ error 1)))"
+   :source "(try (throw (ex :test/answer {:ex/message \"answer\" :value 41})) (catch error (+ (:value (ex-data error)) 1)))"
    :expect {:value 42 :type :integer}}
   {:id :error/catch-order
    :class :error
-   :source "(do (defstruct Problem [value]) (try (throw (Problem 42)) (catch Other error 0) (catch Problem error (:value error))))"
+   :source "(try (throw (ex :file/not-found {:ex/message \"missing\"})) (catch :socket/closed error 0) (catch :file/not-found error 42))"
    :expect {:value 42 :type :integer}}
+  {:id :error/catch-code
+   :class :error
+   :source "(try (throw (ex :file/permission-denied {:ex/message \"denied\"})) (catch :file/permission-denied error (:ex/code (ex-data error))))"
+   :expect {:value :file/permission-denied :type :keyword}}
+  {:id :error/catch-code-vector
+   :class :error
+   :source "(try (throw (ex :file/not-found {:ex/message \"missing\"})) (catch [:file/not-found :file/permission-denied] error :file-error))"
+   :expect {:value :file-error :type :keyword}}
+  {:id :error/exception-message-fallback
+   :class :error
+   :source "(ex-message (ex :failure/code {}))"
+   :expect {:value ":failure/code" :type :string}}
+  {:id :error/exception-provenance-line
+   :class :error
+   :source "(try\n  (throw (ex :test/provenance {}))\n  (catch caught (:line (:ex/created-at (ex-provenance caught)))))"
+   :expect {:value 2 :type :integer}}
+  {:id :error/exception-provenance-throw-column
+   :class :error
+   :source "(try\n  (throw (ex :test/provenance {}))\n  (catch caught (:column (first (:ex/throws (ex-provenance caught))))))"
+   :expect {:value 3 :type :integer}}
+  {:id :error/exception-provenance-throw-count
+   :class :error
+   :source "(let [exception (ex :test/provenance {})] (try (throw exception) (catch caught (count (:ex/throws (ex-provenance caught))))))"
+   :expect {:value 1 :type :integer}}
+  {:id :error/exception-provenance-rethrow-count
+   :class :error
+   :source "(let [exception (ex :test/provenance {})] (try (try (throw exception) (catch caught (throw caught))) (catch caught (count (:ex/throws (ex-provenance caught))))))"
+   :expect {:value 2 :type :integer}}
+  {:id :error/exception-cause
+   :class :error
+   :source "(let [cause (ex :test/cause {}) wrapped (ex :test/wrapped {:ex/cause cause})] (= cause (ex-cause wrapped)))"
+   :expect {:value true :type :boolean}}
+  {:id :error/exception-reject-arbitrary-throw
+   :class :error
+   :source "(throw 42)"
+   :expect {:error :throw :message "throw expects an Exception value created by ex"}}
+  {:id :error/exception-reject-reserved-code
+   :class :error
+   :source "(ex :test/code {:ex/code :test/other})"
+   :expect {:error :exception :message "attributes must not contain :ex/code"}}
   {:id :error/unmatched-catch
    :class :error
-   :source "(do (defstruct Problem [value]) (try (throw (Problem 42)) (catch Other error 0)))"
+   :source "(try (throw (ex :file/not-found {:ex/message \"missing\"})) (catch :socket/closed error 0))"
    :expect {:error :uncaught}}
   {:id :error/finally-normal
    :class :error
@@ -133,7 +173,7 @@
    :expect {:value 41 :type :integer}}
   {:id :error/finally-unwind
    :class :error
-   :source "(do (def cleaned 0) (try (throw 41) (catch Exception error (+ error cleaned)) (finally (set! cleaned (+ cleaned 1)))) (+ 40 cleaned))"
+   :source "(do (def cleaned 0) (try (throw (ex :test/unwind {:ex/message \"unwind\"})) (catch error cleaned) (finally (set! cleaned (+ cleaned 1)))) (+ 40 cleaned))"
    :expect {:value 41 :type :integer}}
   {:id :runtime/letfn
    :class :runtime
@@ -179,7 +219,7 @@
    :expect {:value 1 :type :integer}}
   {:id :iterator/concat
    :class :iterator
-   :source "(let [it (concat [1] [2])] (iter-next it) (iter-next it))"
+   :source "(let [it (iter (concat [1] [2]))] (iter-next it) (iter-next it))"
    :expect {:value 2 :type :integer}}
   {:id :iterator/combinators
    :class :iterator
@@ -203,7 +243,7 @@
    :expect {:value 6 :type :integer}}
   {:id :module/resource
    :class :module
-   :source "(load-resource \"hara/l0-resource.hal\")"
+   :source "(load-resource \"hara/core-language-resource.hal\")"
    :expect {:value 42 :type :integer}}
   {:id :module/refer
    :class :module
@@ -211,7 +251,7 @@
    :expect {:value 42 :type :integer}}
   {:id :module/refer-macros
    :class :module
-   :source "(require \"hara/l0-macros.hal\" {:refer-macros [unless]}) (unless false 42)"
+   :source "(require \"hara/core-language-macros.hal\" {:refer-macros [unless]}) (unless false 42)"
    :expect {:value 42 :type :integer}}
   {:id :module/core-bootstrap
    :class :module
@@ -311,7 +351,7 @@
    :expect {:value 4 :type :integer}}
   {:id :module/core-generators
    :class :module
-   :source "(load-resource \"std/foundation.hal\") (+ (iter-next (range 2 4)) (iter-next (iterate inc 4)) (iter-next (repeat 1 3)))"
+   :source "(load-resource \"std/foundation.hal\") (+ (iter-next (iter (range 2 4))) (iter-next (iter (iterate inc 4))) (iter-next (iter (repeat 1 3))))"
    :expect {:value 9 :type :integer}}
   {:id :iterator/core-while-combinators
    :class :iterator
@@ -355,11 +395,11 @@
    :expect {:value 9 :type :integer}}
   {:id :mutable/array-set
    :class :runtime
-   :source "(let [a (array 1 2)] (. a (set 1 7)) (. a (get 1)))"
+   :source "(let [a (array 1 2)] (Arr/set a 1 7) (Arr/get a 1))"
    :expect {:value 7 :type :integer}}
   {:id :mutable/array-slice
    :class :runtime
-   :source "(count (. (array 1 2 3) (slice 1 3)))"
+   :source "(count (Arr/slice (array 1 2 3) 1 3))"
    :expect {:value 2 :type :integer}}
   {:id :module/namespace-alias
    :class :module
@@ -443,6 +483,64 @@
    :class :namespace
    :source "(ns app (:config {:intrinsics :all})) (bytes/count (str/encode-utf8 \"x\"))"
    :expect {:value 1 :type :integer}}
+  {:id :namespace/named-selects-definition-scope
+   :class :namespace
+   :source "(ns conformance.builtins) (def answer 42) answer"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/anonymous-reuses-current-scope
+   :class :namespace
+   :source "(ns conformance.builtins) (def left 19) (ns+) (def right 23) (+ left right)"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/anonymous-applies-config
+   :class :namespace
+   :source "(ns conformance.builtins) (ns+ (:config {:blank true})) (if true 42 0)"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/anonymous-config-override
+   :class :namespace
+   :source "(ns conformance.override) (ns+ (:config {:override [identity]})) (def identity 42) identity"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/anonymous-config-expose
+   :class :namespace
+   :source "(ns conformance.expose) (ns+ (:config {:expose [identity]})) (identity 42)"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/anonymous-config-expose-omits-unlisted
+   :class :namespace
+   :source "(ns conformance.expose.omit) (ns+ (:config {:expose [identity]})) map"
+   :expect {:error :unbound-symbol
+            :message "Unbound symbol: map"}}
+  {:id :namespace/anonymous-config-intrinsic-alias
+   :class :namespace
+   :source "(ns conformance.alias) (ns+ (:config {:intrinsics {:alias {string text}}})) (text/upper \"hara\")"
+   :expect {:value "HARA" :type :string}}
+  {:id :namespace/anonymous-config-intrinsic-exclude
+   :class :namespace
+   :source "(ns conformance.exclude) (ns+ (:config {:intrinsics {:exclude [string]}})) (str/upper \"hara\")"
+   :expect {:error :unbound-symbol
+            :message "Unbound symbol: str/upper"}}
+  {:id :namespace/config-blank-override-conflict
+   :class :namespace
+   :source "(ns conformance.invalid (:config {:blank true :override [identity]}))"
+   :expect {:error :invalid-ns-config
+            :message ":config :blank true cannot be combined with :override"}}
+  {:id :namespace/config-override-expose-conflict
+   :class :namespace
+   :source "(ns conformance.invalid (:config {:override [identity] :expose [identity]}))"
+   :expect {:error :invalid-ns-config
+            :message ":config :override cannot be combined with :expose"}}
+  {:id :namespace/config-blank-type
+   :class :namespace
+   :source "(ns conformance.invalid (:config {:blank :yes}))"
+   :expect {:error :invalid-ns-config
+            :message ":config :blank expects a boolean"}}
+  {:id :namespace/anonymous-rejects-name
+   :class :namespace
+   :source "(ns+ public.name)"
+   :expect {:error :invalid-ns-clause
+            :message "ns+ does not accept a namespace name"}}
+  {:id :namespace/builtins-are-not-vars-or-native-type
+   :class :namespace
+   :source "(and (nil? (resolve 'ns)) (nil? (resolve 'std.native.Builtins)))"
+   :expect {:value true :type :boolean}}
   {:id :namespace/config-exclude-and-alias
    :class :namespace
    :source "(ns app (:config {:intrinsics {:exclude [bytes] :alias {string text}}})) (text/upper \"hara\")"
@@ -461,7 +559,7 @@
    :class :namespace
    :source "(ns app (:builtins [inc]))"
    :expect {:error :invalid-ns-clause
-            :message ":builtins is valid only inside ns :config"}}
+            :message "Unsupported ns clause: :builtins"}}
   {:id :namespace/duplicate-config
    :class :namespace
    :source "(ns app (:config {}) (:config {}))"
@@ -501,20 +599,11 @@
    :class :namespace
    :source "(ns app (:config {:blank true})) (if true (bytes/count (str/encode-utf8 \"xy\")) 0)"
    :expect {:value 2 :type :integer}}
-  {:id :namespace/builtins-require-registered-exports
+  {:id :namespace/builtins-config-is-internal
    :class :namespace
    :source "(ns app (:config {:builtins [inc]}))"
    :expect {:error :invalid-ns-config
-            :message "No host builtins are registered for namespace: app"}}
-  {:id :namespace/builtins-missing-export
-   :class :namespace
-   :source "(ns std.foundation (:config {:builtins [definitely-missing]}))"
-   :expect {:error :invalid-ns-config
-            :message "Missing builtin export: std.foundation/definitely-missing"}}
-  {:id :namespace/builtins-activation-idempotent
-   :class :namespace
-   :source "(ns std.foundation (:config {:builtins [count]})) (std.foundation/count [41 42])"
-   :expect {:value 2 :type :integer}}
+            :message "Unsupported :config option: :builtins"}}
   {:id :named-value/constructors-same-unit
    :class :named-value
    :source "(do (defstruct Point [x y]) (defmutable Cursor [x y]) (+ (get (Point 1 2) :x) (get (->Point 3 4) :x) (get (map->Point {:x 5}) :x) (field (Cursor 1 2) :x) (field (->Cursor 3 4) :x) (field (map->Cursor {:x 5}) :x)))"

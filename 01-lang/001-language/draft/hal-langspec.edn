@@ -2,26 +2,28 @@
  :document/type :language-spec
  :document/version "alpha"
  :document/status :draft
- :document/title "HAL data language specification"
+ :document/title "HAL core language specification"
  :document/summary
- "Portable contract for the immutable data forms shared by HAL source and the Hara EDN profile."
+ "Portable contract for HAL data, evaluation, bindings, functions, definitions, namespaces, and modules."
 
  :spec/conforms-to
  {:spec/id :hal/metaspec
   :spec/version "alpha"}
 
  :spec/scope
- {:scope/language "HAL data"
+ {:scope/language "HAL core language"
   :scope/data-notation
   {:notation/name "EDN"
    :notation/extension ".edn"
    :notation/profile :hara
    :notation/encoding :utf-8}
   :scope/includes
-  #{:reader :scalar-values :collection-values :metadata :canonical-reading}
+  #{:reader :scalar-values :collection-values :metadata :canonical-reading
+    :evaluation :functions :bindings :definitions :errors :iteration
+    :namespaces :modules}
   :scope/excludes
-  #{:evaluation :functions :bindings :iteration :protocols :modules
-    :standard-libraries :host-capabilities :runtime-implementation}}
+  #{:protocol-catalog :native-catalog :foundation-api
+    :host-capabilities :runtime-implementation}}
 
  :spec/invariants
  [{:requirement/id :data/host-neutral
@@ -39,13 +41,32 @@
    :requirement/evidence
    [{:conformance/suite :hal/reader
      :conformance/cases
-     [:nil :booleans :numbers :collections :empty-collections]}]}]
+     [:nil :booleans :numbers :collections :empty-collections]}]}
+  {:requirement/id :core/portable-semantics
+   :requirement/level :must
+   :requirement/text
+   "Core-language programs have the same observable result in every conforming evaluator, compiler, bytecode engine, and host runtime."
+   :requirement/evidence
+   [{:conformance/suite :hal/core
+     :conformance/cases
+     [:compiler/arithmetic :function/closure-capture]}]}
+  {:requirement/id :core/context-local
+   :requirement/level :must
+   :requirement/text
+   "Namespace, Var, macro, definition, and module state belongs to one runtime context and is not ambient process-global state."
+   :requirement/evidence
+   [{:conformance/suite :hal/core
+     :conformance/cases
+     [:namespace/named-selects-definition-scope
+      :namespace/anonymous-reuses-current-scope]}]}]
 
  :spec/section-order
  [:hal.data/reader
   :hal.data/scalars
   :hal.data/collections
-  :hal.data/metadata]
+  :hal.data/metadata
+  :hal.core/evaluation
+  :hal.core/namespaces]
 
  :spec/sections
  [{:section/id :hal.data/reader
@@ -126,10 +147,127 @@
      "Metadata may only be attached to values that support metadata."
      :requirement/evidence
      [{:conformance/suite :hal/reader
-       :conformance/cases
-       [:metadata :invalid-metadata-value :invalid-metadata-target]}]}]}]
+     :conformance/cases
+       [:metadata :invalid-metadata-value :invalid-metadata-target]}]}]}
 
- :spec/forms []
- :spec/references []
- :spec/conformance []
+  {:section/id :hal.core/evaluation
+   :section/title "Evaluation and definitions"
+   :section/summary
+   "HAL evaluates forms left to right with lexical closures, sequential bindings, tail-position recur, guest exceptions, and context-local definitions."
+   :section/requirements
+   [{:requirement/id :evaluation/core-forms
+     :requirement/level :must
+     :requirement/text
+     "Conforming runtimes implement the core special forms and macros exercised by the shared core-language corpus."
+     :requirement/evidence
+     [{:conformance/suite :hal/core
+       :conformance/cases
+       [:compiler/arithmetic :binding/let-sequential
+        :runtime/loop-recur :error/catch-order]}]}
+    {:requirement/id :evaluation/backend-parity
+     :requirement/level :must
+     :requirement/text
+     "Native evaluation, Rust bytecode execution, and JVM Truffle execution agree on values and guest-error outcomes for shared portable cases."
+     :requirement/evidence
+     [{:conformance/suite :hal/core
+       :conformance/cases
+       [:namespace/named-selects-definition-scope
+        :namespace/anonymous-reuses-current-scope
+        :namespace/anonymous-config-override
+        :namespace/anonymous-config-expose]}]}]}
+
+  {:section/id :hal.core/namespaces
+   :section/title "Namespaces and modules"
+   :section/summary
+   "Namespaces select definition scope and apply explicit startup, Foundation, intrinsic-library, dependency, flavor, and import configuration."
+   :section/requirements
+   [{:requirement/id :namespace/named
+     :requirement/level :must
+     :requirement/text
+     "(ns name clause*) selects name as the current namespace before subsequent forms are analysed and evaluated."}
+    {:requirement/id :namespace/anonymous
+     :requirement/level :must
+     :requirement/text
+     "(ns+ clause*) reapplies configuration to the current namespace and must not accept a namespace name."}
+    {:requirement/id :namespace/config
+     :requirement/level :must
+     :requirement/text
+     "The :config map accepts :blank, :override, :expose, and :intrinsics; :intrinsics accepts :exclude and :alias. Invalid combinations fail atomically."
+     :requirement/evidence
+     [{:conformance/suite :hal/core
+       :conformance/cases
+       [:namespace/anonymous-applies-config
+        :namespace/anonymous-config-override
+        :namespace/anonymous-config-expose
+        :namespace/anonymous-config-intrinsic-alias
+        :namespace/anonymous-config-intrinsic-exclude
+        :namespace/config-blank-override-conflict
+        :namespace/config-override-expose-conflict]}]}
+    {:requirement/id :namespace/builtins-internal
+     :requirement/level :must
+     :requirement/text
+     "Builtins is an internal runtime activation inventory, not a public namespace, Var, or std.native type; Base is the canonical public core-function native type."}
+    {:requirement/id :module/transactional
+     :requirement/level :must
+     :requirement/text
+     "Module loading and referral either complete as one namespace update or leave the prior context state intact."
+     :requirement/evidence
+     [{:conformance/suite :hal/modules
+       :conformance/cases
+       [:module/failure-rollback :module/reload-rollback]}]}]}]
+
+ :spec/forms
+ [{:form/id :hal.form/ns
+   :form/symbol ns
+   :form/class :special-form
+   :form/shape (quote (ns name clause*))
+   :form/semantics "Selects a named namespace and applies its declaration."
+   :form/evaluation :special}
+  {:form/id :hal.form/ns+
+   :form/symbol ns+
+   :form/class :special-form
+   :form/shape (quote (ns+ clause*))
+   :form/semantics "Applies a namespace declaration to the current namespace without accepting a name."
+   :form/evaluation :special}]
+ :spec/references
+ [{:reference/id :hal.ref/reader
+   :reference/kind :conformance
+   :reference/path "conformance/reader.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/core
+   :reference/kind :conformance
+   :reference/path "conformance/core.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/modules
+   :reference/kind :conformance
+   :reference/path "conformance/modules.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/protocols
+   :reference/kind :conformance
+   :reference/path "conformance/protocols.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/native
+   :reference/kind :conformance
+   :reference/path "conformance/native.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/foundation
+   :reference/kind :conformance
+   :reference/path "conformance/foundation.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/foundation-runtime
+   :reference/kind :parity
+   :reference/path "conformance/parity/foundation-runtime.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/jvm-truffle
+   :reference/kind :parity
+   :reference/path "conformance/parity/jvm-truffle.edn"
+   :reference/authority :evidence}
+  {:reference/id :hal.ref/wasm-truffle
+   :reference/kind :parity
+   :reference/path "conformance/parity/wasm-truffle.edn"
+   :reference/authority :evidence}]
+ :spec/conformance
+ [:hal.ref/reader :hal.ref/core :hal.ref/modules :hal.ref/protocols
+  :hal.ref/native :hal.ref/foundation :hal.ref/foundation-runtime
+  :hal.ref/jvm-truffle :hal.ref/wasm-truffle]
  :spec/provenance []}

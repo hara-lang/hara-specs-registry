@@ -87,20 +87,20 @@ The authoritative EDN also contains indexed declarations for the core special
 forms. Form and requirement identifiers are stable references for conformance
 cases and future tooling.
 
-## Executable evidence
+## Migrated executable evidence
 
-- [`conformance/l0.edn`](conformance/l0.edn) — portable evaluation and runtime
+- [`../../../01-lang/001-language/draft/conformance/core.edn`](../../../01-lang/001-language/draft/conformance/core.edn) — portable evaluation and runtime
   behaviour.
-- [`conformance/reader.edn`](conformance/reader.edn) — reader and canonical
+- [`../../../01-lang/001-language/draft/conformance/reader.edn`](../../../01-lang/001-language/draft/conformance/reader.edn) — reader and canonical
   representation.
-- [`conformance/modules.edn`](conformance/modules.edn) — namespace, module,
+- [`../../../01-lang/001-language/draft/conformance/modules.edn`](../../../01-lang/001-language/draft/conformance/modules.edn) — namespace, module,
   lazy-loading, session, and retained-REPL scenarios.
-- [`conformance/parity/jvm-truffle.edn`](conformance/parity/jvm-truffle.edn) —
+- [`../../../01-lang/001-language/draft/conformance/parity/jvm-truffle.edn`](../../../01-lang/001-language/draft/conformance/parity/jvm-truffle.edn) —
   JVM interpreter/Truffle parity.
-- [`conformance/parity/wasm-truffle.edn`](conformance/parity/wasm-truffle.edn) —
+- [`../../../01-lang/001-language/draft/conformance/parity/wasm-truffle.edn`](../../../01-lang/001-language/draft/conformance/parity/wasm-truffle.edn) —
   Rust WebAssembly/Truffle parity.
 
-The L0 corpus now pins immutable and mutable named-value constructors,
+The core-language corpus pins immutable and mutable named-value constructors,
 persistent struct updates, mutable alias visibility, and field-place evaluation
 order. Coverage is still partial. Host authority, numeric promotion, iterator
 closure, error-source behaviour, and standard-library behaviour still need

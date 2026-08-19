@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:5164633a15103b2f24fa5e289fc9c6a882742e702a758d2a889f53c791338d7a",
-    "catalogueDigest": "sha256:5045b072572d89ef0d9686b27c9b9080a644372efc923f8458ae2fb6625778cc",
+    "manifestDigest": "sha256:669809f60d812c5a92d0204b06333314d7316994f47b90b3ff41311a0a8c0c9e",
+    "catalogueDigest": "sha256:0979711c069733e22f996892cb77a751fd1eb4746e86c2acffe7e32752dabdf1",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 58,
     "ready": 0,
     "executable": 31,
-    "requirements": 344,
+    "requirements": 353,
     "materialized": 58,
     "pinnedSource": 0,
     "layers": [
@@ -279,8 +279,8 @@
       "id": "hal/language",
       "slug": "hal-language",
       "coordinate": "hal/language",
-      "title": "HAL data language specification",
-      "summary": "Portable contract for the immutable data forms shared by HAL source and the Hara EDN profile.",
+      "title": "HAL core language specification",
+      "summary": "Portable contract for HAL data, evaluation, bindings, functions, definitions, namespaces, and modules.",
       "type": "language-spec",
       "version": "alpha",
       "status": "draft",
@@ -289,7 +289,7 @@
       "classification": "hara",
       "sourcePath": "01-lang/001-language/draft/hal-langspec.edn",
       "documentationPath": "01-lang/001-language/draft/README.md",
-      "requirements": 12,
+      "requirements": 21,
       "formats": [
         "application/edn"
       ],

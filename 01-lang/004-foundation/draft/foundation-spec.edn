@@ -55,13 +55,20 @@
    :blank/native-and-protocol-aliases true}
   :bootstrap/config
   {:config/cardinality :zero-or-one
-   :config/keys #{:blank :builtins :intrinsics}
+   :config/keys #{:blank :override :expose :intrinsics}
    :config/unknown-key :error}
   :bootstrap/builtins
-  {:builtins/selection :exact
-   :builtins/source :registered-runtime-export-catalog
-   :builtins/missing :error
-   :builtins/repeated-identical-activation :idempotent}
+  {:builtins/status :internal-runtime-accounting
+   :builtins/configurable false
+   :builtins/native-type false
+   :builtins/namespace false
+   :builtins/contract :hal/language}
+  :bootstrap/foundation-selection
+  {:foundation/default :all
+   :foundation/override "Names omitted from startup referral so the namespace may define them."
+   :foundation/expose "Exact Foundation names retained from startup referral."
+   :foundation/conflicts
+   #{[:blank :override] [:blank :expose] [:override :expose]}}
   :bootstrap/intrinsics
   {:intrinsics/default :all
    :intrinsics/options #{:exclude :alias}
@@ -342,11 +349,11 @@
    :reference/authority :historical}
   {:reference/id :foundation/legacy-surface
    :reference/path
-   "../../../00-unsorted/platform-language/draft/conformance/foundation.edn"
+   "../../../01-lang/001-language/draft/conformance/foundation.edn"
    :reference/authority :historical}
   {:reference/id :foundation/legacy-functions
    :reference/path
-   "../../../00-unsorted/platform-language/draft/conformance/functions.edn"
+   "../../../01-lang/001-language/draft/conformance/functions.edn"
    :reference/authority :historical}]
 
  :foundation/conformance
@@ -355,5 +362,5 @@
    :conformance/authority :implementation-evidence}
   {:conformance/id :foundation/legacy-runtime-cases
    :conformance/path
-   "../../../00-unsorted/platform-language/draft/conformance/l0.edn"
+   "../../../01-lang/001-language/draft/conformance/core.edn"
    :conformance/authority :migration-evidence}]}
