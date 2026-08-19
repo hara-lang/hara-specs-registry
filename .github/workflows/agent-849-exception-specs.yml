@@ -2,7 +2,7 @@ name: Materialize portable exception specifications
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
     branches:
       - agent/849-specs-validation-base
 
@@ -66,19 +66,24 @@ jobs:
 
           native_path = Path("00-unsorted/platform-language/draft/conformance/native.edn")
           native = native_path.read_text().replace(":method-count 366", ":method-count 367", 1)
-          old = """  {:name Error
-           :availability :implemented
-           :methods [new message class]
-           :method-classification {:foundation-primitive :all}}"""
-          new = """  {:name Error
-           :availability :implemented
-           :methods [new message class native-type]
-           :method-classification
-           {:foundation-primitive [new message class]
-            :native-only [native-type]}}"""
-          if old not in native:
-              raise SystemExit("native Error inventory changed")
-          native_path.write_text(native.replace(old, new, 1))
+          pattern = re.compile(
+              r"  \{:name Error\n"
+              r"   :availability :implemented\n"
+              r"   :methods \[new message class\]\n"
+              r"   :method-classification \{:foundation-primitive :all\}\}"
+          )
+          replacement = (
+              "  {:name Error\n"
+              "   :availability :implemented\n"
+              "   :methods [new message class native-type]\n"
+              "   :method-classification\n"
+              "   {:foundation-primitive [new message class]\n"
+              "    :native-only [native-type]}}"
+          )
+          native, count = pattern.subn(replacement, native, count=1)
+          if count != 1:
+              raise SystemExit(f"native Error inventory changed: {count} matches")
+          native_path.write_text(native)
           PY
 
       - uses: actions/setup-node@v4
