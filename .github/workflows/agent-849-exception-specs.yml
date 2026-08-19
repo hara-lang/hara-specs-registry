@@ -1,33 +1,32 @@
-name: Complete merged portable exception specifications
+name: Materialize portable exception specifications
 
 on:
-  push:
+  pull_request:
+    types: [opened]
     branches:
-      - main
-    paths:
-      - .github/workflows/agent-849-exception-specs.yml
+      - agent/849-specs-validation-base
 
 permissions:
   contents: write
 
 concurrency:
   group: materialize-portable-exception-specifications
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   materialize-and-validate:
+    if: github.event.pull_request.head.ref == 'agent/849-portable-exception-contract-product'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
-      - name: Recover the reviewed payload and materialize product files
+      - name: Recover reviewed payload and materialize product files
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "251e56a30e68ea3733c134a2dbd0cec80208ac4b"
           git merge-base --is-ancestor 95878e47b8a5f1f63d8183452b55ecd6310e807b HEAD
           python3 - <<'PY'
           import base64
@@ -56,9 +55,7 @@ jobs:
               "(try (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))) (catch e (ex-class e)))",
               "(ex-class (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))))",
           )
-          Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").write_text(
-              exceptions
-          )
+          Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").write_text(exceptions)
 
           l0_path = Path("00-unsorted/platform-language/draft/conformance/l0.edn")
           l0 = l0_path.read_text()
@@ -112,13 +109,14 @@ jobs:
               raise SystemExit("runtime diagnostics are not explicitly specified")
           PY
 
-      - name: Replace bootstrap with validated specification product
+      - name: Publish validated specification product to the head branch
         shell: bash
         run: |
           set -euo pipefail
           rm .github/workflows/agent-849-exception-specs.yml
+          rm -f .github/agent-849-specs-trigger
           git config user.name "OpenAI Agent"
           git config user.email "openai-agent@users.noreply.github.com"
           git add -A
           git commit -m "Specify portable semantic exception classes"
-          git push origin HEAD:main
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
