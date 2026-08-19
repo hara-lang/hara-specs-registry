@@ -105,10 +105,11 @@ jobs:
               if forbidden in l0:
                   raise SystemExit(f"portable L0 corpus contains {forbidden}")
           exceptions = Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").read_text()
-          shared, runtime = exceptions.split("\n :runtime-specific\n", 1)
+          shared = exceptions.split("\n :shared-cases\n", 1)[1].split("\n :runtime-specific\n", 1)[0]
+          runtime = exceptions.split("\n :runtime-specific\n", 1)[1]
           for forbidden in ["hara.lang.base.Ex$Info", "ExceptionInfo", ":ex/native-type"]:
               if forbidden in shared:
-                  raise SystemExit(f"shared exception corpus contains {forbidden}")
+                  raise SystemExit(f"shared exception expected cases contain {forbidden}")
           if "hara.lang.base.Ex$Info" not in runtime or "ExceptionInfo" not in runtime:
               raise SystemExit("runtime diagnostics are not explicitly specified")
           PY
