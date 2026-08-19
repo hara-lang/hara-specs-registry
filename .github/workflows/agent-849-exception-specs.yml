@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: materialize-portable-exception-specifications
+  cancel-in-progress: true
+
 jobs:
   materialize-and-validate:
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "281e875274c504ae8f1d1ab46e0420d9be892ba2"
+          test "$(git rev-parse HEAD^)" = "251e56a30e68ea3733c134a2dbd0cec80208ac4b"
           git merge-base --is-ancestor 95878e47b8a5f1f63d8183452b55ecd6310e807b HEAD
           python3 - <<'PY'
           import base64
@@ -32,7 +36,7 @@ jobs:
           from pathlib import Path
 
           original = subprocess.check_output(
-              ["git", "show", "HEAD^:.github/workflows/agent-849-exception-specs.yml"],
+              ["git", "show", "af64940d5d0a1f1822c6cb923bdbeb525f3da802:.github/workflows/agent-849-exception-specs.yml"],
               text=True,
           )
 
@@ -48,8 +52,12 @@ jobs:
           end = source.index("\n\n  {:section/id ", start + 1)
           spec_path.write_text(source[:start] + "  " + payload("ERRORS_SECTION_B64") + source[end:])
 
+          exceptions = payload("EXCEPTIONS_EDN_B64").replace(
+              "(try (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))) (catch e (ex-class e)))",
+              "(ex-class (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))))",
+          )
           Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").write_text(
-              payload("EXCEPTIONS_EDN_B64")
+              exceptions
           )
 
           l0_path = Path("00-unsorted/platform-language/draft/conformance/l0.edn")
