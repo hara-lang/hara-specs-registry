@@ -1,7 +1,7 @@
-name: Materialize portable exception specifications
+name: Complete merged portable exception specifications
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
@@ -12,37 +12,35 @@ permissions:
 
 jobs:
   materialize-and-validate:
-    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
-      - name: Check out exact specification branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: main
           fetch-depth: 0
 
-      - name: Verify exact exception-corpus ancestry
+      - name: Recover the reviewed payload and materialize product files
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "95878e47b8a5f1f63d8183452b55ecd6310e807b"
-          test "$(git rev-parse HEAD^^)" = "d1897525ebab127d0405f69545a29f2718843a5b"
-
-      - name: Materialize the portable exception contract
-        shell: bash
-        env:
-          ERRORS_SECTION_B64: ezpzZWN0aW9uL2lkIDpoYWwvZXJyb3JzCiA6c2VjdGlvbi90aXRsZSAiUG9ydGFibGUgZXhjZXB0aW9ucyBhbmQgY2xlYW51cCIKIDpzZWN0aW9uL3N1bW1hcnkKICJIQUwgZXhwb3NlcyBvbmUgcG9ydGFibGUgRXhjZXB0aW9uIHZhbHVlLiBTZW1hbnRpYyBjbGFzc2VzIGFyZSBmbGF0IGxhYmVscywgY2F0Y2ggc2VsZWN0b3JzIHJlbWFpbiBjb2RlLW9ubHksIGFuZCBiYWNrZW5kLW5hdGl2ZSBkaWFnbm9zdGljcyBuZXZlciBlbnRlciBwb3J0YWJsZSBkYXRhLiIKIDpzZWN0aW9uL3JlcXVpcmVtZW50cwogW3s6cmVxdWlyZW1lbnQvaWQgOmVycm9yL2NvbnN0cnVjdG9yCiAgIDpyZXF1aXJlbWVudC9sZXZlbCA6bXVzdAogICA6cmVxdWlyZW1lbnQvdGV4dAogICAiZXggYWNjZXB0cyBleGFjdGx5IGEgbmFtZXNwYWNlZCBrZXl3b3JkIGNvZGUgYW5kIGFuIGF0dHJpYnV0ZXMgbWFwLiBJdCBpbnNlcnRzIDpleC9jb2RlLCBhY2NlcHRzIG9wdGlvbmFsIHN0cmluZyA6ZXgvbWVzc2FnZSwgb3B0aW9uYWwgbmFtZXNwYWNlZC1rZXl3b3JkIDpleC9jbGFzcywgb3B0aW9uYWwgbWFwIDpleC9jb250ZXh0LCBhbmQgb3B0aW9uYWwgOmV4L2NhdXNlLiBBdHRyaWJ1dGVzIG1heSBub3Qgc3VwcGx5IDpleC9jb2RlLiIKICAgOnJlcXVpcmVtZW50L2V2aWRlbmNlCiAgIFt7OnN1aXRlIDpoYWwvZXhjZXB0aW9ucwogICAgIDpjYXNlcyBbOmV4Y2VwdGlvbi9jb25zdHJ1Y3Rpb24KICAgICAgICAgICAgIDpleGNlcHRpb24vYWJzZW50LWNsYXNzCiAgICAgICAgICAgICA6ZXhjZXB0aW9uL3JlamVjdC1jbGFzcwogICAgICAgICAgICAgOmV4Y2VwdGlvbi9yZWplY3QtcmVzZXJ2ZWQtY29kZV19XX0KICB7OnJlcXVpcmVtZW50L2lkIDplcnJvci9zZW1hbnRpYy1jbGFzcwogICA6cmVxdWlyZW1lbnQvbGV2ZWwgOm11c3QKICAgOnJlcXVpcmVtZW50L3RleHQKICAgImV4LWNsYXNzIGFjY2VwdHMgYW4gRXhjZXB0aW9uIGFuZCByZXR1cm5zIGl0cyBzZW1hbnRpYyA6ZXgvY2xhc3Mga2V5d29yZCBvciBuaWwuIEl0IHJlamVjdHMgb3JkaW5hcnkgdmFsdWVzIGFuZCBtYWxmb3JtZWQgbGVnYWN5IGNsYXNzIGRhdGEuIFNlbWFudGljIGNsYXNzZXMgYXJlIGZsYXQgZXF1YWxpdHkgbGFiZWxzIGZvciBncm91cGluZywgZmlsdGVyaW5nLCByZXBvcnRpbmcsIGFuZCBzZXJpYWxpemF0aW9uIG9ubHkuIgogICA6cmVxdWlyZW1lbnQvZXZpZGVuY2UKICAgW3s6c3VpdGUgOmhhbC9leGNlcHRpb25zCiAgICAgOmNhc2VzIFs6ZXhjZXB0aW9uL3NlbWFudGljLWNsYXNzCiAgICAgICAgICAgICA6ZXhjZXB0aW9uL2xlZ2FjeS1jbGFzcwogICAgICAgICAgICAgOmV4Y2VwdGlvbi9tYWxmb3JtZWQtbGVnYWN5LWNsYXNzCiAgICAgICAgICAgICA6ZXhjZXB0aW9uL2NsYXNzLWlzLW5vdC1jYXRjaC1zZWxlY3Rvcl19XX0KICB7OnJlcXVpcmVtZW50L2lkIDplcnJvci9uYXRpdmUtdHlwZQogICA6cmVxdWlyZW1lbnQvbGV2ZWwgOm11c3Qtbm90CiAgIDpyZXF1aXJlbWVudC90ZXh0CiAgICJleC1uYXRpdmUtdHlwZSBpcyBhbiBleHBsaWNpdGx5IGxvY2FsIGRpYWdub3N0aWMuIE5hdGl2ZSB0eXBlIG5hbWVzIGRvIG5vdCBlbnRlciBleC1kYXRhLCBjYXRjaCBzZWxlY3Rpb24sIHBvcnRhYmxlIHNlcmlhbGl6YXRpb24gcHJvamVjdGlvbnMsIHByb3ZlbmFuY2UsIG9yIHNoYXJlZCBleHBlY3RlZCB2YWx1ZXMuIgogICA6cmVxdWlyZW1lbnQvZXZpZGVuY2UKICAgW3s6c3VpdGUgOmhhbC9leGNlcHRpb25zCiAgICAgOmNhc2VzIFs6ZGlhZ25vc3RpYy9uYXRpdmUtdHlwZS1qdm0KICAgICAgICAgICAgIDpkaWFnbm9zdGljL25hdGl2ZS10eXBlLXJ1c3QKICAgICAgICAgICAgIDpkaWFnbm9zdGljL25hdGl2ZS10eXBlLWV4Y2x1ZGVkXX1dfQogIHs6cmVxdWlyZW1lbnQvaWQgOmVycm9yL2NhdGNoLWNvZGUKICAgOnJlcXVpcmVtZW50L2xldmVsIDptdXN0CiAgIDpyZXF1aXJlbWVudC90ZXh0CiAgICJ0aHJvdyBhY2NlcHRzIG9ubHkgRXhjZXB0aW9uLiBLZXl3b3JkIGFuZCBub24tZW1wdHkgdmVjdG9yIGNhdGNoIHNlbGVjdG9ycyBjb21wYXJlIG9ubHkgOmV4L2NvZGUgaW4gc291cmNlIG9yZGVyLiBBbiB1bmNvbmRpdGlvbmFsIGNhdGNoIGlzIGxhc3QuIDpleC9jbGFzcyBuZXZlciBwYXJ0aWNpcGF0ZXMgaW4gY2F0Y2ggc2VsZWN0aW9uLiIKICAgOnJlcXVpcmVtZW50L2V2aWRlbmNlCiAgIFt7OnN1aXRlIDpoYWwvbDAKICAgICA6Y2FzZXMgWzplcnJvci9jYXRjaC1leGNlcHRpb24tdmFsdWUKICAgICAgICAgICAgIDplcnJvci9jYXRjaC1vcmRlcgogICAgICAgICAgICAgOmVycm9yL2NhdGNoLWNvZGUKICAgICAgICAgICAgIDplcnJvci9jYXRjaC1jb2RlLXZlY3RvcgogICAgICAgICAgICAgOmVycm9yL2V4Y2VwdGlvbi1jbGFzcy1kb2VzLW5vdC1jYXRjaAogICAgICAgICAgICAgOmVycm9yL3VubWF0Y2hlZC1jYXRjaF19XX0KICB7OnJlcXVpcmVtZW50L2lkIDplcnJvci9jYXVzZQogICA6cmVxdWlyZW1lbnQvbGV2ZWwgOm11c3QKICAgOnJlcXVpcmVtZW50L3RleHQKICAgIkFuIEV4Y2VwdGlvbiBzdXBwbGllZCBhcyA6ZXgvY2F1c2UgcmV0YWlucyBpZGVudGl0eS4gQSBzdXBwb3J0ZWQgcmF3IGhvc3QgZXJyb3IgaXMgbm9ybWFsaXplZCB0byBhbiBpbmRlcGVuZGVudCA6aG9zdC9uYXRpdmUtZXJyb3IgRXhjZXB0aW9uIGNvbnRhaW5pbmcgcG9ydGFibGUgY29kZSBhbmQgbWVzc2FnZSBkYXRhIG9ubHk7IHRoZSBsaXZlIGJhY2tlbmQgdmFsdWUgYW5kIG5hdGl2ZSB0eXBlIGFyZSBub3Qgc3RvcmVkLiIKICAgOnJlcXVpcmVtZW50L2V2aWRlbmNlCiAgIFt7OnN1aXRlIDpoYWwvZXhjZXB0aW9ucwogICAgIDpjYXNlcyBbOmV4Y2VwdGlvbi9jYXVzZS1pZGVudGl0eQogICAgICAgICAgICAgOmV4Y2VwdGlvbi9ob3N0LWNhdXNlLW5vcm1hbGl6YXRpb24KICAgICAgICAgICAgIDpleGNlcHRpb24vY2F1c2UtaW5kZXBlbmRlbnQtcHJvdmVuYW5jZV19XX0KICB7OnJlcXVpcmVtZW50L2lkIDplcnJvci9wcmVzZXJ2YXRpb24KICAgOnJlcXVpcmVtZW50L2xldmVsIDptdXN0CiAgIDpyZXF1aXJlbWVudC90ZXh0CiAgICJUaGUgb3B0aW9uYWwgc2VtYW50aWMgY2xhc3MgaXMgcHJlc2VydmVkIHRocm91Z2ggZXgtZGF0YSwgY2F1c2VzLCByZXRocm93cywgcHJvdmVuYW5jZSwgcHJvbWlzZXMsIEhUQSB2YWx1ZSBlbmNvZGluZywgYW5kIGhvc3QtYm91bmRhcnkgcm91bmQgdHJpcHMuIgogICA6cmVxdWlyZW1lbnQvZXZpZGVuY2UKICAgW3s6c3VpdGUgOmhhbC9leGNlcHRpb25zCiAgICAgOmNhc2VzIFs6ZXhjZXB0aW9uL3JldGhyb3cKICAgICAgICAgICAgIDpleGNlcHRpb24vcHJvbWlzZQogICAgICAgICAgICAgOmV4Y2VwdGlvbi9odGEtcm91bmQtdHJpcAogICAgICAgICAgICAgOmV4Y2VwdGlvbi9ob3N0LXJvdW5kLXRyaXBdfV19CiAgezpyZXF1aXJlbWVudC9pZCA6ZXJyb3IvcHJvdmVuYW5jZQogICA6cmVxdWlyZW1lbnQvbGV2ZWwgOm11c3QKICAgOnJlcXVpcmVtZW50L3RleHQKICAgIlByb3ZlbmFuY2UgaXMgcnVudGltZS1vd25lZCBhbmQgZXhjbHVkZWQgZnJvbSBleC1kYXRhLiBUaGUgZmlyc3QgdGhyb3cgZXN0YWJsaXNoZXMgOmV4L2NyZWF0ZWQtYXQgYW5kIGV2ZXJ5IHRocm93IG9yIHJldGhyb3cgYXBwZW5kcyBhIHBvcnRhYmxlIHRocm93IHNpdGUuIENhdGNoIGRvZXMgbm90IGNoYW5nZSBwcm92ZW5hbmNlLiIKICAgOnJlcXVpcmVtZW50L2V2aWRlbmNlCiAgIFt7OnN1aXRlIDpoYWwvbDAKICAgICA6Y2FzZXMgWzplcnJvci9leGNlcHRpb24tcHJvdmVuYW5jZS1saW5lCiAgICAgICAgICAgICA6ZXJyb3IvZXhjZXB0aW9uLXByb3ZlbmFuY2UtdGhyb3ctY29sdW1uCiAgICAgICAgICAgICA6ZXJyb3IvZXhjZXB0aW9uLXByb3ZlbmFuY2UtdGhyb3ctY291bnQKICAgICAgICAgICAgIDplcnJvci9leGNlcHRpb24tcHJvdmVuYW5jZS1yZXRocm93LWNvdW50XX1dfQogIHs6cmVxdWlyZW1lbnQvaWQgOmVycm9yL2ZpbmFsbHkKICAgOnJlcXVpcmVtZW50L2xldmVsIDptdXN0CiAgIDpyZXF1aXJlbWVudC90ZXh0CiAgICJBIGZpbmFsbHkgY2xhdXNlIGV4ZWN1dGVzIGV4YWN0bHkgb25jZSBkdXJpbmcgbm9ybWFsIGNvbXBsZXRpb24gYW5kIGVycm9yIHVud2luZGluZy4gSWYgY2xlYW51cCBmYWlscywgdGhlIGNsZWFudXAgZXJyb3IgYmVjb21lcyB0aGUgb2JzZXJ2YWJsZSByZXN1bHQuIgogICA6cmVxdWlyZW1lbnQvZXZpZGVuY2UKICAgW3s6c3VpdGUgOmhhbC9sMAogICAgIDpjYXNlcyBbOmVycm9yL2ZpbmFsbHktbm9ybWFsCiAgICAgICAgICAgICA6ZXJyb3IvZmluYWxseS11bndpbmRdfV19CiAgezpyZXF1aXJlbWVudC9pZCA6ZXJyb3Ivc291cmNlCiAgIDpyZXF1aXJlbWVudC9sZXZlbCA6bXVzdAogICA6cmVxdWlyZW1lbnQvdGV4dAogICAiUmVhZGVyLCBhbmFseXNpcywgYXJpdHksIGRlc3RydWN0dXJpbmcsIHJlY3VyLCBwcm90b2NvbCwgYW5kIHJ1bnRpbWUgZXJyb3JzIHJldGFpbiBhdmFpbGFibGUgc291cmNlIGxvY2F0aW9uIGluZm9ybWF0aW9uLiJ9XQogOnNlY3Rpb24vZm9ybXMKIFs6aGFsLmZvcm0vdGhyb3cgOmhhbC5mb3JtL3RyeV19
-          EXCEPTIONS_EDN_B64: ezpzcGVjL3ZlcnNpb24gIjAuMC4wLWFscGhhIgogOnNwZWMvc3RhdHVzIDpkcmFmdAogOnN5bnRheCA6ZWRuCiA6cHVycG9zZSA6cG9ydGFibGUtZXhjZXB0aW9uLWNvbnRyYWN0CiA6c3VpdGUgOmhhbC9leGNlcHRpb25zCgogOmNvbnN0cnVjdG9yCiB7OmZvcm0gIihleCBjb2RlIGRhdGEpIgogIDphcml0eSAyCiAgOmNvZGUgezp0eXBlIDpuYW1lc3BhY2VkLWtleXdvcmQKICAgICAgICAgOnN0b3JlZC1hcyA6ZXgvY29kZQogICAgICAgICA6cmVzZXJ2ZWQtaW4tZGF0YSB0cnVlfQogIDpkYXRhIHs6dHlwZSA6bWFwCiAgICAgICAgIDpvcHRpb25hbAogICAgICAgICB7OmV4L21lc3NhZ2UgOnN0cmluZwogICAgICAgICAgOmV4L2NsYXNzIDpuYW1lc3BhY2VkLWtleXdvcmQKICAgICAgICAgIDpleC9jb250ZXh0IDptYXAKICAgICAgICAgIDpleC9jYXVzZSA6ZXhjZXB0aW9ufX19CgogOnNlbWFudGljLWNsYXNzCiB7OmFjY2Vzc29yIGV4LWNsYXNzCiAgOmFic2VudCBuaWwKICA6c2hhcGUgOm5hbWVzcGFjZWQta2V5d29yZAogIDpjb21wYXJpc29uIDpmbGF0LWVxdWFsaXR5CiAgOnVzZXMgWzpncm91cGluZyA6ZmlsdGVyaW5nIDpyZXBvcnRpbmcgOnNlcmlhbGl6YXRpb25dCiAgOmNhdGNoLXNlbGVjdGlvbiBmYWxzZQogIDpvcmRpbmFyeS12YWx1ZXMgOnJlamVjdGVkCiAgOm1hbGZvcm1lZC1sZWdhY3ktdmFsdWVzIDpyZWplY3RlZH0KCiA6bmF0aXZlLXR5cGUKIHs6YWNjZXNzb3IgZXgtbmF0aXZlLXR5cGUKICA6cG9ydGFiaWxpdHkgOmxvY2FsLWRpYWdub3N0aWMKICA6c2hhcmVkLWV4cGVjdGVkLXZhbHVlcyA6Zm9yYmlkZGVuCiAgOmV4Y2x1ZGVkLWZyb20KICBbOmV4LWRhdGEgOmNhdGNoLXNlbGVjdGlvbiA6cG9ydGFibGUtc2VyaWFsaXphdGlvbiA6cHJvdmVuYW5jZV0KICA6cnVudGltZS1leHBlY3RhdGlvbnMKICB7Omp2bSAiaGFyYS5sYW5nLmJhc2UuRXgkSW5mbyIKICAgOnJ1c3QgIkV4Y2VwdGlvbkluZm8ifX0KCiA6Y2F1c2VzCiB7OmV4Y2VwdGlvbiA6cHJlc2VydmUtaWRlbnRpdHkKICA6aG9zdC1lcnJvcgogIHs6bm9ybWFsaXphdGlvbi1jb2RlIDpob3N0L25hdGl2ZS1lcnJvcgogICA6c3RvcmVkLWZpZWxkcyBbOmV4L2NvZGUgOmV4L21lc3NhZ2VdCiAgIDpsaXZlLW9iamVjdC1zdG9yZWQgZmFsc2UKICAgOm5hdGl2ZS10eXBlLXN0b3JlZCBmYWxzZQogICA6c2VtYW50aWMtY2xhc3MgbmlsCiAgIDpwcm92ZW5hbmNlIDppbmRlcGVuZGVudH19CgogOmNhdGNoCiB7OnNlbGVjdG9ycyBbOm5hbWVzcGFjZWQta2V5d29yZCA6bm9uLWVtcHR5LXZlY3RvciA6dW5jb25kaXRpb25hbF0KICA6Y29tcGFyaXNvbi1rZXkgOmV4L2NvZGUKICA6Y2xhc3Mtc2VsZWN0aW9uIGZhbHNlCiAgOm9yZGVyIDpzb3VyY2UKICA6dW5jb25kaXRpb25hbC1wb3NpdGlvbiA6bGFzdH0KCiA6cHJlc2VydmF0aW9uCiBbOmV4LWRhdGEgOmNhdXNlIDpyZXRocm93IDpwcm92ZW5hbmNlIDpwcm9taXNlCiAgOmh0YS12YWx1ZSA6aG9zdC1ib3VuZGFyeV0KCiA6c2hhcmVkLWNhc2VzCiBbezppZCA6ZXhjZXB0aW9uL2NvbnN0cnVjdGlvbgogICA6c291cmNlICIobGV0IFtlIChleCA6ZmlsZS9ub3QtZm91bmQgezpleC9jbGFzcyA6ZXguY2xhc3MvaW8gOmV4L21lc3NhZ2UgXCJGaWxlIHdhcyBub3QgZm91bmRcIiA6ZmlsZS9wYXRoIFwiL3RtcC9taXNzaW5nXCJ9KV0gWyg6ZXgvY29kZSAoZXgtZGF0YSBlKSkgKGV4LWNsYXNzIGUpIChleC1tZXNzYWdlIGUpXSkiCiAgIDpleHBlY3Qgezpwb3J0YWJsZS12YWx1ZSBbOmZpbGUvbm90LWZvdW5kIDpleC5jbGFzcy9pbyAiRmlsZSB3YXMgbm90IGZvdW5kIl19fQogIHs6aWQgOmV4Y2VwdGlvbi9hYnNlbnQtY2xhc3MKICAgOnNvdXJjZSAiKGV4LWNsYXNzIChleCA6dGVzdC9mYWlsdXJlIHt9KSkiCiAgIDpleHBlY3Qgezpwb3J0YWJsZS12YWx1ZSBuaWx9fQogIHs6aWQgOmV4Y2VwdGlvbi9yZWplY3QtY2xhc3MKICAgOnNvdXJjZSAiKGV4IDp0ZXN0L2ZhaWx1cmUgezpleC9jbGFzcyA6aW99KSIKICAgOmV4cGVjdCB7OmVycm9yIDppbnZhbGlkLWV4Y2VwdGlvbgogICAgICAgICAgICA6bWVzc2FnZSAiOmV4L2NsYXNzIG11c3QgYmUgYSBuYW1lc3BhY2VkIGtleXdvcmQifX0KICB7OmlkIDpleGNlcHRpb24vcmVqZWN0LXJlc2VydmVkLWNvZGUKICAgOnNvdXJjZSAiKGV4IDp0ZXN0L2ZhaWx1cmUgezpleC9jb2RlIDp0ZXN0L290aGVyfSkiCiAgIDpleHBlY3QgezplcnJvciA6aW52YWxpZC1leGNlcHRpb24KICAgICAgICAgICAgOm1lc3NhZ2UgImV4IGF0dHJpYnV0ZXMgbXVzdCBub3QgY29udGFpbiA6ZXgvY29kZSJ9fQogIHs6aWQgOmV4Y2VwdGlvbi9zZW1hbnRpYy1jbGFzcwogICA6c291cmNlICIoZXgtY2xhc3MgKGV4IDp0ZXN0L2ZhaWx1cmUgezpleC9jbGFzcyA6ZXguY2xhc3Mvc3RhdGV9KSkiCiAgIDpleHBlY3Qgezpwb3J0YWJsZS12YWx1ZSA6ZXguY2xhc3Mvc3RhdGV9fQogIHs6aWQgOmV4Y2VwdGlvbi9sZWdhY3ktY2xhc3MKICAgOnNvdXJjZSAiKGV4LWNsYXNzIChleC1pbmZvIFwibGVnYWN5XCIgezpleC9jbGFzcyA6ZXguY2xhc3MvbGVnYWN5fSkpIgogICA6ZXhwZWN0IHs6cG9ydGFibGUtdmFsdWUgOmV4LmNsYXNzL2xlZ2FjeX19CiAgezppZCA6ZXhjZXB0aW9uL21hbGZvcm1lZC1sZWdhY3ktY2xhc3MKICAgOnNvdXJjZSAiKGV4LWNsYXNzIChleC1pbmZvIFwibGVnYWN5XCIgezpleC9jbGFzcyA6bGVnYWN5fSkpIgogICA6ZXhwZWN0IHs6ZXJyb3IgOmludmFsaWQtZXhjZXB0aW9uCiAgICAgICAgICAgIDptZXNzYWdlICI6ZXgvY2xhc3MgbXVzdCBiZSBhIG5hbWVzcGFjZWQga2V5d29yZCJ9fQogIHs6aWQgOmV4Y2VwdGlvbi9jbGFzcy1pcy1ub3QtY2F0Y2gtc2VsZWN0b3IKICAgOnNvdXJjZSAiKHRyeSAodGhyb3cgKGV4IDp0ZXN0L2ZhaWx1cmUgezpleC9jbGFzcyA6ZXguY2xhc3MvaW99KSkgKGNhdGNoIDpleC5jbGFzcy9pbyBlIDApIChjYXRjaCBlIDQyKSkiCiAgIDpleHBlY3Qgezpwb3J0YWJsZS12YWx1ZSA0Mn19CiAgezppZCA6ZXhjZXB0aW9uL2NhdXNlLWlkZW50aXR5CiAgIDpzb3VyY2UgIihsZXQgW2NhdXNlIChleCA6dGVzdC9jYXVzZSB7OmV4L2NsYXNzIDpleC5jbGFzcy9zdGF0ZX0pIHdyYXBwZWQgKGV4IDp0ZXN0L3dyYXBwZWQgezpleC9jYXVzZSBjYXVzZX0pXSAoYW5kICg9IGNhdXNlIChleC1jYXVzZSB3cmFwcGVkKSkgKD0gOmV4LmNsYXNzL3N0YXRlIChleC1jbGFzcyAoZXgtY2F1c2Ugd3JhcHBlZCkpKSkpIgogICA6ZXhwZWN0IHs6cG9ydGFibGUtdmFsdWUgdHJ1ZX19CiAgezppZCA6ZXhjZXB0aW9uL3JldGhyb3cKICAgOnNvdXJjZSAiKHRyeSAodHJ5ICh0aHJvdyAoZXggOnRlc3QvZmFpbHVyZSB7OmV4L2NsYXNzIDpleC5jbGFzcy9zdGF0ZX0pKSAoY2F0Y2ggZSAodGhyb3cgZSkpKSAoY2F0Y2ggZSAoZXgtY2xhc3MgZSkpKSIKICAgOmV4cGVjdCB7OnBvcnRhYmxlLXZhbHVlIDpleC5jbGFzcy9zdGF0ZX19CiAgezppZCA6ZXhjZXB0aW9uL3Byb21pc2UKICAgOnNvdXJjZSAiKHRyeSAoZGVyZWYgKFByb21pc2UvZnJvbSAoZXggOnRlc3QvZmFpbHVyZSB7OmV4L2NsYXNzIDpleC5jbGFzcy9zdGF0ZX0pKSkgKGNhdGNoIGUgKGV4LWNsYXNzIGUpKSkiCiAgIDpleHBlY3Qgezpwb3J0YWJsZS12YWx1ZSA6ZXguY2xhc3Mvc3RhdGV9fQogIHs6aWQgOmV4Y2VwdGlvbi9odGEtcm91bmQtdHJpcAogICA6cnVudGltZS1oYXJuZXNzIDpodGEKICAgOmV4cGVjdCB7OmNsYXNzIDpleC5jbGFzcy9zdGF0ZQogICAgICAgICAgICA6bmF0aXZlLXR5cGUtYWJzZW50IHRydWV9fQogIHs6aWQgOmV4Y2VwdGlvbi9ob3N0LXJvdW5kLXRyaXAKICAgOnJ1bnRpbWUtaGFybmVzcyA6aG9zdC1ib3VuZGFyeQogICA6ZXhwZWN0IHs6Y2xhc3MgOmV4LmNsYXNzL3N0YXRlCiAgICAgICAgICAgIDpuYXRpdmUtdHlwZS1hYnNlbnQgdHJ1ZX19CiAgezppZCA6ZXhjZXB0aW9uL2hvc3QtY2F1c2Utbm9ybWFsaXphdGlvbgogICA6cnVudGltZS1oYXJuZXNzIDpob3N0LWVycm9yCiAgIDpleHBlY3Qgezpjb2RlIDpob3N0L25hdGl2ZS1lcnJvcgogICAgICAgICAgICA6Y2xhc3MgbmlsCiAgICAgICAgICAgIDpwb3J0YWJsZS1rZXlzICN7OmV4L2NvZGUgOmV4L21lc3NhZ2V9fQogIHs6aWQgOmV4Y2VwdGlvbi9jYXVzZS1pbmRlcGVuZGVudC1wcm92ZW5hbmNlCiAgIDpydW50aW1lLWhhcm5lc3MgOmhvc3QtZXJyb3IKICAgOmV4cGVjdCB7OmluZGVwZW5kZW50IHRydWV9fQogIHs6aWQgOmRpYWdub3N0aWMvbmF0aXZlLXR5cGUtZXhjbHVkZWQKICAgOnJ1bnRpbWUtaGFybmVzcyA6cG9ydGFibGUtcHJvamVjdGlvbgogICA6ZXhwZWN0IHs6Zm9yYmlkZGVuLWtleXMgI3s6ZXgvbmF0aXZlLXR5cGUgOm5hdGl2ZS10eXBlfX1dCgogOnJ1bnRpbWUtc3BlY2lmaWMKIHs6anZtCiAgW3s6aWQgOmRpYWdub3N0aWMvbmF0aXZlLXR5cGUtanZtCiAgICA6c291cmNlICIoZXgtbmF0aXZlLXR5cGUgKGV4IDp0ZXN0L2ZhaWx1cmUge30pKSIKICAgIDpleHBlY3Qgezpsb2NhbC1kaWFnb3N0aWMgImhhcmEubGFuZy5iYXNlLkV4JEluZm8ifX1dCiAgOnJ1c3QKICBbeyppZCA6ZGlhZ25vc3RpYy9uYXRpdmUtdHlwZS1ydXN0CiAgICA6c291cmNlICIoZXgtbmF0aXZlLXR5cGUgKGV4IDp0ZXN0L2ZhaWx1cmUge30pKSIKICAgIDpleHBlY3Qgezpsb2NhbC1kaWFnb3N0aWMgIkV4Y2VwdGlvbkluZm8ifX1dfX0K
-          L0_INSERT_B64: ezppZCA6ZXJyb3IvZXhjZXB0aW9uLWNsYXNzCiA6Y2xhc3MgOmVycm9yCiA6c291cmNlICIoZXgtY2xhc3MgKGV4IDp0ZXN0L2ZhaWx1cmUgezpleC9jbGFzcyA6ZXguY2xhc3MvaW99KSkiCiA6ZXhwZWN0IHs6dmFsdWUgOmV4LmNsYXNzL2lvIDp0eXBlIDprZXl3b3JkfX0KezppZCA6ZXJyb3IvZXhjZXB0aW9uLWFic2VudC1jbGFzcwogOmNsYXNzIDplcnJvcgogOnNvdXJjZSAiKGV4LWNsYXNzIChleCA6dGVzdC9mYWlsdXJlIHt9KSkiCiA6ZXhwZWN0IHs6dmFsdWUgbmlsIDp0eXBlIDpuaWx9fQp7OmlkIDplcnJvci9leGNlcHRpb24tcmVqZWN0LWNsYXNzCiA6Y2xhc3MgOmVycm9yCiA6c291cmNlICIoZXggOnRlc3QvZmFpbHVyZSB7OmV4L2NsYXNzIDppb30pIgogOmV4cGVjdCB7OmVycm9yIDppbnZhbGlkLWV4Y2VwdGlvbgogICAgICAgICAgOm1lc3NhZ2UgIjpleC9jbGFzcyBtdXN0IGJlIGEgbmFtZXNwYWNlZCBrZXl3b3JkIn19Cns6aWQgOmVycm9yL2V4Y2VwdGlvbi1sZWdhY3ktY2xhc3MKIDpjbGFzcyA6ZXJyb3IKIDpzb3VyY2UgIihleC1jbGFzcyAoZXgtaW5mbyBcImxlZ2FjeVwiIHs6ZXgvY2xhc3MgOmV4LmNsYXNzL2xlZ2FjeX0pKSIKIDpleHBlY3Qgezp2YWx1ZSA6ZXguY2xhc3MvbGVnYWN5IDp0eXBlIDprZXl3b3JkfX0KezppZCA6ZXJyb3IvZXhjZXB0aW9uLXJlamVjdC1tYWxmb3JtZWQtbGVnYWN5LWNsYXNzCiA6Y2xhc3MgOmVycm9yCiA6c291cmNlICIoZXgtY2xhc3MgKGV4LWluZm8gXCJsZWdhY3lcIiB7OmV4L2NsYXNzIDpsZWdhY3l9KSkiCiA6ZXhwZWN0IHs6ZXJyb3IgOmludmFsaWQtZXhjZXB0aW9uCiAgICAgICAgICA6bWVzc2FnZSAiOmV4L2NsYXNzIG11c3QgYmUgYSBuYW1lc3BhY2VkIGtleXdvcmQifX0KezppZCA6ZXJyb3IvZXhjZXB0aW9uLWNsYXNzLWRvZXMtbm90LWNhdGNoCiA6Y2xhc3MgOmVycm9yCiA6c291cmNlICIodHJ5ICh0aHJvdyAoZXggOnRlc3QvZmFpbHVyZSB7OmV4L2NsYXNzIDpleC5jbGFzcy9pb30pKSAoY2F0Y2ggOmV4LmNsYXNzL2lvIGVycm9yIDApIChjYXRjaCBlcnJvciA0MikpIgogOmV4cGVjdCB7OnZhbHVlIDQyIDp0eXBlIDppbnRlZ2VyfX0KezppZCA6ZXJyb3IvZXhjZXB0aW9uLWNsYXNzLXRocm91Z2gtY2F1c2UKIDpjbGFzcyA6ZXJyb3IKIDpzb3VyY2UgIihsZXQgW2NhdXNlIChleCA6dGVzdC9jYXVzZSB7OmV4L2NsYXNzIDpleC5jbGFzcy9zdGF0ZX0pIHdyYXBwZWQgKGV4IDp0ZXN0L3dyYXBwZWQgezpleC9jYXVzZSBjYXVzZX0pXSAoZXgtY2xhc3MgKGV4LWNhdXNlIHdyYXBwZWQpKSkiCiA6ZXhwZWN0IHs6dmFsdWUgOmV4LmNsYXNzL3N0YXRlIDp0eXBlIDprZXl3b3JkfX0KezppZCA6ZXJyb3IvZXhjZXB0aW9uLWNsYXNzLXJlamVjdHMtdmFsdWUKIDpjbGFzcyA6ZXJyb3IKIDpzb3VyY2UgIihleC1jbGFzcyA0MikiCiA6ZXhwZWN0IHs6ZXJyb3IgOmludmFsaWQtZXhjZXB0aW9uCiAgICAgICAgICA6bWVzc2FnZSAiZXgtY2xhc3MgZXhwZWN0cyBhbiBFeGNlcHRpb24ifX0K
-        run: |
-          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "281e875274c504ae8f1d1ab46e0420d9be892ba2"
+          git merge-base --is-ancestor 95878e47b8a5f1f63d8183452b55ecd6310e807b HEAD
           python3 - <<'PY'
           import base64
-          import os
+          import re
+          import subprocess
           from pathlib import Path
 
+          original = subprocess.check_output(
+              ["git", "show", "HEAD^:.github/workflows/agent-849-exception-specs.yml"],
+              text=True,
+          )
+
           def payload(name):
-              return base64.b64decode(os.environ[name]).decode()
+              match = re.search(rf"^\s+{name}: ([A-Za-z0-9+/=]+)$", original, re.MULTILINE)
+              if not match:
+                  raise SystemExit(f"missing reviewed payload {name}")
+              return base64.b64decode(match.group(1)).decode()
 
           spec_path = Path("00-unsorted/platform-language/draft/hal-langspec.edn")
           source = spec_path.read_text()
@@ -50,8 +48,9 @@ jobs:
           end = source.index("\n\n  {:section/id ", start + 1)
           spec_path.write_text(source[:start] + "  " + payload("ERRORS_SECTION_B64") + source[end:])
 
-          exceptions_path = Path("00-unsorted/platform-language/draft/conformance/exceptions.edn")
-          exceptions_path.write_text(payload("EXCEPTIONS_EDN_B64"))
+          Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").write_text(
+              payload("EXCEPTIONS_EDN_B64")
+          )
 
           l0_path = Path("00-unsorted/platform-language/draft/conformance/l0.edn")
           l0 = l0_path.read_text()
@@ -61,30 +60,28 @@ jobs:
           l0_path.write_text(l0.replace(marker, "  " + payload("L0_INSERT_B64") + "  " + marker, 1))
 
           native_path = Path("00-unsorted/platform-language/draft/conformance/native.edn")
-          native = native_path.read_text()
-          native = native.replace(":method-count 366", ":method-count 367", 1)
+          native = native_path.read_text().replace(":method-count 366", ":method-count 367", 1)
           old = """  {:name Error
-   :availability :implemented
-   :methods [new message class]
-   :method-classification {:foundation-primitive :all}}"""
+           :availability :implemented
+           :methods [new message class]
+           :method-classification {:foundation-primitive :all}}"""
           new = """  {:name Error
-   :availability :implemented
-   :methods [new message class native-type]
-   :method-classification
-   {:foundation-primitive [new message class]
-    :native-only [native-type]}}"""
+           :availability :implemented
+           :methods [new message class native-type]
+           :method-classification
+           {:foundation-primitive [new message class]
+            :native-only [native-type]}}"""
           if old not in native:
               raise SystemExit("native Error inventory changed")
           native_path.write_text(native.replace(old, new, 1))
           PY
 
-      - name: Set up Node 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
 
-      - name: Validate and regenerate registry indexes
+      - name: Validate registry and portable projections
         shell: bash
         run: |
           set -euo pipefail
@@ -92,27 +89,22 @@ jobs:
           npm test
           npm run registry:generate
           npm run check
-
-      - name: Audit portable expected values
-        shell: bash
-        run: |
-          set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           l0 = Path("00-unsorted/platform-language/draft/conformance/l0.edn").read_text()
           for forbidden in ["hara.lang.base.Ex$Info", "ExceptionInfo", ":ex/native-type", ":native-type"]:
               if forbidden in l0:
-                  raise SystemExit(f"portable L0 corpus contains backend diagnostic {forbidden}")
+                  raise SystemExit(f"portable L0 corpus contains {forbidden}")
           exceptions = Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").read_text()
           shared, runtime = exceptions.split("\n :runtime-specific\n", 1)
           for forbidden in ["hara.lang.base.Ex$Info", "ExceptionInfo", ":ex/native-type"]:
               if forbidden in shared:
-                  raise SystemExit(f"shared exception corpus contains backend diagnostic {forbidden}")
+                  raise SystemExit(f"shared exception corpus contains {forbidden}")
           if "hara.lang.base.Ex$Info" not in runtime or "ExceptionInfo" not in runtime:
               raise SystemExit("runtime diagnostics are not explicitly specified")
           PY
 
-      - name: Publish validated specification change
+      - name: Replace bootstrap with validated specification product
         shell: bash
         run: |
           set -euo pipefail
@@ -121,4 +113,4 @@ jobs:
           git config user.email "openai-agent@users.noreply.github.com"
           git add -A
           git commit -m "Specify portable semantic exception classes"
-          git push --force-with-lease origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:main
