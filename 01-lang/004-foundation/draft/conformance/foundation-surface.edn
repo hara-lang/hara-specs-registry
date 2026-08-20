@@ -8,7 +8,7 @@
  :source-manifest
  {:schema-version 2,
   :inventory "core/rust/standard-library.namespaces",
-  :semantic-surface-digest "sha256:7262e6e939ddae1817666d5835c647d39afe8df535e18fcb480339ec59a62fe1",
+  :semantic-surface-digest "sha256:d2d75c2ab58bee209afa64942ab431c346cb58a68df271a479811cda55ad4e60",
   :counting :effective-public-var-declaration-once},
  :profile-dispositions
  {:profiles [:jvm :rust :wasm],
@@ -36,7 +36,10 @@
   std.foundation/res-data
   std.foundation/res-error-value
   std.foundation/res-context
-  std.foundation/res-with-context],
+  std.foundation/res-with-context
+  std.foundation/with:out-string
+  std.foundation/with:close
+  std.foundation/with:template-meta],
  :namespaces [{:namespace std.foundation,
                :source "std/foundation.hal",
                :vars [{:declarations [{:doc "", :kind :def, :signature ""}],
@@ -1152,15 +1155,15 @@
                       {:declarations [{:doc "Binds closeable resources and closes them in reverse order after body.",
                                        :kind :defmacro,
                                        :signature "[bindings & body]"}],
-                       :name with:close}
+                       :name with-close}
                       {:declarations [{:doc "Captures text written by p and println while evaluating body.",
                                        :kind :defmacro,
                                        :signature "[& body]"}],
-                       :name with:out-string}
+                       :name with-out-string}
                       {:declarations [{:doc "Binds template metadata for the duration of body.",
                                        :kind :defmacro,
                                        :signature "[metadata & body]"}],
-                       :name with:template-meta}
+                       :name with-template-meta}
                       {:declarations [{:doc "Returns true if value equals 0.",
                                        :kind :defn,
                                        :signature "[value]"}],

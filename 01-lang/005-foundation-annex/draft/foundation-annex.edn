@@ -9,9 +9,9 @@
  :annex/source {
                  :source/repository "https://github.com/hara-lang/hara"
                  :source/ref "agent/foundation-coll-predicate"
-                 :source/commit "43f2d709ba6c0265753d6ed863d87660100f19ce"
+                 :source/commit "686d8541d4bd7a45569a74dd6895256cf1c6bf77"
                  :source/manifest-schema 2
-                 :source/surface-digest "sha256:7262e6e939ddae1817666d5835c647d39afe8df535e18fcb480339ec59a62fe1"
+                 :source/surface-digest "sha256:d2d75c2ab58bee209afa64942ab431c346cb58a68df271a479811cda55ad4e60"
                  :source/migration-digest "sha256:e7465411b6ad8cae3e71e0aaa668ff97b0a5514ccec9c7d541da577829fed28e"
                 }
  :annex/scope {
@@ -2121,7 +2121,7 @@
                                             :binding/source-line 2554
                                            }
                                         {
-                                            :binding/name with:out-string
+                                            :binding/name with-out-string
                                             :binding/kind :defmacro
                                             :binding/signature "[& body]"
                                             :binding/doc "Captures text written by p and println while evaluating body."
@@ -2129,7 +2129,7 @@
                                             :binding/source-line 2559
                                            }
                                         {
-                                            :binding/name with:close
+                                            :binding/name with-close
                                             :binding/kind :defmacro
                                             :binding/signature "[bindings & body]"
                                             :binding/doc "Binds closeable resources and closes them in reverse order after body."
@@ -2159,7 +2159,7 @@
                                             :binding/source-line 2624
                                            }
                                         {
-                                            :binding/name with:template-meta
+                                            :binding/name with-template-meta
                                             :binding/kind :defmacro
                                             :binding/signature "[metadata & body]"
                                             :binding/doc "Binds template metadata for the duration of body."
@@ -3525,7 +3525,7 @@
                      :generation/tool "generate-foundation-annex"
                      :generation/tool-version "1"
                      :generation/manifest-schema 2
-                     :generation/surface-digest "sha256:7262e6e939ddae1817666d5835c647d39afe8df535e18fcb480339ec59a62fe1"
+                     :generation/surface-digest "sha256:d2d75c2ab58bee209afa64942ab431c346cb58a68df271a479811cda55ad4e60"
                      :generation/migration-digest "sha256:e7465411b6ad8cae3e71e0aaa668ff97b0a5514ccec9c7d541da577829fed28e"
                     }
 }
