@@ -12,13 +12,17 @@
 
 (def native-calibration-snippets
   {:evaluator-compiler
-   "[(Maths/abs -2) (Bits/and 6 3) (Num/long 4.0)]"
+   {:source "[(Maths/abs -2) (Bits/and 6 3) (Num/long 4.0)]"
+    :expected [2 2 4]}
    :blank-namespace-alias
-   "(ns blank.native (:config {:blank true})) [(std.foundation/= Iter std.native.Iter) (Iter/iter-next (Iter/iter-map (fn [value] value) [1]))]"
+   {:source "(ns blank.native (:config {:blank true})) [(std.foundation/= Iter std.native.Iter) (Iter/iter-next (Iter/iter-map (fn [value] value) [1]))]"
+    :expected [true 1]}
    :exact-error-class
-   "[(Error/message (Error/new \"native failure\" {})) (normalized-error-class (Error/new \"native failure\" {:ex/class :ex.class/native-failure}))]"
+   {:source "[(Error/message (Error/new \"native failure\" {})) (normalized-error-class (Error/new \"native failure\" {:ex/class :ex.class/native-failure}))]"
+    :expected ["native failure" :ex.class/native-failure]}
    :base-identity-fast-paths
-   "(let [vector-value [1 2] set-value #{1 2}] [[vector-value (Base/vec vector-value)] [set-value (Base/set set-value)]])"})
+   {:source "(let [vector-value [1 2] set-value #{1 2}] [[vector-value (Base/vec vector-value)] [set-value (Base/set set-value)]])"
+    :expected [[[1 2] [1 2]] [#{1 2} #{1 2}]]}})
 
 (def native-implementation-calibrations
   {:base-vec-identity
