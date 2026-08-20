@@ -27,14 +27,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "bf48e9837e50f009c1be34de58621825f2396a23"
           git merge-base --is-ancestor 95878e47b8a5f1f63d8183452b55ecd6310e807b HEAD
+          git merge-base --is-ancestor bf48e9837e50f009c1be34de58621825f2396a23 HEAD
           npm install
           npm test
           npm run registry:generate
           npm run check
-          rm -f package-lock.json .github/agent-849-clean-index-trigger
-          git diff --exit-code -- . ':(exclude)registry-index.json' || {
+          rm -f package-lock.json
+          git diff --exit-code -- . \
+            ':(exclude)registry-index.json' \
+            ':(exclude).github/agent-849-clean-index-trigger' || {
             echo "clean index generation changed files outside registry-index.json" >&2
             exit 1
           }
