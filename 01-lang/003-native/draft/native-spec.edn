@@ -58,6 +58,16 @@
   :builtins/conformance
   "../../001-language/draft/conformance/native.edn"}
 
+ :native/behavioral-conformance
+ {:conformance/manifest "../../001-language/draft/conformance/native.edn"
+  :conformance/cases "../../001-language/draft/conformance/native-method-cases.edn"
+  :conformance/fixture "../../001-language/draft/conformance/fixtures/native_behavioral.hal"
+  :conformance/authority :specs-owned
+  :conformance/counts :derived
+  :conformance/classifications [:portable :capability-specific :inventory-only]
+  :conformance/consumers
+  [:jvm-interpreter :truffle :rust-evaluator :rust-bytecode :browser-wasm]}
+
  :native/types
  [{:native/id :std.native/maths
    :native/symbol Maths :native/namespace std.native.Maths
