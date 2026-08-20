@@ -2,8 +2,9 @@
  :spec/status :draft
  :syntax :edn
  :purpose :per-method-functional-conformance
- :platforms [:rust :truffle]
- :fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
+ :platforms [:jvm-interpreter :truffle :rust-evaluator :rust-bytecode :browser-wasm]
+ :fixture "01-lang/001-language/draft/conformance/fixtures/protocol_behavioral.hal"
+ :method-counting :declaration-once
  :method-count 105
  :error-contract
  {:matching :category-prefix
@@ -147,7 +148,7 @@
   {:protocol IDisplay :method display :domain :representation
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
-   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+   :failure {:case :not-applicable :reason :universal-native-adapter}}
   {:protocol IDissoc :method dissoc :domain :associative-collection
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
@@ -219,7 +220,7 @@
   {:protocol IEquality :method equality :domain :identity
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
-   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+   :failure {:case :not-applicable :reason :universal-native-adapter}}
   {:protocol IExInfo :method data :domain :exception
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
@@ -235,7 +236,7 @@
   {:protocol IHash :method hash :domain :identity
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}
-   :failure {:case :unsupported-receiver :category :protocol/unsupported-receiver}}
+   :failure {:case :not-applicable :reason :universal-native-adapter}}
   {:protocol IHashCached :method hash-current :domain :identity
    :success {:case :actual-use-case :fixture-result :success}
    :limit {:case :missing-receiver :category :protocol/arity}

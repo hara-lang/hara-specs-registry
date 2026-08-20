@@ -31,6 +31,22 @@
   :public-method-count 105
   :hidden-protocol-count 0
   :hidden-method-count 0}
+ :method-counting
+ {:policy :declaration-once
+  :declared-method-count 105
+  :effective-surface-method-count 115
+  :inherited-method-references 10
+  :rule
+  "A method contributes once, on the protocol that declares it. Inherited
+   methods remain behavioral obligations of the declaring protocol and are
+   not counted again on child protocols. Effective-surface counts are
+   diagnostic only and must never be used as the functional case count."
+  :reconciliation
+  {:former-protocol-record 90
+   :former-case-catalog-record 89
+   :cause :partial-behavioral-catalog-drift
+   :resolution :live-declared-surface
+   :resolved-count 105}}
  :runtime-modules
  {:rust
   {:directory "rust/src/lang/protocol"
@@ -38,16 +54,16 @@
    :file-name "<module-name>.rs"
    :one-protocol-per-module true}}
  :conformance
- {:fixture "lib/test-fixtures/std/foundation/protocol_conformance.hal"
-  :platforms [:rust :truffle]
+ {:fixture "01-lang/001-language/draft/conformance/fixtures/protocol_surface.hal"
+  :platforms [:truffle :rust-evaluator :rust-bytecode :browser-wasm]
   :protocol-count 55
   :method-count 105
   :invocation :direct-canonical-method-var
   :legacy-special-form false}
  :functional-conformance
- {:fixture "lib/test-fixtures/std/foundation/protocol_functionality.hal"
-  :case-catalog "specs/01-lang/001-language/draft/conformance/protocol-method-cases.edn"
-  :platforms [:rust :truffle]
+ {:fixture "01-lang/001-language/draft/conformance/fixtures/protocol_behavioral.hal"
+  :case-catalog "01-lang/001-language/draft/conformance/protocol-method-cases.edn"
+  :platforms [:jvm-interpreter :truffle :rust-evaluator :rust-bytecode :browser-wasm]
   :method-count 105
   :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
   :error-matching :category-prefix
