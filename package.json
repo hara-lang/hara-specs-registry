@@ -8,9 +8,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "node scripts/generate-index.mjs",
-    "check": "node scripts/validate-registry.mjs && node scripts/generate-index.mjs --check && node scripts/check-index.mjs",
+    "build": "node scripts/validate-schema-catalog.mjs && node scripts/generate-index.mjs",
+    "check": "node scripts/validate-registry.mjs && node scripts/validate-schema-catalog.mjs && node scripts/generate-index.mjs --check && node scripts/check-index.mjs",
     "test": "node --test test/*.test.mjs",
+    "catalog:check": "node scripts/validate-schema-catalog.mjs",
     "registry:generate": "node scripts/generate-index.mjs",
     "registry:generate:check": "node scripts/generate-index.mjs --check"
   }
