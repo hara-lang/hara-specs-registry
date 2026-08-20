@@ -216,7 +216,7 @@
    :semantics :copy-selected-vars-into-receiving-namespace}
   {:name intern-all :domain :namespace-facade
    :semantics :copy-public-vars-into-receiving-namespace}
-  {:name with:template-meta :domain :template
+  {:name with-template-meta :domain :template
    :semantics :dynamic-template-metadata-binding}
   {:name template-vars :domain :template
    :semantics :evaluate-forms-generated-from-source-vars}

@@ -214,8 +214,13 @@
    :surface/domain :macro
    :surface/symbols
    [defonce doto if-not when if-let when-let cond-> cond->> with-ns intern-in intern-all
-    with:template-meta template-vars template-entries code-line code-column test-check]
-   :surface/classification :portable-hal}
+    with-template-meta template-vars template-entries code-line code-column test-check]
+   :surface/classification :portable-hal
+   :surface/requirements
+   [{:requirement/id :foundation/with-macro-spelling
+     :requirement/level :must
+     :requirement/text
+     "Foundation context macros use with-* public names: with-out-string, with-close, and with-template-meta. The former with:* spellings do not resolve."}]}
   {:surface/id :foundation/templates
    :surface/domain :function
    :surface/symbols [template-meta template-ensure intern-var]

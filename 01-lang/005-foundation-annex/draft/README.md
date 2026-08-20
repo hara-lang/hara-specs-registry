@@ -8,9 +8,9 @@ This annex separates the current portable Foundation API from automatic aliases,
 
 - Repository: `https://github.com/hara-lang/hara`
 - Ref: `agent/foundation-coll-predicate`
-- Commit: `43f2d709ba6c0265753d6ed863d87660100f19ce`
+- Commit: `686d8541d4bd7a45569a74dd6895256cf1c6bf77`
 - Manifest schema: `2`
-- Surface digest: `sha256:7262e6e939ddae1817666d5835c647d39afe8df535e18fcb480339ec59a62fe1`
+- Surface digest: `sha256:d2d75c2ab58bee209afa64942ab431c346cb58a68df271a479811cda55ad4e60`
 - Migration digest: `sha256:e7465411b6ad8cae3e71e0aaa668ff97b0a5514ccec9c7d541da577829fed28e`
 
 ## Current Foundation surface
