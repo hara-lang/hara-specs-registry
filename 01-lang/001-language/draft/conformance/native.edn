@@ -61,18 +61,34 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 33
-  :method-count 370
   :source-of-truth :types
+  :counting
+  {:policy :derived
+   :type-count "count(:types)"
+   :method-count "sum(count(:methods) for each entry in :types)"
+   :rule "Consumers must derive both counts from :types and reject a recorded numeric override."}
   :extra-types :forbidden
   :extra-methods :forbidden}
 
  :method-conformance
  {:status :accepted
-  :platforms [:rust :truffle]
+  :platforms [:jvm-interpreter :truffle :rust-evaluator :rust-bytecode :browser-wasm]
   :invocation :direct-canonical-method
-  :fixture "lib/test-fixtures/std/foundation/native_method_conformance.hal"
-  :classifications [:implemented :capability-gated]
+  :fixture "01-lang/001-language/draft/conformance/fixtures/native_behavioral.hal"
+  :case-catalog "01-lang/001-language/draft/conformance/native-method-cases.edn"
+  :authority :specs-owned
+  :classifications [:portable :capability-specific :inventory-only]
+  :counts :derived-from-executable-corpus
+  :closure
+  {:live-inventory :types
+   :classified-methods native-method-keys
+   :guard native-closure-report
+   :failure-on [:unclassified-addition :unclassified-removal :unclassified-rename]}
+  :reports
+  {:classifications native-classification-summary
+   :profile native-profile-report
+   :host-assertions native-host-assertion-report
+   :boundaries native-boundary-results}
   :foundation-exposure [:hal-wrapper :foundation-primitive :native-only]
   :raw-rust
   {:scope :startup-descriptors
