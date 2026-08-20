@@ -297,15 +297,31 @@
    :allowed-iterator-surface [iter iter? iter-next? iter-next]}}
 
  :counts
- {:protocols 52
-  :method-declarations 93
-  :distinct-method-names 91
+ {:protocol-authority "specs/01-lang/001-language/draft/conformance/protocols.edn"
+  :protocol-method-counting :declaration-once
+  :protocols 55
+  :method-declarations 105
+  :effective-surface-method-count 115
+  :inherited-method-references 10
+  :capability-specific-protocols 15
+  :capability-specific-method-declarations 20
+  :capability-specific-effective-surface-method-count 34
+  :capability-specific-inherited-method-references 14
+  :covered-protocols-total 70
+  :covered-method-declarations-total 125
+  :covered-effective-surface-method-count-total 149
+  :historical-control-snapshot
+  {:protocols 52
+   :method-declarations 93
+   :distinct-method-names 91}
   :root-function-names 71
   :root-constants 2
   :library-function-names 42
   :library-constants 0}
 
- :protocol-method-list
+ ;; Historical classification input only. It is not an inventory and must not
+ ;; be counted as the current protocol surface.
+ :historical-protocol-method-list
  [IApplicable/apply-default IApplicable/apply-in IApplicable/transform-in IApplicable/transform-out
   IAssoc/assoc ICas/cas IClose/close IColl/start-string
   IColl/end-string IColl/sep-string IColl/iterator IComponent/props
