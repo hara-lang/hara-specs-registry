@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:669809f60d812c5a92d0204b06333314d7316994f47b90b3ff41311a0a8c0c9e",
-    "catalogueDigest": "sha256:c1207107fd301b40778c96c8d7ada407c3553ee92b2c4a7f2ee8198f1d6cacba",
+    "manifestDigest": "sha256:92243dd63bbaca7a1aa5184275294eab5f116e115fe03c46780b6390e765a073",
+    "catalogueDigest": "sha256:a7dc1a38add68a9364f4528abe39abe56c8d6c840a186056591b39e61c9fdeaf",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -13,12 +13,12 @@
     }
   },
   "summary": {
-    "specifications": 58,
-    "draft": 58,
+    "specifications": 59,
+    "draft": 59,
     "ready": 0,
-    "executable": 31,
-    "requirements": 361,
-    "materialized": 58,
+    "executable": 32,
+    "requirements": 371,
+    "materialized": 59,
     "pinnedSource": 0,
     "layers": [
       "00-unsorted",
@@ -841,6 +841,37 @@
         "repository": "hara-lang/hara-specs-registry",
         "ref": "main",
         "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hara/std-typed-catalog",
+      "slug": "hara-std-typed-catalog",
+      "coordinate": "hara/std-typed-catalog",
+      "title": "Portable identified schema catalogs",
+      "summary": "Immutable std.typed schema identity, exact dependency, recursive component, publication, and admission contract.",
+      "type": "data-contract",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/011-typed-catalog/draft/std-typed-catalog.edn",
+      "documentationPath": "01-lang/011-typed-catalog/draft/README.md",
+      "requirements": 10,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": true,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/011-typed-catalog/draft/std-typed-catalog.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/011-typed-catalog/draft/README.md"
       }
     },
     {

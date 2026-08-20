@@ -64,3 +64,22 @@ test("every pinned source uses immutable commit and blob identities", async () =
     assert.match(spec.source.blob, /^[0-9a-f]{40}$/);
   }
 });
+
+test("the std.typed catalogue contract is manifest-indexed with its fixture", async () => {
+  const manifest = await readJson("spec-manifest.json");
+  const manifestPaths = new Set(manifest.files.map(({ path: filePath }) => filePath));
+  assert.equal(manifestPaths.has("01-lang/011-typed-catalog/draft/README.md"), true);
+  assert.equal(manifestPaths.has("01-lang/011-typed-catalog/draft/conformance/catalog-v1.json"), true);
+  assert.equal(manifestPaths.has("01-lang/011-typed-catalog/draft/std-typed-catalog.edn"), true);
+
+  const index = await readJson("registry-index.json");
+  const specification = index.specs.find(({ id }) => id === "hara/std-typed-catalog");
+  assert.ok(specification);
+  assert.equal(specification.version, "0-alpha");
+  assert.equal(specification.status, "draft");
+  assert.equal(specification.type, "data-contract");
+  assert.equal(specification.requirements, 10);
+  assert.equal(specification.executable, true);
+  assert.equal(specification.sourcePath, "01-lang/011-typed-catalog/draft/std-typed-catalog.edn");
+  assert.equal(specification.documentationPath, "01-lang/011-typed-catalog/draft/README.md");
+});
