@@ -53,7 +53,7 @@
    :requirement/text
    "Literal collections remain persistent values unless an explicit mutable value constructor is used."
    :requirement/evidence
-   [{:suite :hal/core
+   [{:suite :hal/l0
      :cases [:collection/core-functions
              :collection/ordinary-dissoc-navigation]}]}
 
@@ -62,7 +62,7 @@
    :requirement/text
    "defstruct defines an immutable persistent named value with structural equality and persistent updates; defmutable defines a fixed-shape mutable named value with reference identity and field/set! mutation. The two categories are distinct language abstractions rather than aliases for one host representation."
    :requirement/evidence
-   [{:suite :hal/core
+   [{:suite :hal/l0
      :cases [:named-value/constructors-same-unit
              :named-value/defstruct-persistent-map
              :named-value/defmutable-reference
@@ -73,7 +73,7 @@
    :requirement/text
    "Sequence operations are specified over the HAL iterator boundary and do not require a host sequence abstraction."
    :requirement/evidence
-   [{:suite :hal/core
+   [{:suite :hal/l0
      :cases [:iterator/core :iterator/combinators]}]}
 
   {:requirement/id :hal/context-local
@@ -81,7 +81,7 @@
    :requirement/text
    "Namespace, Var, macro, protocol, module, and capability state is local to a HAL runtime context."
    :requirement/evidence
-   [{:suite :hal/core
+   [{:suite :hal/l0
      :cases [:runtime/dynamic-binding :runtime/metadata]}]}
 
   {:requirement/id :hal/no-ambient-authority
@@ -210,14 +210,14 @@
      :requirement/text
      "A function captures referenced lexical bindings from its definition environment."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:function/closure-capture]}]}
     {:requirement/id :fn/arity
      :requirement/level :must
      :requirement/text
      "Functions support fixed arities, a final variadic binding introduced by &, and multiple arity clauses. Calling a function with no matching arity is a deterministic HAL error."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:function/fixed-arity
                :function/variadic-arity
                :function/multiple-arities
@@ -227,14 +227,14 @@
      :requirement/text
      "let bindings are established from left to right. Each initializer evaluates after the preceding bindings in the same vector have entered scope, so it may refer to those earlier bindings."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:binding/let-sequential]}]}
     {:requirement/id :binding/destructuring
      :requirement/level :must
      :requirement/text
      "Function, let, and loop bindings accept nested sequential and map destructuring. Sequential patterns support &, :as, and missing positions; map patterns support :keys, :strs, :syms, :as, and :or. Missing values bind nil, and :or supplies defaults when the selected map value is missing or nil."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:binding/sequential-destructuring
                :binding/map-destructuring
                :binding/missing-destructuring
@@ -244,7 +244,7 @@
      :requirement/text
      "Definitions preserve declared metadata and expose descriptive :doc, :schema, and :arglists values through their Vars."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:definition/doc-metadata
                :definition/schema-metadata
                :definition/arglists-metadata]}]}]
@@ -273,7 +273,7 @@
      :requirement/text
      "A HAL Seq is a non-empty, reusable frozen view over a traversal source. A Seq satisfies seq? but not iter?; iter creates an independent cursor over the view. first and rest observe cached sequence cells without consuming them, while seq and rest return nil when no cell exists. There is no separate empty Seq value or next operation. nil, an empty persistent collection, and an exhausted iterator remain distinct empty representations; iter converts each traversable value to a cursor and vec materializes each empty representation as an empty vector. Display realizes no more than eleven cells and renders at most the first ten, followed by ... when more values exist."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:sequence/empty-is-nil
                :sequence/empty-first-last
                :sequence/non-empty-rest
@@ -283,14 +283,14 @@
      :requirement/text
      "Single-pass streaming transforms select their result mode from the primary source. A Seq produces a reusable lazy Seq, an Iterator produces a consumptive lazy Iterator, and a persistent collection is eagerly materialized using its collection-family behavior. For multi-source transforms, the first collection argument is primary. Empty Seq results are nil, while empty Iterator results remain exhausted Iterators. Qualified Iter/iter-* operations always retain their raw Iterator contract."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:sequence/source-sensitive-transforms]}]}
     {:requirement/id :sequence/prepend
      :requirement/level :must
      :requirement/text
      "cons may prepend a value to a Seq without materializing its tail. conj is not defined for Seq values."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:sequence/lazy-cons
                :sequence/cons-representation-independent
                :sequence/reject-conj]}]}
@@ -299,7 +299,7 @@
      :requirement/text
      "iter-next? exactly observes whether iter-next can produce an item without logically consuming that item. Repeated successful observations are stable, the following iter-next returns the observed item, exhaustion returns false, and failures other than exhaustion propagate."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:iterator/exact-lookahead
                :iterator/generated-exhaustion
                :iterator/nil-requires-conversion]}]}
@@ -308,7 +308,7 @@
      :requirement/text
      "std.foundation exports exactly iter, iter?, iter-next?, and iter-next from the iterator family. Every other iter-* operation is a host-native operation of Iter and must be invoked through the startup type alias as Iter/iter-* (or an explicit namespace alias); it is not a root Foundation binding."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:iterator/root-surface
                :iterator/native-combinator-qualified
                :iterator/root-combinator-unbound]}]}
@@ -317,14 +317,14 @@
      :requirement/text
      "cycle requires a non-empty source, proves and buffers the first item without losing it, and rejects an empty source."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:iterator/empty-cycle-rejected]}]}
     {:requirement/id :iterator/shortest-source-finite
      :requirement/level :must
      :requirement/text
      "Iterator combinators that stop at the shortest source, including iter-zip and iter-interleave, are finite when any source is finite and may be materialized without consuming an unbounded source."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:iterator/shortest-source-finite]}]}
     {:requirement/id :iterator/lazy
      :requirement/level :must
@@ -354,43 +354,94 @@
      "Division and remainder by zero report a HAL error."}]}
 
   {:section/id :hal/errors
-   :section/title "Errors and cleanup"
-   :section/summary
-   "HAL errors preserve guest values and source information, and cleanup executes during normal completion and unwinding."
-   :section/requirements
-   [{:requirement/id :error/finally
-     :requirement/level :must
-     :requirement/text
-     "A finally clause executes exactly once during normal completion and error unwinding. If cleanup fails, the cleanup error becomes the observable result."
-     :requirement/evidence
-     [{:suite :hal/core
-       :cases [:error/finally-normal
-               :error/finally-unwind]}]}
-    {:requirement/id :error/guest-value
-     :requirement/level :must
-     :requirement/text
-     "throw accepts and raises only an Exception value created by (ex code attributes), without converting it to a host throwable or text. code is a namespaced keyword. attributes is a map; ex inserts code as :ex/code and rejects a conflicting :ex/code entry. :ex/message, when present, is a string; otherwise ex-message returns the printed code. :ex/cause, when present, is an Exception; :ex/context, when present, is a map. Other keys are application data. Catch clauses are tested in source order, bind the original Exception, and unmatched values continue unwinding. The canonical unconditional clause is (catch binding body+). A selective clause uses either one namespaced keyword or a non-empty vector of distinct namespaced keywords before the binding; selectors compare with :ex/code in the caught value's ex-data map. An unconditional clause must be last. Host-language classes are not part of canonical HAL catch syntax."
-     :requirement/evidence
-     [{:suite :hal/core
-       :cases [:error/catch-guest-value
-               :error/catch-order
-               :error/catch-code
-               :error/catch-code-vector
-               :error/unmatched-catch]}]}
-    {:requirement/id :error/catch-validation
-     :requirement/level :must
-     :requirement/text
-     "Catch bindings are symbols. Keyword selectors are namespaced. Selector vectors are non-empty, contain only distinct namespaced keywords, and are matched as an ordered clause-local disjunction. Duplicate selectors, selective clauses after an unconditional clause, more than one unconditional clause, catch clauses after finally, and more than one finally clause are compile-time errors."}
-    {:requirement/id :error/catch-compatibility
-     :requirement/level :should-not
-     :requirement/text
-     "Implementations may temporarily accept legacy Exception and Throwable class-selector clauses while canonical sources are migrated, but must not emit them, document them as canonical, or expose host classes through caught values."}
-    {:requirement/id :error/source
-     :requirement/level :must
-     :requirement/text
-     "Reader, analysis, arity, destructuring, recur, protocol, and runtime errors retain available source location information."}]
-   :section/forms
-   [:hal.form/throw :hal.form/try]}
+ :section/title "Portable exceptions and cleanup"
+ :section/summary
+ "HAL exposes one portable Exception value. Semantic classes are flat labels, catch selectors remain code-only, and backend-native diagnostics never enter portable data."
+ :section/requirements
+ [{:requirement/id :error/constructor
+   :requirement/level :must
+   :requirement/text
+   "ex accepts exactly a namespaced keyword code and an attributes map. It inserts :ex/code, accepts optional string :ex/message, optional namespaced-keyword :ex/class, optional map :ex/context, and optional :ex/cause. Attributes may not supply :ex/code."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/construction
+             :exception/absent-class
+             :exception/reject-class
+             :exception/reject-reserved-code]}]}
+  {:requirement/id :error/semantic-class
+   :requirement/level :must
+   :requirement/text
+   "ex-class accepts an Exception and returns its semantic :ex/class keyword or nil. It rejects ordinary values and malformed legacy class data. Semantic classes are flat equality labels for grouping, filtering, reporting, and serialization only."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/semantic-class
+             :exception/legacy-class
+             :exception/malformed-legacy-class
+             :exception/class-is-not-catch-selector]}]}
+  {:requirement/id :error/native-type
+   :requirement/level :must-not
+   :requirement/text
+   "ex-native-type is an explicitly local diagnostic. Native type names do not enter ex-data, catch selection, portable serialization projections, provenance, or shared expected values."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:diagnostic/native-type-jvm
+             :diagnostic/native-type-rust
+             :diagnostic/native-type-excluded]}]}
+  {:requirement/id :error/catch-code
+   :requirement/level :must
+   :requirement/text
+   "throw accepts only Exception. Keyword and non-empty vector catch selectors compare only :ex/code in source order. An unconditional catch is last. :ex/class never participates in catch selection."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:error/catch-exception-value
+             :error/catch-order
+             :error/catch-code
+             :error/catch-code-vector
+             :error/exception-class-does-not-catch
+             :error/unmatched-catch]}]}
+  {:requirement/id :error/cause
+   :requirement/level :must
+   :requirement/text
+   "An Exception supplied as :ex/cause retains identity. A supported raw host error is normalized to an independent :host/native-error Exception containing portable code and message data only; the live backend value and native type are not stored."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/cause-identity
+             :exception/host-cause-normalization
+             :exception/cause-independent-provenance]}]}
+  {:requirement/id :error/preservation
+   :requirement/level :must
+   :requirement/text
+   "The optional semantic class is preserved through ex-data, causes, rethrows, provenance, promises, HTA value encoding, and host-boundary round trips."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/rethrow
+             :exception/promise
+             :exception/hta-round-trip
+             :exception/host-round-trip]}]}
+  {:requirement/id :error/provenance
+   :requirement/level :must
+   :requirement/text
+   "Provenance is runtime-owned and excluded from ex-data. The first throw establishes :ex/created-at and every throw or rethrow appends a portable throw site. Catch does not change provenance."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:error/exception-provenance-line
+             :error/exception-provenance-throw-column
+             :error/exception-provenance-throw-count
+             :error/exception-provenance-rethrow-count]}]}
+  {:requirement/id :error/finally
+   :requirement/level :must
+   :requirement/text
+   "A finally clause executes exactly once during normal completion and error unwinding. If cleanup fails, the cleanup error becomes the observable result."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:error/finally-normal
+             :error/finally-unwind]}]}
+  {:requirement/id :error/source
+   :requirement/level :must
+   :requirement/text
+   "Reader, analysis, arity, destructuring, recur, protocol, and runtime errors retain available source location information."}]
+ :section/forms
+ [:hal.form/throw :hal.form/try]}
 
   {:section/id :hal/protocols-structs
    :section/title "Protocols, named values, and multimethods"
@@ -410,21 +461,21 @@
      :requirement/text
      "defstruct and defmutable install Name, ->Name, and map->Name constructor Vars in the current evaluation environment before following forms in the same enclosing do or source unit are analysed. Constructors consume declared fields in declaration order; map constructors bind missing fields to nil and ignore extra fields."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:named-value/constructors-same-unit]}]}
     {:requirement/id :struct/persistent-map
      :requirement/level :must
      :requirement/text
      "A defstruct instance is an immutable persistent named value backed by map semantics. Declared keyword fields are readable through keyword invocation and get. assoc and assoc-in may update declared fields only, return the same struct type, leave the receiver unchanged, and preserve structural sharing. Declared field order is retained for construction, iteration, display, and transport encoding."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:named-value/defstruct-persistent-map]}]}
     {:requirement/id :struct/equality-metadata-and-removal
      :requirement/level :must
      :requirement/text
      "defstruct equality and hashing are structural and include the named type and declared field values, while metadata remains separate from fields and equality. dissoc returns a plain persistent map rather than a struct. field is not an immutable struct accessor and rejects a defstruct instance."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:runtime/metadata
                :named-value/defstruct-persistent-map]}]}
     {:requirement/id :mutable/reference-identity
@@ -432,14 +483,14 @@
      :requirement/text
      "A defmutable instance has a fixed declared field set and reference identity. field reads a declared field directly; aliases observe the same subsequent writes; distinct instances remain unequal even when every field value is equal."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:named-value/defmutable-reference]}]}
     {:requirement/id :mutable/field-write
      :requirement/level :must
      :requirement/text
      "set! with a (field receiver field) place evaluates the receiver once, then the replacement once, from left to right; mutates exactly one declared field; and returns the replacement value. An unknown field is a deterministic HAL error."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:named-value/defmutable-reference
                :named-value/defmutable-evaluation-order]}]}
     {:requirement/id :mutable/no-associative-operations
@@ -451,7 +502,7 @@
      :requirement/text
      "instance? and protocol dispatch recognise both defstruct and defmutable descriptors consistently across the tree evaluator, Rust bytecode VM, and Java/Truffle runtime. Protocol methods read immutable receivers with keyword/get lookup and mutable receivers with field."
      :requirement/evidence
-     [{:suite :hal/core
+     [{:suite :hal/l0
        :cases [:protocol/struct-extension
                :protocol/struct-inline-extension
                :protocol/mutable-extension]}]}]
@@ -704,14 +755,8 @@
   {:form/id :hal.form/try
    :form/symbol try
    :form/class :special-form
-   :form/shape
-   (quote (try body+
-               (catch binding body+)*
-               (catch namespaced-keyword binding body+)*
-               (catch [namespaced-keyword+] binding body+)*
-               (finally body+)?))
-   :form/semantics
-   "Evaluates protected forms with source-ordered exception-code catches, an optional final unconditional catch, and optional cleanup. Selectors match :ex/code from ex-data."
+   :form/shape (quote (try body* catch-clause* finally-clause?))
+   :form/semantics "Evaluates protected forms with ordered catches and optional cleanup."
    :form/evaluation :special}
   {:form/id :hal.form/var
    :form/symbol var
@@ -790,36 +835,36 @@
    :form/evaluation :macroexpand}]
 
  :spec/references
- [{:reference/id :hal.ref/core
+ [{:reference/id :hal.ref/l0
    :reference/kind :conformance
-   :reference/path "../../../01-lang/001-language/draft/conformance/core.edn"
+   :reference/path "conformance/l0.edn"
    :reference/authority :evidence
    :reference/description "Portable evaluator and runtime behaviour cases."}
   {:reference/id :hal.ref/reader
    :reference/kind :conformance
-   :reference/path "../../../01-lang/001-language/draft/conformance/reader.edn"
+   :reference/path "conformance/reader.edn"
    :reference/authority :evidence
    :reference/description "Reader acceptance, canonical printing, and error cases."}
   {:reference/id :hal.ref/modules
    :reference/kind :conformance
-   :reference/path "../../../01-lang/001-language/draft/conformance/modules.edn"
+   :reference/path "conformance/modules.edn"
    :reference/authority :evidence
    :reference/description "Namespace, module, lazy-loading, session, and retained-REPL acceptance scenarios."}
   {:reference/id :hal.ref/jvm-truffle
    :reference/kind :parity
-   :reference/path "../../../01-lang/001-language/draft/conformance/parity/jvm-truffle.edn"
+   :reference/path "conformance/parity/jvm-truffle.edn"
    :reference/authority :evidence
    :reference/description "JVM interpreter and Truffle parity cases."}
   {:reference/id :hal.ref/wasm-truffle
    :reference/kind :parity
-   :reference/path "../../../01-lang/001-language/draft/conformance/parity/wasm-truffle.edn"
+   :reference/path "conformance/parity/wasm-truffle.edn"
    :reference/authority :evidence
    :reference/description "Rust WebAssembly and Truffle parity cases."}
   {:reference/id :hal.ref/legacy-language
    :reference/kind :provenance
    :reference/path "../../../99-archive/planning/language/l0-language.md"
    :reference/authority :historical
-   :reference/description "Previous prose core-language contract used as draft source material."}
+   :reference/description "Previous prose L0 contract used as draft source material."}
   {:reference/id :hal.ref/legacy-foundation
    :reference/kind :provenance
    :reference/path "../../../99-archive/planning/foundation/foundation.edn"
@@ -827,7 +872,7 @@
    :reference/description "Previous foundation boundary model used as draft source material."}]
 
  :spec/conformance
- [:hal.ref/core
+ [:hal.ref/l0
   :hal.ref/reader
   :hal.ref/modules
   :hal.ref/jvm-truffle

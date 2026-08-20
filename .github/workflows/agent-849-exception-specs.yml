@@ -1,0 +1,122 @@
+name: Materialize portable exception specifications
+
+on:
+  pull_request:
+    types: [opened]
+    branches:
+      - agent/849-specs-validation-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-portable-exception-specifications
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-validate:
+    if: github.event.pull_request.head.ref == 'agent/849-portable-exception-contract-product'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Recover reviewed payload and materialize product files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 95878e47b8a5f1f63d8183452b55ecd6310e807b HEAD
+          python3 - <<'PY'
+          import base64
+          import re
+          import subprocess
+          from pathlib import Path
+
+          original = subprocess.check_output(
+              ["git", "show", "af64940d5d0a1f1822c6cb923bdbeb525f3da802:.github/workflows/agent-849-exception-specs.yml"],
+              text=True,
+          )
+
+          def payload(name):
+              match = re.search(rf"^\s+{name}: ([A-Za-z0-9+/=]+)$", original, re.MULTILINE)
+              if not match:
+                  raise SystemExit(f"missing reviewed payload {name}")
+              return base64.b64decode(match.group(1)).decode()
+
+          spec_path = Path("00-unsorted/platform-language/draft/hal-langspec.edn")
+          source = spec_path.read_text()
+          start = source.index("  {:section/id :hal/errors")
+          end = source.index("\n\n  {:section/id ", start + 1)
+          spec_path.write_text(source[:start] + "  " + payload("ERRORS_SECTION_B64") + source[end:])
+
+          exceptions = payload("EXCEPTIONS_EDN_B64").replace(
+              "(try (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))) (catch e (ex-class e)))",
+              "(ex-class (deref (Promise/from (ex :test/failure {:ex/class :ex.class/state}))))",
+          )
+          Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").write_text(exceptions)
+
+          l0_path = Path("00-unsorted/platform-language/draft/conformance/l0.edn")
+          l0 = l0_path.read_text()
+          marker = "  {:id :error/unmatched-catch"
+          if marker not in l0:
+              raise SystemExit("structured exception insertion marker changed")
+          l0_path.write_text(l0.replace(marker, "  " + payload("L0_INSERT_B64") + "  " + marker, 1))
+
+          native_path = Path("00-unsorted/platform-language/draft/conformance/native.edn")
+          native = native_path.read_text().replace(":method-count 366", ":method-count 367", 1)
+          old = """  {:name Error
+           :availability :implemented
+           :methods [new message class]
+           :method-classification {:foundation-primitive :all}}"""
+          new = """  {:name Error
+           :availability :implemented
+           :methods [new message class native-type]
+           :method-classification
+           {:foundation-primitive [new message class]
+            :native-only [native-type]}}"""
+          if old not in native:
+              raise SystemExit("native Error inventory changed")
+          native_path.write_text(native.replace(old, new, 1))
+          PY
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Validate registry and portable projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npm test
+          npm run registry:generate
+          npm run check
+          python3 - <<'PY'
+          from pathlib import Path
+          l0 = Path("00-unsorted/platform-language/draft/conformance/l0.edn").read_text()
+          for forbidden in ["hara.lang.base.Ex$Info", "ExceptionInfo", ":ex/native-type", ":native-type"]:
+              if forbidden in l0:
+                  raise SystemExit(f"portable L0 corpus contains {forbidden}")
+          exceptions = Path("00-unsorted/platform-language/draft/conformance/exceptions.edn").read_text()
+          shared, runtime = exceptions.split("\n :runtime-specific\n", 1)
+          for forbidden in ["hara.lang.base.Ex$Info", "ExceptionInfo", ":ex/native-type"]:
+              if forbidden in shared:
+                  raise SystemExit(f"shared exception corpus contains {forbidden}")
+          if "hara.lang.base.Ex$Info" not in runtime or "ExceptionInfo" not in runtime:
+              raise SystemExit("runtime diagnostics are not explicitly specified")
+          PY
+
+      - name: Publish validated specification product to the head branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/agent-849-exception-specs.yml
+          rm -f .github/agent-849-specs-trigger
+          git config user.name "OpenAI Agent"
+          git config user.email "openai-agent@users.noreply.github.com"
+          git add -A
+          git commit -m "Specify portable semantic exception classes"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
