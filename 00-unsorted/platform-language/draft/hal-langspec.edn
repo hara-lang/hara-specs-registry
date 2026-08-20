@@ -354,33 +354,94 @@
      "Division and remainder by zero report a HAL error."}]}
 
   {:section/id :hal/errors
-   :section/title "Errors and cleanup"
-   :section/summary
-   "HAL errors preserve guest values and source information, and cleanup executes during normal completion and unwinding."
-   :section/requirements
-   [{:requirement/id :error/finally
-     :requirement/level :must
-     :requirement/text
-     "A finally clause executes exactly once during normal completion and error unwinding. If cleanup fails, the cleanup error becomes the observable result."
-     :requirement/evidence
-     [{:suite :hal/l0
-       :cases [:error/finally-normal
-               :error/finally-unwind]}]}
-    {:requirement/id :error/guest-value
-     :requirement/level :must
-     :requirement/text
-     "throw raises the evaluated HAL value without converting it to host text. Catch clauses are tested in source order, bind the original value, and unmatched values continue unwinding."
-     :requirement/evidence
-     [{:suite :hal/l0
-       :cases [:error/catch-guest-value
-               :error/catch-order
-               :error/unmatched-catch]}]}
-    {:requirement/id :error/source
-     :requirement/level :must
-     :requirement/text
-     "Reader, analysis, arity, destructuring, recur, protocol, and runtime errors retain available source location information."}]
-   :section/forms
-   [:hal.form/throw :hal.form/try]}
+ :section/title "Portable exceptions and cleanup"
+ :section/summary
+ "HAL exposes one portable Exception value. Semantic classes are flat labels, catch selectors remain code-only, and backend-native diagnostics never enter portable data."
+ :section/requirements
+ [{:requirement/id :error/constructor
+   :requirement/level :must
+   :requirement/text
+   "ex accepts exactly a namespaced keyword code and an attributes map. It inserts :ex/code, accepts optional string :ex/message, optional namespaced-keyword :ex/class, optional map :ex/context, and optional :ex/cause. Attributes may not supply :ex/code."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/construction
+             :exception/absent-class
+             :exception/reject-class
+             :exception/reject-reserved-code]}]}
+  {:requirement/id :error/semantic-class
+   :requirement/level :must
+   :requirement/text
+   "ex-class accepts an Exception and returns its semantic :ex/class keyword or nil. It rejects ordinary values and malformed legacy class data. Semantic classes are flat equality labels for grouping, filtering, reporting, and serialization only."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/semantic-class
+             :exception/legacy-class
+             :exception/malformed-legacy-class
+             :exception/class-is-not-catch-selector]}]}
+  {:requirement/id :error/native-type
+   :requirement/level :must-not
+   :requirement/text
+   "ex-native-type is an explicitly local diagnostic. Native type names do not enter ex-data, catch selection, portable serialization projections, provenance, or shared expected values."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:diagnostic/native-type-jvm
+             :diagnostic/native-type-rust
+             :diagnostic/native-type-excluded]}]}
+  {:requirement/id :error/catch-code
+   :requirement/level :must
+   :requirement/text
+   "throw accepts only Exception. Keyword and non-empty vector catch selectors compare only :ex/code in source order. An unconditional catch is last. :ex/class never participates in catch selection."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:error/catch-exception-value
+             :error/catch-order
+             :error/catch-code
+             :error/catch-code-vector
+             :error/exception-class-does-not-catch
+             :error/unmatched-catch]}]}
+  {:requirement/id :error/cause
+   :requirement/level :must
+   :requirement/text
+   "An Exception supplied as :ex/cause retains identity. A supported raw host error is normalized to an independent :host/native-error Exception containing portable code and message data only; the live backend value and native type are not stored."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/cause-identity
+             :exception/host-cause-normalization
+             :exception/cause-independent-provenance]}]}
+  {:requirement/id :error/preservation
+   :requirement/level :must
+   :requirement/text
+   "The optional semantic class is preserved through ex-data, causes, rethrows, provenance, promises, HTA value encoding, and host-boundary round trips."
+   :requirement/evidence
+   [{:suite :hal/exceptions
+     :cases [:exception/rethrow
+             :exception/promise
+             :exception/hta-round-trip
+             :exception/host-round-trip]}]}
+  {:requirement/id :error/provenance
+   :requirement/level :must
+   :requirement/text
+   "Provenance is runtime-owned and excluded from ex-data. The first throw establishes :ex/created-at and every throw or rethrow appends a portable throw site. Catch does not change provenance."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:error/exception-provenance-line
+             :error/exception-provenance-throw-column
+             :error/exception-provenance-throw-count
+             :error/exception-provenance-rethrow-count]}]}
+  {:requirement/id :error/finally
+   :requirement/level :must
+   :requirement/text
+   "A finally clause executes exactly once during normal completion and error unwinding. If cleanup fails, the cleanup error becomes the observable result."
+   :requirement/evidence
+   [{:suite :hal/l0
+     :cases [:error/finally-normal
+             :error/finally-unwind]}]}
+  {:requirement/id :error/source
+   :requirement/level :must
+   :requirement/text
+   "Reader, analysis, arity, destructuring, recur, protocol, and runtime errors retain available source location information."}]
+ :section/forms
+ [:hal.form/throw :hal.form/try]}
 
   {:section/id :hal/protocols-structs
    :section/title "Protocols, named values, and multimethods"

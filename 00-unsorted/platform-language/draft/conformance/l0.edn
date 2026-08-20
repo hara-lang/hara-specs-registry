@@ -163,7 +163,42 @@
    :class :error
    :source "(ex :test/failure {:ex/code :test/other})"
    :expect {:error :invalid-exception :message "ex attributes must not contain :ex/code"}}
-  {:id :error/unmatched-catch
+  {:id :error/exception-class
+ :class :error
+ :source "(ex-class (ex :test/failure {:ex/class :ex.class/io}))"
+ :expect {:value :ex.class/io :type :keyword}}
+{:id :error/exception-absent-class
+ :class :error
+ :source "(ex-class (ex :test/failure {}))"
+ :expect {:value nil :type :nil}}
+{:id :error/exception-reject-class
+ :class :error
+ :source "(ex :test/failure {:ex/class :io})"
+ :expect {:error :invalid-exception
+          :message ":ex/class must be a namespaced keyword"}}
+{:id :error/exception-legacy-class
+ :class :error
+ :source "(ex-class (ex-info \"legacy\" {:ex/class :ex.class/legacy}))"
+ :expect {:value :ex.class/legacy :type :keyword}}
+{:id :error/exception-reject-malformed-legacy-class
+ :class :error
+ :source "(ex-class (ex-info \"legacy\" {:ex/class :legacy}))"
+ :expect {:error :invalid-exception
+          :message ":ex/class must be a namespaced keyword"}}
+{:id :error/exception-class-does-not-catch
+ :class :error
+ :source "(try (throw (ex :test/failure {:ex/class :ex.class/io})) (catch :ex.class/io error 0) (catch error 42))"
+ :expect {:value 42 :type :integer}}
+{:id :error/exception-class-through-cause
+ :class :error
+ :source "(let [cause (ex :test/cause {:ex/class :ex.class/state}) wrapped (ex :test/wrapped {:ex/cause cause})] (ex-class (ex-cause wrapped)))"
+ :expect {:value :ex.class/state :type :keyword}}
+{:id :error/exception-class-rejects-value
+ :class :error
+ :source "(ex-class 42)"
+ :expect {:error :invalid-exception
+          :message "ex-class expects an Exception"}}
+    {:id :error/unmatched-catch
    :class :error
    :source "(try (throw (ex :test/selected {})) (catch :test/other error 0))"
    :expect {:error :uncaught}}
