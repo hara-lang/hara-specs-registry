@@ -1302,6 +1302,24 @@
       "kind": "markdown",
       "classification": "hara",
       "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/011-typed-catalog/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/011-typed-catalog/draft/conformance/catalog-v1.json",
+      "kind": "json",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/011-typed-catalog/draft/std-typed-catalog.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
     }
   ]
 }
