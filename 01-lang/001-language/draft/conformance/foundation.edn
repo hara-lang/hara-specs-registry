@@ -129,7 +129,7 @@
     min max min-key max-key rand-int rand-nth random-sample shuffle]
    :host-primitives
    [var-ns var-sym bound? unbound? regexp? seq? error? uuid load-string
-    ex-info ex-message
+    ex ex-info ex-message ex-cause ex-provenance ex-class ex-native-type
     abs acos acosh asin asinh atan atan2 atanh
     ceil cos cosh exp floor pow sin sinh sqrt tan tanh
     quot rem parse-long parse-double nan? infinite?
@@ -223,9 +223,11 @@
 
   :root
   {:synced-both
-   [map-keys map-vals seq? ex-info ex-message min max
+   [map-keys map-vals seq? ex ex-info ex-message ex-cause ex-provenance
+    ex-class ex-native-type min max
     abs acos acosh asin asinh atan atan2 atanh
     ceil cos cosh exp floor pow sin sinh sqrt tan tanh
+    parse-long parse-double
     bit-and bit-or bit-xor bit-not bit-shift-left bit-shift-right]
    :truffle-only
    [var-sym regexp? load-string select-keys merge]
@@ -235,7 +237,7 @@
     map-indexed keep-indexed flatten min-key max-key
     rand-int rand-nth random-sample shuffle
     var-ns bound? unbound? error? uuid
-    quot rem parse-long parse-double nan? infinite?
+    quot rem nan? infinite?
     bit-and-not bit-clear bit-flip bit-set bit-test rand
     wrapped wrapped?]
    :missing-constants []

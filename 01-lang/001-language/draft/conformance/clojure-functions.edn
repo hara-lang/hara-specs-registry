@@ -158,16 +158,25 @@
   [{:name ex-info
     :clojure clojure.core/ex-info
     :classification :host-primitive
+    :status :deprecated-runtime-input
     :arities [[message data] [message data cause]]
-    :semantics :structured-exception-construction}
+    :semantics :legacy-unclassified-exception-construction
+    :contract "exceptions.edn"}
    {:name ex-message
     :clojure clojure.core/ex-message
-    :classification :host-primitive}
+    :classification :host-primitive
+    :contract "exceptions.edn"}
    {:name ex-data
     :clojure clojure.core/ex-data
     :classification :protocol-wrapper
     :protocol IExInfo
-    :method data}]}
+    :method data
+    :contract "exceptions.edn"}
+   {:name ex-cause
+    :clojure clojure.core/ex-cause
+    :classification :host-primitive
+    :semantics :portable-cause-access
+    :contract "exceptions.edn"}]}
 
  :dynamic-context-surface
  {:existing

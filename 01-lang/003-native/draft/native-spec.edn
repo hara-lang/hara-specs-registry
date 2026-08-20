@@ -64,8 +64,8 @@
    :native/availability :portable
    :native/methods [abs acos acosh asin asinh atan atan2 atanh ceil cos cosh
                     exp floor pow sin sinh sqrt tan tanh]}
-  {:native/id :std.native/numbers
-   :native/symbol Numbers :native/namespace std.native.Numbers
+  {:native/id :std.native/num
+   :native/symbol Num :native/namespace std.native.Num
    :native/availability :portable :native/methods [long double]}
   {:native/id :std.native/bits
    :native/symbol Bits :native/namespace std.native.Bits

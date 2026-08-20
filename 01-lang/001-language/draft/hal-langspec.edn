@@ -164,6 +164,19 @@
        :conformance/cases
        [:compiler/arithmetic :binding/let-sequential
         :runtime/loop-recur :error/catch-order]}]}
+    {:requirement/id :evaluation/portable-exceptions
+     :requirement/level :must
+     :requirement/text
+     "Exceptions use portable codes, optional semantic classes, code-only catch selection, portable causes and provenance, and host-only native type diagnostics."
+     :requirement/evidence
+     [{:conformance/suite :hal/exceptions
+       :conformance/cases
+       [:exception/variadic-construction
+        :exception/standard-code-registry
+        :exception/cause-identity
+        :exception/provenance
+        :exception/class-does-not-select-catch
+        :exception/native-type-is-not-portable-data]}]}
     {:requirement/id :evaluation/backend-parity
      :requirement/level :must
      :requirement/text
@@ -238,6 +251,10 @@
    :reference/kind :conformance
    :reference/path "conformance/core.edn"
    :reference/authority :evidence}
+  {:reference/id :hal.ref/exceptions
+   :reference/kind :conformance
+   :reference/path "conformance/exceptions.edn"
+   :reference/authority :normative}
   {:reference/id :hal.ref/modules
    :reference/kind :conformance
    :reference/path "conformance/modules.edn"
@@ -267,7 +284,7 @@
    :reference/path "conformance/parity/wasm-truffle.edn"
    :reference/authority :evidence}]
  :spec/conformance
- [:hal.ref/reader :hal.ref/core :hal.ref/modules :hal.ref/protocols
+ [:hal.ref/reader :hal.ref/core :hal.ref/exceptions :hal.ref/modules :hal.ref/protocols
   :hal.ref/native :hal.ref/foundation :hal.ref/foundation-runtime
   :hal.ref/jvm-truffle :hal.ref/wasm-truffle]
  :spec/provenance []}

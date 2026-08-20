@@ -12,14 +12,47 @@
    host-backed values, or behavior that portable HAL cannot express."}
 
  :counts
- {:tracked-functions 22
-  :implemented-both 3
+ {:tracked-functions 26
+  :implemented-both 7
   :partial-platform-parity 2
   :selected 11
   :unresolved-families 1}
 
  :functions
- [{:name intern-var
+ [{:name ex
+   :arities [[code data] [code data & key-value-pairs]]
+   :domain :exception
+   :classification :host-primitive
+   :status :implemented
+   :semantics :canonical-portable-exception-construction
+   :contract "exceptions.edn"}
+
+  {:name ex-provenance
+   :arities [1]
+   :domain :exception
+   :classification :host-primitive
+   :status :implemented
+   :semantics :portable-creation-and-throw-site-access
+   :contract "exceptions.edn"}
+
+  {:name ex-class
+   :arities [1]
+   :domain :exception
+   :classification :host-primitive
+   :status :implemented
+   :semantics :portable-semantic-class-access
+   :contract "exceptions.edn"}
+
+  {:name ex-native-type
+   :arities [1]
+   :domain :exception
+   :classification :host-primitive
+   :status :implemented
+   :semantics :leaked-host-native-type-or-nil
+   :portability :diagnostic-only
+   :contract "exceptions.edn"}
+
+  {:name intern-var
    :arities [3 4]
    :domain :namespace
    :classification :host-primitive
