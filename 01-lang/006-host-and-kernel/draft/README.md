@@ -26,6 +26,15 @@ while `std.sandbox` is an explicitly required portable facade specified by
 This layer owns what those surfaces enforce — see the `:host-kernel/boundaries`
 map in the spec for the full ownership table.
 
+[`filesystem-provider-spec.edn`](filesystem-provider-spec.edn) defines the
+trusted `IFilesystemFactory` registry, opened `IFilesystem` capability,
+single-root Session attachment, asynchronous call context, redacted mount
+descriptors, capabilities, pagination, revisions, conflict handling, provider
+close, stable cross-provider failures, and conformance requirements for native,
+memory, IndexedDB, SFTP, GitHub, and Google Drive mounts. The adjacent
+[`conformance/filesystem-provider.edn`](conformance/filesystem-provider.edn)
+is the normative provider corpus.
+
 [`session-snapshot-spec.edn`](session-snapshot-spec.edn) defines HSS0 portable
 startup images, incremental layers, sealed and overlay restore modes, secret
 requirements, and the limits that keep live authority out of snapshots.

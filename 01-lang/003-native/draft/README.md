@@ -14,5 +14,11 @@ parity without exposing general Java, Rust, JavaScript, or host reflection.
 open, eval, value-call, cancel, status, and close lifecycle; provider
 registration and backend handles remain trusted embedding concerns.
 
+`std.native.File` remains the sole guest-visible mounted filesystem boundary.
+Provider construction, capabilities, revisions, pagination, cancellation, and
+close semantics are owned by the provider-neutral
+[`filesystem-provider-spec.edn`](../../006-host-and-kernel/draft/filesystem-provider-spec.edn).
+No provider-specific operation is added to `File/*`.
+
 HAL wrappers are outside this layer. `std.native.String/trim` belongs here;
 `std.foundation.string/trim` belongs to the Foundation annex.
