@@ -7,15 +7,15 @@ This annex separates the current portable Foundation API from automatic aliases,
 ## Pinned source
 
 - Repository: `https://github.com/hara-lang/hara`
-- Ref: `main`
-- Commit: `2cc34e235a960061b2a94035dc5de689e7b670d8`
+- Ref: `237298a67d74d4530dd73cb3b344d5d270ad2dde`
+- Commit: `237298a67d74d4530dd73cb3b344d5d270ad2dde`
 - Manifest schema: `2`
-- Surface digest: `sha256:e1848671ae52399cd0d73134179d7f90feb39ea7162c05c003fdb615352fef66`
-- Migration digest: `sha256:41d5008611550d46376fcdde3237067c848c0f6eff898398f2f0072f10a0325b`
+- Surface digest: `sha256:b773906f67eed9250920862fa1c66e2a948ad182083e0ce0b78fcd85411f9438`
+- Migration digest: `sha256:b82361b350af7af09212597e6ac042767cadf52c6c2964fd67da2063ef868437`
 
 ## Current Foundation surface
 
-The root `std.foundation` namespace contains **269** public bindings. It is represented separately from the **5** child namespaces.
+The root `std.foundation` namespace contains **266** public bindings. It is represented separately from the **5** child namespaces.
 
 | Current child namespace | Alias | Public bindings | Profiles |
 | --- | --- | ---: | --- |
@@ -23,15 +23,15 @@ The root `std.foundation` namespace contains **269** public bindings. It is repr
 | `std.foundation.coroutine` | `co` | 7 | jvm, rust, wasm |
 | `std.foundation.pretty` | `pretty` | 13 | jvm, rust, wasm |
 | `std.foundation.promise` | `promise` | 11 | jvm, rust, wasm |
-| `std.foundation.string` | `str` | 48 | jvm, rust, wasm |
+| `std.foundation.string` | `str` | 42 | jvm, rust, wasm |
 
-Current children contain **86** public bindings in total.
+Current children contain **80** public bindings in total.
 
 ## Native static objects
 
 These runtime objects are recorded separately and do not contribute to the namespace count:
 
-`Algo`, `Arr`, `Base`, `Bits`, `Bytes`, `Coroutine`, `Crypto`, `Document`, `Edn`, `Error`, `File`, `Host`, `Iter`, `Json`, `Kernel`, `Maths`, `Num`, `OS`, `Obj`, `Package`, `Printer`, `Process`, `Promise`, `RegExp`, `Result`, `Runtime`, `Schema`, `Socket`, `Stream`, `String`, `Test`, `UUID`.
+`Algo`, `Arr`, `Base`, `Bits`, `Bytes`, `Coroutine`, `Crypto`, `Document`, `Duplex`, `Edn`, `Env`, `Error`, `File`, `Host`, `Iter`, `Json`, `Kernel`, `Maths`, `Numbers`, `OS`, `Obj`, `Package`, `Printer`, `Process`, `Promise`, `RegExp`, `Result`, `Runtime`, `Schema`, `Socket`, `Stream`, `String`, `Test`, `UUID`.
 
 ## Historical migrations
 
