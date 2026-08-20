@@ -23,6 +23,7 @@
   :method-var "std.native.<Type>/<method>"
   :global-object "<Type>"
   :global-method "<Type>/<method>"
+  :value-type-keyword ":std.native.<Type>"
   :example {:type std.native.Maths
             :method Maths/sin
             :wrapper std.foundation/sin}
@@ -412,7 +413,7 @@
   {:name Base
    :availability :implemented
    :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
-             keyword reduced apply not boolean compare reduced? nil? boolean?
+             keyword reduced unreduced apply not boolean compare reduced? nil? boolean?
              string? char? number? integer? long? double? keyword? symbol?
              pointer? atom? function? bytes? array? object? list? cons? vector? tuple?
              map? set? sequential? satisfies? type instance?]
