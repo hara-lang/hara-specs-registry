@@ -6,17 +6,20 @@
   {:canonical
    {:namespace-prefix "std.protocol."
     :namespace-suffix :ascii-lowercase-protocol-name
-    :protocol-var "<namespace>/<Protocol>"
+    :protocol-identity "<namespace>/<Protocol>"
+    :guest-type-reference false
     :method-var "<namespace>/<method>"}
    :foundation-alias
    {:namespace "std.foundation"
-    :protocol-var "<namespace>/<Protocol>"
+    :protocol-type "<Protocol>"
     :method-vars false
     :identity :same-protocol-object}}
  :guest
-  {:protocol-var "<current-namespace>/<Protocol>"
+  {:protocol-type "<Protocol>"
+   :qualified-protocol-type false
    :method-var "<current-namespace>/<method>"
-   :alias-call "<alias>/<method>"
+   :protocol-method-call "<Protocol>/<method>"
+   :namespace-method-call "<alias>/<method>"
    :legacy-prefixed-method-var false
    :method-collision :reject-atomically
    :same-protocol-reload :replace}}
@@ -27,6 +30,10 @@
  :inventory
  {:protocol-count 55
   :method-count 105
+  :capability-specific-protocol-count 15
+  :capability-specific-method-count 20
+  :covered-protocol-count 70
+  :covered-method-count 125
   :public-protocol-count 55
   :public-method-count 105
   :hidden-protocol-count 0
@@ -34,8 +41,14 @@
  :method-counting
  {:policy :declaration-once
   :declared-method-count 105
+  :capability-declared-method-count 20
+  :total-declared-method-count 125
   :effective-surface-method-count 115
   :inherited-method-references 10
+  :capability-effective-surface-method-count 34
+  :capability-inherited-method-references 14
+  :total-effective-surface-method-count 149
+  :total-inherited-method-references 24
   :rule
   "A method contributes once, on the protocol that declares it. Inherited
    methods remain behavioral obligations of the declaring protocol and are
@@ -56,19 +69,81 @@
  :conformance
  {:fixture "01-lang/001-language/draft/conformance/fixtures/protocol_surface.hal"
   :platforms [:truffle :rust-evaluator :rust-bytecode :browser-wasm]
-  :protocol-count 55
+ :protocol-count 55
   :method-count 105
   :invocation :direct-canonical-method-var
+  :protocol-type-reference :unqualified
   :legacy-special-form false}
  :functional-conformance
  {:fixture "01-lang/001-language/draft/conformance/fixtures/protocol_behavioral.hal"
   :case-catalog "01-lang/001-language/draft/conformance/protocol-method-cases.edn"
   :platforms [:jvm-interpreter :truffle :rust-evaluator :rust-bytecode :browser-wasm]
   :method-count 105
-  :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver]
+  :capability-specific-method-count 20
+  :total-method-count 125
+  :checks-per-method [:actual-use-case :missing-receiver :unsupported-receiver
+                      :variadic-arity-where-declared]
+  :cross-cutting-entrypoints
+  [{:name protocol-receiver-matrix-results :case-count 10}
+   {:name protocol-cross-cutting-results :case-count 6}
+   {:name protocol-capability-receiver-results :case-count 8}
+   {:name protocol-native-value-results :case-count 15}
+   {:name protocol-predicate-results :case-count 7}]
+  :method-entrypoints
+  [{:name :fixture-result :classification :portable :method-count 105}
+   {:name capability-protocol-results
+    :classification :capability-specific
+    :method-count 20}]
   :error-matching :category-prefix
   :error-message-text :non-normative
-  :error-categories [:protocol/arity :protocol/unsupported-receiver]}
+  :error-categories [:protocol/arity :protocol/unsupported-receiver]
+  :runtime-disposition
+  {:count-semantics
+   {:unit :declared-method-obligation
+    :portable :shared-corpus-obligations
+    :capability-specific :additional-runtime-obligations
+    :passed :all-reported-obligations-passing
+    :failed :all-reported-obligations-failing
+    :skipped :all-reported-obligations-not-executed
+    :sum-rule "passed + failed + skipped = portable + capability-specific"}
+   :capability-sets
+   {:native-runtime-protocols
+    {:protocol-count 15
+     :method-count 20
+     :protocols
+     [IStreamWrite IAbort IStreamPoll IStreamOffer IClosed IFlush IStreamDuplex
+      IWork IWorkExecutor IWorkStore IWorkRef IWorkHost IWorkRun
+      IMatch IStringLike]
+     :disposition :source-owned-capability-corpus
+     :fixture-entrypoint capability-protocol-results
+     :receiver-entrypoint protocol-capability-receiver-results}}
+   :profiles
+   {:jvm-interpreter
+    {:portable 105 :capability-specific 20 :passed 0 :failed 0 :skipped 125
+     :exclusions
+     [{:capability :canonical-guest-protocols
+       :reason :jvm-interpreter-does-not-expose-std-protocol-guest-vars}
+      {:capability :runtime-specific-protocols
+       :reason :jvm-interpreter-does-not-expose-capability-protocol-guest-vars}]}
+    :truffle
+    {:portable 105 :capability-specific 20 :capability-specific-protocol-count 15
+     :capability-set :native-runtime-protocols
+     :passed 125 :failed 0 :skipped 0 :exclusions []}
+    :rust-evaluator
+    {:portable 105 :capability-specific 20 :capability-specific-protocol-count 15
+     :capability-set :native-runtime-protocols
+     :passed 125 :failed 0 :skipped 0 :exclusions []}
+    :rust-bytecode
+    {:portable 105 :capability-specific 20 :capability-specific-protocol-count 15
+     :capability-set :native-runtime-protocols
+     :passed 125 :failed 0 :skipped 0 :exclusions []}
+    :browser-wasm
+    {:portable 105 :capability-specific 20 :capability-specific-protocol-count 15
+     :capability-set :native-runtime-protocols
+     :passed 125 :failed 0 :skipped 0 :exclusions []
+     :environment-exclusion
+     {:when :wasm-artifact-unavailable
+      :passed 0 :failed 0 :skipped 125}}}}}
  :method-naming {:predicates-suffix "?"
                  :forbidden-suffix "!"}
  :protocols
@@ -147,4 +222,24 @@
              rt-active 1 rt-get 2 rt-start 2 rt-started? 2 rt-stopped? 2 rt-stop 2}}
   {:name IToMutable :extends [IPersistent] :methods {to-mutable 1}}
   {:name IToPersistent :extends [IMutable] :methods {to-persistent 1}}
-  {:name IWatch :methods {watch-add 3 watch-remove 2 watch-list 1}}]}
+  {:name IWatch :methods {watch-add 3 watch-remove 2 watch-list 1}}]
+ :capability-protocols
+ [{:name IStreamWrite :methods {write 2}}
+  {:name IAbort :methods {abort 2}}
+  {:name IStreamPoll :methods {poll 1}}
+  {:name IStreamOffer :methods {offer 2}}
+  {:name IClosed :methods {closed? 1}}
+  {:name IFlush :methods {flush 1}}
+  {:name IStreamDuplex
+   :extends [IStream IStreamWrite IAbort]
+   :methods {}}
+  {:name IWork :methods {work-spec 1}}
+  {:name IWorkExecutor :methods {work-execute 2}}
+  {:name IWorkStore :methods {work-query 2 work-transact 2}}
+  {:name IWorkRef :methods {work-id 1}}
+  {:name IWorkHost :extends [IComponent]
+   :methods {work-submit 4 work-resolve 2}}
+  {:name IWorkRun :extends [IWorkRef IClosed]
+   :methods {work-status 1 work-result 1 work-events 2 work-cancel 2}}
+  {:name IMatch :methods {match-value 2}}
+  {:name IStringLike :methods {to-string 1 from-string 2}}]}
