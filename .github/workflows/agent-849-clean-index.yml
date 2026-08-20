@@ -1,0 +1,51 @@
+name: Regenerate #849 clean registry index
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - agent/849-specs-clean-validation-base
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-and-validate:
+    if: github.event.pull_request.head.ref == 'agent/849-portable-exception-contract-specs-clean'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Regenerate and validate the clean index
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "bf48e9837e50f009c1be34de58621825f2396a23"
+          git merge-base --is-ancestor 95878e47b8a5f1f63d8183452b55ecd6310e807b HEAD
+          npm install
+          npm test
+          npm run registry:generate
+          npm run check
+          rm -f package-lock.json .github/agent-849-clean-index-trigger
+          git diff --exit-code -- . ':(exclude)registry-index.json' || {
+            echo "clean index generation changed files outside registry-index.json" >&2
+            exit 1
+          }
+
+      - name: Publish the validated generated index
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "OpenAI Agent"
+          git config user.email "openai-agent@users.noreply.github.com"
+          git add registry-index.json
+          git rm -f --ignore-unmatch .github/agent-849-clean-index-trigger
+          git commit -m "Regenerate exception specification index"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
