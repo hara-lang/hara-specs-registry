@@ -20,6 +20,15 @@
    :exact-error-class
    {:source "[(Error/message (Error/new \"native failure\" {})) (normalized-error-class (Error/new \"native failure\" {:ex/class :ex.class/native-failure}))]"
     :expected ["native failure" :ex.class/native-failure]}
+   :concrete-native-type
+   {:source "[(Base/type [1]) (Base/type (Base/vector 1))]"
+    :expected [:std.native.Tuple :std.native.Vector]}
+   :reduced-round-trip
+   {:source "[(Base/unreduced (Base/reduced 42)) (Base/unreduced 42)]"
+    :expected [42 42]
+    :diagnostic-history
+    [{:observed :unsupported-receiver
+      :reason "Reduced values do not implement IDeref, so Foundation/unreduced requires the classified Base/unreduced boundary rather than a host-specific unwrap or a broken portable deref composition."}]}
    :base-identity-fast-paths
    {:source "(let [vector-value [1 2] set-value #{1 2}] [[vector-value (Base/vec vector-value)] [set-value (Base/set set-value)]])"
     :expected [[[1 2] [1 2]] [#{1 2} #{1 2}]]}})
@@ -182,6 +191,7 @@
    'Base/symbol ['base/value (fn [] (Base/symbol "base" "value"))]
    'Base/keyword [:base/value (fn [] (Base/keyword "base" "value"))]
    'Base/reduced [true (fn [] (Base/reduced? (Base/reduced 1)))]
+   'Base/unreduced [1 (fn [] (Base/unreduced (Base/reduced 1)))]
    'Base/apply [42 (fn [] (Base/apply + [19 23]))]
    'Base/not [true (fn [] (Base/not nil))]
    'Base/boolean [false (fn [] (Base/boolean nil))]
@@ -361,8 +371,8 @@
 
 (defn native-method-results
   []
-  (mapv (fn [method] (native-method-result method nil))
-        (native-method-keys)))
+  (vec (map (fn [method] (native-method-result method nil))
+        (native-method-keys))))
 
 (defn native-classification-summary
   []
@@ -474,6 +484,10 @@
     :points [:normalized-result :normalized-error]
     :expected :ex.class/demo
     :actual (normalized-error-class (Error/new "boom" {:ex/class :ex.class/demo}))}
+   {:id :concrete-native-type
+    :points [:valid-value :normalized-result]
+    :expected [:std.native.Tuple :std.native.Vector]
+    :actual [(Base/type [1]) (Base/type (Base/vector 1))]}
    {:id :persistent-vector-value
     :points [:valid-value :identity-fast-path]
     :expected [1 2] :actual (Base/vec [1 2])}
@@ -515,10 +529,10 @@
 
 (defn native-boundary-results
   []
-  (mapv
+  (vec (map
     (fn [case]
       (assoc case :pass (= (get case :expected) (get case :actual))))
-    (native-boundary-cases)))
+    (native-boundary-cases))))
 
 (defn native-profile-report
   []

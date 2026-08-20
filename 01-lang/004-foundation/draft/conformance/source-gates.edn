@@ -20,12 +20,6 @@
    :rule/pattern "\\[std\\.foundation\\.(string|promise|bytes|socket|file|coroutine|edn|json|set|pretty|host|kernel|os|crypto)\\s"
    :rule/message "Use builtin aliases such as str/*, co/*, json/*, bytes/*, and host/*; do not require Foundation builtin libraries."}
 
-  {:rule/id :hara.source/no-foundation-mapv
-   :rule/severity :error
-   :rule/path-pattern "^core/(lib/(src|src-lang|test|test-lang)|rust/hal-src)/.*\\.hal$"
-   :rule/pattern "(?m)(^|[\\s(\\[])(std\\.foundation/)?mapv(?=[\\s)\\]])"
-   :rule/message "Executable native-HAL source must not define or invoke std.foundation/mapv; historical specification prose outside executable HAL roots is allowed."}
-
   {:rule/id :hara.source/no-native-reduce-in
    :rule/severity :error
    :rule/path-pattern "^core/.*"

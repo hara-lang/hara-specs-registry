@@ -15,10 +15,11 @@
   :scope/includes
   #{:bootstrap-referral :namespace-configuration :root-public-vars
     :root-macros :protocol-aliases :native-type-aliases
-    :portable-function-wrappers :public-metadata :portable-library-contracts}
+    :portable-function-wrappers :public-metadata :portable-library-contracts
+    :qualified-foundation-libraries}
   :scope/excludes
   #{:core-form-semantics :protocol-dispatch-semantics :native-method-semantics
-    :qualified-foundation-libraries :general-host-interop}}
+    :general-host-interop}}
 
  :foundation/invariants
  [{:requirement/id :foundation/bootstrap-portable
@@ -78,7 +79,17 @@
    :aliases/selection :all}
   :bootstrap/native-aliases
   {:aliases/spec :hara/native
-   :aliases/selection :all}}
+   :aliases/selection :all}
+  :bootstrap/qualified-library-aliases
+  {str std.foundation.string
+   co std.foundation.coroutine
+   promise std.foundation.promise
+   bytes std.foundation.bytes
+  pretty std.foundation.pretty}
+  :bootstrap/alias-validation
+  {:accepted-alias-states #{:loaded :unloaded}
+   :qualified-member-resolution :required
+   :namespace-object-equality :not-required}}
 
  :foundation/namespaces
  {:namespaces/status :accepted
@@ -142,7 +153,7 @@
    [{:requirement/id :foundation/vector-type
      :requirement/level :must
      :requirement/text
-     "type returns :hara/Vector for both compact tuple-backed and persistent-tree-backed vector values."}
+     "type returns the concrete descriptor :std.native.Tuple for compact tuple values and :std.native.Vector for persistent vectors."}
     {:requirement/id :foundation/vector-predicates
      :requirement/level :must
      :requirement/text
@@ -170,7 +181,7 @@
    :surface/symbols
    [range repeat repeatedly iterate take-while drop-while partition-all
     partition interpose interleave map filter take drop mapcat keep cycle zip
-    partition-pair every? any?]
+    partition-pair every? any? some mapv]
    :surface/classification :native-wrapper
    :surface/native-spec :hara/native}
   {:surface/id :foundation/numeric-native
@@ -199,7 +210,7 @@
    :surface/domain :macro
    :surface/symbols
    [defonce doto if-not when if-let when-let cond-> cond->> with-ns intern-in intern-all
-    with:template-meta template-vars template-entries code-line code-column]
+    with:template-meta template-vars template-entries code-line code-column test-check]
    :surface/classification :portable-hal}
   {:surface/id :foundation/templates
    :surface/domain :function
@@ -225,9 +236,10 @@
      IToPersistent]
     :collection/native-base-method :forbidden}
    :collection/mapv
-   {:collection/status :removed
-    :collection/executable-definition :forbidden
-    :collection/executable-call :forbidden}}
+   {:collection/status :public-portable-hal
+    :collection/result :persistent-vector
+    :collection/multi-source :stop-at-shortest
+    :collection/source-mutation :forbidden}}
 
   :collection/first-source
   {:collection/rule
@@ -267,10 +279,14 @@
     :requirement/level :must
     :requirement/text
     "reduce-in remains a public portable HAL function composed from IReduce, IToMutable, and IToPersistent; no Base/reduce-in or std.native.Base/reduce-in method exists."}
-   {:requirement/id :foundation/mapv-removed
-    :requirement/level :must-not
+   {:requirement/id :foundation/mapv-portable
+    :requirement/level :must
     :requirement/text
-    "Executable HAL source defines or invokes mapv; callers use map when first-source family is intended and vec around map only when a vector is an explicit schema boundary."}
+    "mapv is portable HAL, accepts one or more sources, stops at the shortest source, and always returns a persistent vector while preserving map's iterator cleanup behavior."}
+   {:requirement/id :foundation/test-native-boundary
+    :requirement/level :must
+    :requirement/text
+    "Test configuration, Result construction, and Result inspection use Test/* directly. Foundation retains only the test-check macro needed to delay evaluation and normalize thrown test forms; test-config, test-result, and test-passed? do not resolve."}
    {:requirement/id :foundation/first-source-results
     :requirement/level :must
     :requirement/text
@@ -414,10 +430,25 @@
    :reference/authority :historical}]
 
  :foundation/conformance
- [{:conformance/id :foundation/root-hal-tests
-   :conformance/path "../../../../lib/test/std/foundation_test.hal"
-   :conformance/authority :implementation-evidence}
-  {:conformance/id :foundation/legacy-runtime-cases
-   :conformance/path
-   "../../../01-lang/001-language/draft/conformance/core.edn"
-   :conformance/authority :migration-evidence}]}
+ {:conformance/authority :specs-owned
+  :conformance/counting
+  {:unit :effective-public-var
+   :definition :declaration-once
+   :rule "Each fully qualified public Var is counted once. Repeated defstruct/def materialization remains declaration evidence without increasing the effective surface."
+   :counts :derived}
+  :conformance/surface "conformance/foundation-surface.edn"
+  :conformance/behavior "conformance/fixtures/foundation_behavioral.hal"
+  :conformance/snapshot-tool "conformance/tools/surface_snapshot.hal"
+  :conformance/validation-matrix "conformance/validation-matrix.edn"
+  :conformance/consumers
+  [:jvm-interpreter :jvm-truffle :rust-evaluator :rust-bytecode
+   :compiler :browser-wasm]
+  :conformance/reporting
+  [:portable :capability-specific :inventory-only :passed :failed :skipped]
+  :conformance/closure
+  "Every surface addition, removal, rename, or duplicate classification fails until the specs-owned surface and behavioral classification agree."
+  :conformance/legacy-evidence
+  [{:path "../../../../lib/test/std/foundation_test.hal"
+    :authority :migration-source}
+   {:path "../../../01-lang/001-language/draft/conformance/core.edn"
+    :authority :historical}]}}
