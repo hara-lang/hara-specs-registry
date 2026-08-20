@@ -47,7 +47,7 @@
  {:status :accepted
   :closed true
   :type-count 34
-  :method-count 366
+  :method-count 367
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -390,8 +390,10 @@
    :method-classification {:native-only :all}}
   {:name Error
    :availability :implemented
-   :methods [new message class]
-   :method-classification {:foundation-primitive :all}}
+   :methods [new message class native-type]
+   :method-classification
+   {:foundation-primitive [new message class]
+    :native-only [native-type]}}
   {:name Base
    :availability :implemented
    :methods [list vector vec set pair tuple hash-map hash-set atom pointer symbol
