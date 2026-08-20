@@ -416,7 +416,7 @@
              keyword reduced unreduced apply not boolean compare reduced? nil? boolean?
              string? char? number? integer? long? double? keyword? symbol?
              pointer? atom? function? bytes? array? object? list? cons? vector? tuple?
-             map? set? sequential? satisfies? type instance?]
+             map? set? sequential? coll? satisfies? type instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Algo

@@ -8,7 +8,7 @@
  :source-manifest
  {:schema-version 2,
   :inventory "core/rust/standard-library.namespaces",
-  :semantic-surface-digest "sha256:bd5336abf810ae9aab32d787db707be444d51a19a8c653056a16b2870af4259e",
+  :semantic-surface-digest "sha256:7262e6e939ddae1817666d5835c647d39afe8df535e18fcb480339ec59a62fe1",
   :counting :effective-public-var-declaration-once},
  :profile-dispositions
  {:profiles [:jvm :rust :wasm],
@@ -26,7 +26,17 @@
  :forbidden-vars
  [std.foundation/test-config
   std.foundation/test-result
-  std.foundation/test-passed?],
+  std.foundation/test-passed?
+  std.foundation/result-status
+  std.foundation/res-synchronize
+  std.foundation/res-result?
+  std.foundation/res-success?
+  std.foundation/res-error?
+  std.foundation/res-status
+  std.foundation/res-data
+  std.foundation/res-error-value
+  std.foundation/res-context
+  std.foundation/res-with-context],
  :namespaces [{:namespace std.foundation,
                :source "std/foundation.hal",
                :vars [{:declarations [{:doc "", :kind :def, :signature ""}],
@@ -191,6 +201,10 @@
                                        :kind :defmacro,
                                        :signature "[]"}],
                        :name code-line}
+                      {:declarations [{:doc "Returns true when value satisfies the runtime collection capability.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name coll?}
                       {:declarations [{:doc "Composes two or more functions right-to-left.",
                                        :kind :defn,
                                        :signature ""}],
@@ -831,10 +845,6 @@
                                        :kind :defn,
                                        :signature ""}],
                        :name result}
-                      {:declarations [{:doc "Returns :success or :error from result.",
-                                       :kind :defn,
-                                       :signature "[result]"}],
-                       :name result-status}
                       {:declarations [{:doc "Returns true when value is a native Result.",
                                        :kind :defn,
                                        :signature "[value]"}],

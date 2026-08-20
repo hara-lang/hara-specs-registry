@@ -147,7 +147,7 @@
    :surface/classification :portable-hal}
   {:surface/id :foundation/value-classification
    :surface/domain :function
-   :surface/symbols [type vector? tuple? pair?]
+   :surface/symbols [type vector? tuple? pair? coll?]
    :surface/classification :narrow-runtime-primitive
    :surface/requirements
    [{:requirement/id :foundation/vector-type
@@ -157,7 +157,11 @@
     {:requirement/id :foundation/vector-predicates
      :requirement/level :must
      :requirement/text
-     "vector? accepts both vector backends; tuple? accepts only the compact backend; pair? accepts a compact tuple of count two and does not accept an ordinary persistent vector or list merely because its count is two."}]}
+     "vector? accepts both vector backends; tuple? accepts only the compact backend; pair? accepts a compact tuple of count two and does not accept an ordinary persistent vector or list merely because its count is two."}
+    {:requirement/id :foundation/collection-predicate
+     :requirement/level :must
+     :requirement/text
+     "coll? is a source-owned Foundation binding over the runtime collection capability; it accepts persistent collection implementations and rejects scalars and nil."}]}
   {:surface/id :foundation/references
    :surface/domain :function
    :surface/symbols
@@ -286,7 +290,7 @@
    {:requirement/id :foundation/test-native-boundary
     :requirement/level :must
     :requirement/text
-    "Test configuration, Result construction, and Result inspection use Test/* directly. Foundation retains only the test-check macro needed to delay evaluation and normalize thrown test forms; test-config, test-result, and test-passed? do not resolve."}
+    "Test configuration and inspection use Test/* directly. Foundation exposes only result and result? for native Result construction and recognition; Result/* owns all inspection. Foundation retains only the test-check macro needed to delay evaluation and normalize thrown test forms; test-config, test-result, test-passed?, result-status, and every res-* compatibility name do not resolve."}
    {:requirement/id :foundation/first-source-results
     :requirement/level :must
     :requirement/text

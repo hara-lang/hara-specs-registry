@@ -23,6 +23,12 @@
    :concrete-native-type
    {:source "[(Base/type [1]) (Base/type (Base/vector 1))]"
     :expected [:std.native.Tuple :std.native.Vector]}
+   :collection-capability-predicate
+   {:source "[(Base/coll? (Base/vector 1)) (Base/coll? {:a 1}) (Base/coll? 1) (Base/coll? nil)]"
+    :expected [true true false false]
+    :diagnostic-history
+    [{:observed :foundation-bootstrap-only
+      :reason "coll? was formerly available only as an unclassified Foundation bootstrap intrinsic; Base/coll? now owns the protocol-aware native operation and the HAL facade transparently forwards to it."}]}
    :reduced-round-trip
    {:source "[(Base/unreduced (Base/reduced 42)) (Base/unreduced 42)]"
     :expected [42 42]
@@ -220,6 +226,7 @@
    'Base/map? [true (fn [] (Base/map? {:a 1}))]
    'Base/set? [true (fn [] (Base/set? #{1}))]
    'Base/sequential? [true (fn [] (Base/sequential? [1]))]
+   'Base/coll? [[true false] (fn [] [(Base/coll? [1]) (Base/coll? 1)])]
    'Base/type [:std.native.Vector (fn [] (Base/type (Base/vector 1)))]
    'Base/instance? [true (fn [] (Base/instance? Promise (Promise/from 1)))]
    'Iter/iter [1 (fn [] (Iter/iter-next (Iter/iter [1 2])))]
