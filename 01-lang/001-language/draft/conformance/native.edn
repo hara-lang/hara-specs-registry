@@ -3,6 +3,21 @@
  :syntax :edn
  :purpose :native-runtime-boundary
 
+ :language-builtins
+ {:status :accepted
+  :purpose :cross-runtime-accounting
+  :native-type false
+  :namespace nil
+  :evaluation [quote syntax-quote do if let letfn binding loop recur throw try fn]
+  :definitions [def declare var set! defmacro defstruct defmutable defprotocol
+                extend-type defmulti defmethod]
+  :namespaces [ns ns+ require alias]
+  :interop [new field .]
+  :rules
+  ["Builtins are evaluator and compiler forms, not Vars on a std.native.Builtins object."
+   "The accounting inventory is identical across conforming runtimes."
+   "Ordinary callable fundamentals belong to std.native.Base or canonical HAL source."]}
+
  :naming
  {:type-object "std.native.<Type>"
   :method-var "std.native.<Type>/<method>"
@@ -46,8 +61,8 @@
  :inventory
  {:status :accepted
   :closed true
-  :type-count 34
-  :method-count 367
+  :type-count 33
+  :method-count 370
   :source-of-truth :types
   :extra-types :forbidden
   :extra-methods :forbidden}
@@ -71,8 +86,8 @@
   :canonical-method-namespace "std.native.<Type>"
   :global-alias "<Type>"
   :global-aliases
-  [Maths Numbers Bits Kernel Sandbox Package String Bytes Crypto OS Process File Socket
-   Promise Coroutine Stream Duplex Arr Obj Runtime Printer Document Edn Json Host Test
+  [Maths Num Bits Kernel Sandbox Package String Bytes Crypto OS Process File Socket
+   Promise Coroutine Stream Arr Obj Runtime Printer Document Edn Json Host Test
    RegExp UUID Result Schema Error Base Algo Iter]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
@@ -198,9 +213,9 @@
              floor pow sin sinh sqrt tan tanh]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
-  {:name Numbers
+  {:name Num
    :availability :implemented
-   :methods [long double]
+   :methods [long double parse-long parse-double]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Bits
@@ -250,20 +265,16 @@
    :method-classification {:native-only :all}}
   {:name OS
    :availability :implemented
-   :methods [platform arch cwd env getenv]
+   :methods [platform arch cwd env getenv time-ms time-ns]
    :method-classification {:native-only :all}}
   {:name Process
    :availability :capability-gated
    :methods [spawn instance? alive? write close-input stdout stderr
-             stdout-stream stderr-stream duplex wait kill]
+             stdout-stream stderr-stream wait kill]
    :method-classification {:native-only :all}
    :streaming
    {:stdout-stream {:returns :stream :items :bytes :pending-limit 1}
-    :stderr-stream {:returns :stream :items :bytes :pending-limit 1}
-    :duplex {:receive :stdout-stream
-             :send :stdin
-             :stderr :separate-stream
-             :close :close-input}}}
+    :stderr-stream {:returns :stream :items :bytes :pending-limit 1}}}
   {:name File
    :availability :capability-gated
    :methods [parent join resolve read write exists? stat entries list walk mkdir delete
@@ -273,7 +284,7 @@
    :preferred-path-library std.fs.path}
   {:name Socket
    :availability :capability-gated
-   :methods [connect listen endpoint events next send close receive-stream duplex]
+   :methods [connect listen endpoint events next send close receive-stream]
    :method-classification {:native-only :all}
    :server-streaming
    {:listen {:arguments [host port options callback]
@@ -294,10 +305,6 @@
                      :returns :stream
                      :items :bytes
                      :pending-limit 1}
-    :duplex {:handles [:socket]
-             :receive :receive-stream
-             :send :socket-send
-             :close :socket-close}
     :threading {:host-threads :raw-events-only
                 :hal-callbacks :evaluator-thread}}}
   {:name Promise
@@ -314,17 +321,10 @@
    :wrapper-source "lib/src/std/foundation/coroutine.hal"}
   {:name Stream
    :availability :implemented
-   :methods [generate next instance?]
+   :methods [create generate next instance?]
    :method-classification {:hal-wrapper [generate]
-                           :native-only [next instance?]}
+                           :native-only [create next instance?]}
    :wrapper-source "lib/src/std/foundation.hal"}
-  {:name Duplex
-   :availability :implemented
-   :methods [create receive send close instance?]
-   :method-classification {:native-only :all}
-   :contract {:receive :stream
-              :send :promise
-              :close :idempotent}}
   {:name Arr
    :availability :implemented
    :methods [new instance? get set push-first push-last pop-first pop-last
@@ -345,7 +345,7 @@
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Printer
    :availability :implemented
-   :methods [p println]
+   :methods [p println capture]
    :method-classification {:foundation-primitive :all}}
   {:name Document
    :availability :implemented
@@ -366,7 +366,8 @@
    :method-classification {:native-only :all}}
   {:name Test
    :availability :implemented
-   :methods [catalog config context events run result passed?]
+   :methods [catalog config context events compare run result passed? actual expected
+             failures failure-seq failure-count failure failure?]
    :method-classification {:native-only :all}}
   {:name RegExp
    :availability :implemented
@@ -386,22 +387,19 @@
    :method-classification {:native-only :all}}
   {:name Schema
    :availability :implemented
-   :methods [instance? kind form ast origin]
+   :methods [compile of instance? kind form ast origin]
    :method-classification {:native-only :all}}
   {:name Error
    :availability :implemented
-   :methods [new message class native-type]
-   :method-classification
-   {:foundation-primitive [new message class]
-    :native-only [native-type]}}
+   :methods [new message class]
+   :method-classification {:foundation-primitive :all}}
   {:name Base
    :availability :implemented
-   :methods [list vector vec set pair tuple hash-map hash-set atom pointer symbol
-             keyword reduced reduced? unreduced nil? not-nil? boolean? false? true?
-             string? char? number? integer? decimal? long? double? keyword? symbol?
-             pointer? atom? fn? bytes? array? object? list? pair? vector? tuple?
-             map? map-entry? set? sequential? satisfies? type instance? schema
-             schema-of]
+   :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
+             keyword reduced apply not boolean compare reduced? nil? boolean?
+             string? char? number? integer? long? double? keyword? symbol?
+             pointer? atom? function? bytes? array? object? list? cons? vector? tuple?
+             map? set? sequential? satisfies? type instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Algo
