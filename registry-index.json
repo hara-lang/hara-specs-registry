@@ -13,12 +13,12 @@
     }
   },
   "summary": {
-    "specifications": 58,
-    "draft": 58,
+    "specifications": 59,
+    "draft": 59,
     "ready": 0,
-    "executable": 31,
-    "requirements": 361,
-    "materialized": 58,
+    "executable": 32,
+    "requirements": 371,
+    "materialized": 59,
     "pinnedSource": 0,
     "layers": [
       "00-unsorted",
@@ -841,6 +841,37 @@
         "repository": "hara-lang/hara-specs-registry",
         "ref": "main",
         "path": "01-lang/010-bytecode/draft/README.md"
+      }
+    },
+    {
+      "id": "hara/std-typed-catalog",
+      "slug": "hara-std-typed-catalog",
+      "coordinate": "hara/std-typed-catalog",
+      "title": "Portable identified schema catalogs",
+      "summary": "Immutable std.typed schema identity, exact dependency, recursive component, publication, and admission contract.",
+      "type": "data-contract",
+      "version": "0-alpha",
+      "status": "draft",
+      "layer": "01-lang",
+      "owner": "hara-lang",
+      "classification": "hara",
+      "sourcePath": "01-lang/011-typed-catalog/draft/std-typed-catalog.edn",
+      "documentationPath": "01-lang/011-typed-catalog/draft/README.md",
+      "requirements": 10,
+      "formats": [
+        "application/edn"
+      ],
+      "executable": true,
+      "materialization": "registry",
+      "source": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/011-typed-catalog/draft/std-typed-catalog.edn"
+      },
+      "documentation": {
+        "repository": "hara-lang/hara-specs-registry",
+        "ref": "main",
+        "path": "01-lang/011-typed-catalog/draft/README.md"
       }
     },
     {
