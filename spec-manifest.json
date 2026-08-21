@@ -602,6 +602,30 @@
       "owner": "hara-lang"
     },
     {
+      "path": "01-lang/021-code-query/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/021-code-query/draft/README.md",
+      "kind": "markdown",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/021-code-query/draft/conformance/code-query-conformance.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
+      "path": "01-lang/021-code-query/draft/conformance/code-query-conformance-results.edn",
+      "kind": "edn",
+      "classification": "hara",
+      "owner": "hara-lang"
+    },
+    {
       "path": "01-lang/platform-language-migration.edn",
       "kind": "edn",
       "classification": "hara",
