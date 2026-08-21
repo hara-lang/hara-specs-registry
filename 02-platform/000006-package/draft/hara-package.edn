@@ -4,7 +4,7 @@
  :document/status :draft
  :document/title "Hara project and package contract"
  :document/summary
- "Normative single-manifest project, dependency resolution, deterministic package build, release and installation contract."
+ "Normative single-manifest project, dependency resolution, deterministic package build, prebuilt runtime-variant selection, release and installation contract."
  :spec/conforms-to {:spec/id :hara/tap-protocol-metaspec
                     :spec/version "0.0.0-alpha"}
 
@@ -14,11 +14,11 @@
   {:role/id :hara.package.role/resolver
    :role/summary "Resolves declared dependencies and remote artifacts into project.lock.edn."}
   {:role/id :hara.package.role/builder
-   :role/summary "Compiles HAL to HIR as applicable and builds one deterministic .harp."}
+   :role/summary "Compiles release artifacts and builds one deterministic .harp."}
   {:role/id :hara.package.role/registry
    :role/summary "Accepts immutable releases authorized by GitHub-governed publisher identity."}
   {:role/id :hara.package.role/runtime
-   :role/summary "Loads resolved package resources and embedded extension declarations."}]
+   :role/summary "Selects, verifies, loads and closes package resources and prebuilt runtime variants."}]
 
  :platform/entities
  [{:entity/id :hara.package/project
@@ -44,9 +44,27 @@
   {:entity/id :hara.package/archive-index
    :entity/path "package.edn"
    :entity/generated true
-   :entity/summary "Immutable index generated inside a .harp archive."
+   :entity/summary "Immutable data-only index generated inside a .harp archive."
    :entity/fields [:harp/format :package :files :resources :extensions
-                   :remote-artifacts :integrity]}
+                   :dependencies :variants :descriptor :remote-artifacts
+                   :integrity]}
+  {:entity/id :hara.package/runtime-variant
+   :entity/summary "One prebuilt artifact selected only for its exact consumer runtime."
+   :entity/required-fields [:variant/artifact :variant/required-capabilities]
+   :entity/optional-fields [:variant/dependencies :variant/host-calls
+                            :variant/exports :variant/lifecycle]
+   :entity/runtime-keys [:jvm :wasm]}
+  {:entity/id :hara.package/runtime-artifact
+   :entity/summary "A digest-bound prebuilt JAR, Wasm module, or HTA module."
+   :entity/required-fields [:artifact/type :artifact/path :artifact/sha256
+                            :artifact/target :artifact/abi
+                            :artifact/entry-point]
+   :entity/types [:jar :wasm :hta]}
+  {:entity/id :hara.package/runtime-selection
+   :entity/summary "The deterministic result of exact-runtime selection and preflight."
+   :entity/fields [:selection/runtime :selection/artifact
+                   :selection/dependencies :selection/capabilities
+                   :selection/host-calls :selection/exports]}
   {:entity/id :hara.package/release
    :entity/summary "Immutable accepted package coordinate, version and archive digest."
    :entity/fields [:release/coordinate :release/version :release/commit
@@ -70,6 +88,35 @@
   :project/build {:type :build-declaration}
   :project/extensions {:type :extension-map}
   :project/remote-artifacts {:type :remote-artifact-map}}
+
+ :package-artifact/fields
+ {:package
+  {:required [:identity :version]
+   :optional [:provenance]
+   :provenance/required-when-variants [:repository :commit]}
+  :files
+  {:type :path-map
+   :entry/required [:sha256 :size]}
+  :variants
+  {:type :runtime-keyed-map
+   :keys [:jvm :wasm]
+   :unique-keys true}
+  :variant/artifact
+  {:type :map
+   :required [:artifact/type :artifact/path :artifact/sha256
+              :artifact/target :artifact/abi :artifact/entry-point]}
+  :variant/required-capabilities {:type :set}
+  :variant/host-calls {:type :set}
+  :variant/exports {:type :set}
+  :variant/dependencies {:type :map}
+  :variant/lifecycle
+  {:type :map
+   :fields [:lifecycle/load :lifecycle/close
+            :lifecycle/session-isolation :lifecycle/async
+            :lifecycle/cancellation]
+   :required-values {:lifecycle/load :idempotent
+                     :lifecycle/close :idempotent
+                     :lifecycle/session-isolation true}}}
 
  :platform/operations
  [{:operation/id :hara.package.operation/check
@@ -97,6 +144,36 @@
    :operation/output :hara.package/release
    :operation/failures [:unauthorized :source-mismatch :project-mismatch
                         :archive-conflict :release-conflict]}
+  {:operation/id :hara.package.operation/select-variant
+   :operation/role :hara.package.role/runtime
+   :operation/input [:hara.package/archive-index :hara.package/runtime-requirements]
+   :operation/output :hara.package/runtime-selection
+   :operation/failures [:package/invalid-manifest
+                        :package/duplicate-variant
+                        :package/missing-variant
+                        :package/target-mismatch
+                        :package/abi-mismatch
+                        :package/capability-denied
+                        :package/host-call-denied]}
+  {:operation/id :hara.package.operation/verify-variant
+   :operation/role :hara.package.role/runtime
+   :operation/input [:hara.package/runtime-selection :hara.package/archive-bytes]
+   :operation/output :hara.package/verified-runtime-selection
+   :operation/failures [:package/missing-artifact
+                        :package/digest-mismatch
+                        :package/size-mismatch]}
+  {:operation/id :hara.package.operation/initialize-variant
+   :operation/role :hara.package.role/runtime
+   :operation/input [:hara.package/verified-runtime-selection
+                     :hara.package/session]
+   :operation/output :hara.package/provider-registration
+   :operation/failures [:package/initialization-failed
+                        :package/registration-failed]}
+  {:operation/id :hara.package.operation/close-variant
+   :operation/role :hara.package.role/runtime
+   :operation/input :hara.package/provider-registration
+   :operation/output :hara.package/closed-registration
+   :operation/failures [:package/close-failed]}
   {:operation/id :hara.package.operation/load
    :operation/role :hara.package.role/runtime
    :operation/input [:hara.package/lock :hara.package/namespace]
@@ -125,7 +202,7 @@
    :requirement/text "project.lock.edn and the package.edn inside a .harp are generated outputs and are never parallel authoring surfaces."}
   {:requirement/id :hara.package/data-only
    :requirement/level :must
-   :requirement/text "project.edn is EDN data and is parsed without evaluating HAL or granting host authority."}
+   :requirement/text "project.edn and package.edn are EDN data parsed without evaluating HAL, loading classes or modules, constructing host objects, or granting host authority."}
   {:requirement/id :hara.package/exact-lock
    :requirement/level :must
    :requirement/text "The lock records exact versions, registry revisions, source commits, archive digests and remote-artifact digests needed for reproducible loading."}
@@ -137,7 +214,7 @@
    :requirement/text "Packages may carry HAL, HIR and EDN resources; a compatible verified HIR is preferred and HAL remains the portable fallback when included."}
   {:requirement/id :hara.package/no-install-execution
    :requirement/level :must
-   :requirement/text "Installing a .harp verifies and extracts bytes but does not execute build hooks, lifecycle scripts or package code."}
+   :requirement/text "Installing a .harp verifies and extracts bytes but does not execute build hooks, lifecycle scripts, package code, Cargo, Maven, javac, rustc, or another compiler or build tool."}
   {:requirement/id :hara.package/immutable-release
    :requirement/level :must
    :requirement/text "An accepted coordinate and version is bound permanently to one source commit, one project.edn digest and one archive digest."}
@@ -149,7 +226,7 @@
    :requirement/text "Runtime-specific project intent is declared only below :project/runtime-profiles, keyed by :jvm or :rust, using :runtime/source-paths, :runtime/test-paths, :runtime/extension-paths, :runtime/native-source-paths, :runtime/target-path, and :runtime/dependencies."}
   {:requirement/id :hara.package/runtime-profile-auto-selection
    :requirement/level :must
-   :requirement/text "JVM commands select :jvm and native Rust commands select :rust automatically; ordinary commands do not expose a runtime-profile selection flag."}
+   :requirement/text "JVM commands select the :jvm project profile and native Rust commands select the :rust project profile automatically; ordinary commands do not expose a project runtime-profile selection flag."}
   {:requirement/id :hara.package/runtime-profile-effective-paths
    :requirement/level :must
    :requirement/text "Effective HAL source, test, and extension roots are the ordered shared roots followed by the selected runtime profile additions; native source roots and target paths belong only to the selected runtime profile."}
@@ -173,7 +250,52 @@
    :requirement/text "Locked and frozen execution reject an absent, stale, incomplete, or manifest-divergent active runtime section, while offline execution performs no network access."}
   {:requirement/id :hara.package/runtime-profile-package-mount
    :requirement/level :must
-   :requirement/text "Before evaluation, the active locked graph is mounted read-only; package builds retain shared and runtime-specific resources, profile-scoped indexes, and the exact multi-runtime lockfile."}]
+   :requirement/text "Before evaluation, the active locked graph is mounted read-only; package builds retain shared and runtime-specific resources, profile-scoped indexes, and the exact multi-runtime lockfile."}
+  {:requirement/id :hara.package/project-profile-vs-package-variant
+   :requirement/level :must
+   :requirement/text "Project build profiles (:jvm and :rust) and consumer package variants (:jvm and :wasm) are distinct. A Rust host may produce or consume the :wasm package variant, but no profile name is rewritten implicitly."}
+  {:requirement/id :hara.package/portable-package-compatibility
+   :requirement/level :must
+   :requirement/text "A package with portable HAL/HIR resources and no :variants remains valid and resolves without a native artifact."}
+  {:requirement/id :hara.package/variant-identity
+   :requirement/level :must
+   :requirement/text "One package identity and version may declare at most one :jvm variant and at most one :wasm variant; duplicate or unknown runtime keys are invalid."}
+  {:requirement/id :hara.package/exact-runtime-selection
+   :requirement/level :must
+   :requirement/text "Selection uses only the exact active runtime key. A missing :jvm or :wasm variant fails with :package/missing-variant and never falls back across runtimes."}
+  {:requirement/id :hara.package/runtime-artifact-types
+   :requirement/level :must
+   :requirement/text "A :jvm variant selects an :artifact/type :jar artifact. A :wasm variant selects :artifact/type :wasm or :hta. Other runtime/type pairs are invalid."}
+  {:requirement/id :hara.package/artifact-file-binding
+   :requirement/level :must
+   :requirement/text "Every selected artifact path is a safe archive-relative file in :files, and :artifact/sha256 exactly equals that file entry's sha256 digest."}
+  {:requirement/id :hara.package/artifact-verification-before-load
+   :requirement/level :must
+   :requirement/text "The runtime verifies the selected artifact bytes, target, ABI, required capabilities, and host-call allowlist before class loading, module instantiation, provider registration, or package code execution."}
+  {:requirement/id :hara.package/variant-dependency-isolation
+   :requirement/level :must
+   :requirement/text "Shared dependencies remain package-wide. :variant/dependencies are visible only to the selected runtime variant and never leak into another runtime graph."}
+  {:requirement/id :hara.package/provenance-required-for-variants
+   :requirement/level :must
+   :requirement/text "A package declaring :variants records immutable source repository and commit provenance in the :package map; registration fails before loading when provenance is absent or inconsistent with the verified release."}
+  {:requirement/id :hara.package/jvm-trusted-registration
+   :requirement/level :must
+   :requirement/text "A verified JVM JAR is opened in an isolated trusted loader, resolves only declared dependencies, registers its declared entry point atomically, and discards the loader and partial registration on initialization failure."}
+  {:requirement/id :hara.package/wasm-host-authority
+   :requirement/level :must
+   :requirement/text "A verified Wasm or HTA module receives only declared host calls. Undeclared calls, raw sockets, credentials, native handles, and ambient host authority are unavailable."}
+  {:requirement/id :hara.package/wasm-lifecycle
+   :requirement/level :must
+   :requirement/text "Wasm/HTA async operations have explicit completion and cancellation; package handles are session-scoped; load and close are idempotent; close cancels outstanding work and releases handles before reporting completion."}
+  {:requirement/id :hara.package/failure-isolation
+   :requirement/level :must
+   :requirement/text "Digest, ABI, target, capability, host-call, initialization, cancellation, and close failures are stable package errors and do not expose partial registration to another package or session."}
+  {:requirement/id :hara.package/runtime-neutral-descriptor
+   :requirement/level :must
+   :requirement/text "Portable descriptors contain only ordinary data and stable operation, error, capability, and lifecycle identifiers; they never contain credentials, classloaders, raw sockets, native pointers, or live handles."}
+  {:requirement/id :hara.package/canonical-variant-metadata
+   :requirement/level :must
+   :requirement/text "Manifest validation and canonicalization are deterministic and idempotent. Runtime keys, paths, dependency coordinates, capabilities, host calls, and exports have one normalized ordering and representation."}]
 
  :platform/conformance
  [{:conformance/id :hara.package/projects
