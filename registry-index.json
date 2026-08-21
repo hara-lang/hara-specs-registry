@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:1c97a6e15010d6c8253779b4ecbd79bad29b4d965fcd799926bef089a372a591",
-    "catalogueDigest": "sha256:c1207107fd301b40778c96c8d7ada407c3553ee92b2c4a7f2ee8198f1d6cacba",
+    "manifestDigest": "sha256:37ec09d16abd72eb09c6dd01bd4ad2c8a00e3e1a3657de81b6c3f3af3c1375d8",
+    "catalogueDigest": "sha256:a7dc1a38add68a9364f4528abe39abe56c8d6c840a186056591b39e61c9fdeaf",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
