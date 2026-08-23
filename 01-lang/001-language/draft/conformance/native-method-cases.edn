@@ -33,7 +33,8 @@
  {:method-local [:canonical-invocation :valid-value :normalized-result]
   :cross-cutting
   [:arity-failure :type-failure :normalized-error :identity-fast-path
-   :mutation :lifecycle :cleanup :evaluator-compiler-agreement :browser-wasm]
+   :mutation :lifecycle :cleanup :evaluator-compiler-agreement :browser-wasm
+   :result-dereference :reader-shorthand]
   :entrypoints
   {:method-results native-method-results
    :boundary-results native-boundary-results
@@ -86,7 +87,13 @@
    {:id :base-instance
     :calibrated-receiver Promise
     :reason :descriptor-and-portable-type-name-agree
-    :entrypoint native-method-result}]}
+    :entrypoint native-method-result}
+   {:id :result-dereference
+    :success :return-data
+    :error :throw-result-error
+    :reader-shorthand "@result"
+    :cases [:result-deref-success :result-deref-error]
+    :entrypoint native-boundary-results}]}
 
  :maintenance-workflow
  {:on-native-add-change-remove

@@ -58,7 +58,17 @@
    [{:conformance/suite :hal/core
      :conformance/cases
      [:namespace/named-selects-definition-scope
-      :namespace/anonymous-reuses-current-scope]}]}]
+      :namespace/anonymous-reuses-current-scope]}]}
+  {:requirement/id :runtime/stack-safe-work
+   :requirement/level :must
+   :requirement/text
+   "Conforming runtimes handle the shared parser, source-analysis, evaluator, and backend workloads without native stack overflow; when a bounded resource is exhausted they report the normalized resource category rather than a namespace-cycle diagnostic."
+   :requirement/evidence
+   [{:conformance/suite :hal/stack-safety
+     :conformance/cases [:parser/generated-flat-vector
+                         :parser/generated-deep-vector
+                         :source-analysis/generated-form
+                         :evaluator/loop-recur]}]}]
 
  :spec/section-order
  [:hal.data/reader
@@ -99,7 +109,18 @@
      :requirement/evidence
      [{:conformance/suite :hal/reader
        :conformance/cases
-       [:odd-map :unterminated-list :mismatched-vector]}]}]}
+       [:odd-map :unterminated-list :mismatched-vector]}]}
+    {:requirement/id :reader/deref-prefix
+     :requirement/level :must
+     :requirement/text
+     "The prefix form @form reads as (deref form) and has exactly the same evaluation semantics."
+     :requirement/evidence
+     [{:conformance/suite :hal/reader
+       :conformance/cases [:reader-prefixes]}
+      {:conformance/suite :hal/core
+       :conformance/cases [:reader/deref]}
+      {:conformance/suite :hal/native
+       :conformance/cases [:result-deref-success :result-deref-error]}]}]}
 
   {:section/id :hal.data/scalars
    :section/title "Scalar values"
@@ -279,6 +300,10 @@
    :reference/kind :parity
    :reference/path "conformance/parity/jvm-truffle.edn"
    :reference/authority :evidence}
+  {:reference/id :hal.ref/stack-safety
+   :reference/kind :conformance
+   :reference/path "conformance/stack-safety.edn"
+   :reference/authority :normative}
   {:reference/id :hal.ref/wasm-truffle
    :reference/kind :parity
    :reference/path "conformance/parity/wasm-truffle.edn"
@@ -286,5 +311,5 @@
  :spec/conformance
  [:hal.ref/reader :hal.ref/core :hal.ref/exceptions :hal.ref/modules :hal.ref/protocols
   :hal.ref/native :hal.ref/foundation :hal.ref/foundation-runtime
-  :hal.ref/jvm-truffle :hal.ref/wasm-truffle]
+  :hal.ref/jvm-truffle :hal.ref/wasm-truffle :hal.ref/stack-safety]
  :spec/provenance []}

@@ -79,6 +79,10 @@
    :class :binding
    :source "(let [[left [middle & tail] :as all] [19 [20 21 22]]] (+ left middle (first tail) (- (count all) 20)))"
    :expect {:value 42 :type :integer}}
+  {:id :binding/destructuring-foundation-shadowing
+   :class :binding
+   :source "(ns conformance.destructure.override (:config {:override [atom deref drop get reset!]})) (defn atom [value] :local-atom) (defn deref [value] :local-deref) (defn drop [amount value] :local-drop) (defn get [value key] :local-get) (defn reset! [value next] :local-reset) (pr-str [(let [[head & tail] [1 2 3]] [head tail]) (let [{:keys [value]} {:value 42}] value) (letfn [(even* [n] (if (= n 0) true (odd* (- n 1)))) (odd* [n] (if (= n 0) false (even* (- n 1))))] [(even* 4) (odd* 3)])])"
+   :expect {:value "[[1 [2 3]] 42 [true true]]" :type :string}}
   {:id :binding/map-destructuring
    :class :binding
    :source "(let [{:keys [left] :strs [middle] :syms [right] :or {right 3} :as all} {:left 19 \"middle\" 20}] (+ left middle right (count all)))"
@@ -254,7 +258,23 @@
    :expect {:value 1 :type :integer}}
   {:id :iterator/concat
    :class :iterator
-   :source "(let [it (concat [1] [2])] (iter-next it) (iter-next it))"
+   :source "(let [it (Iter/iter-concat [1] [2])] (iter-next it) (iter-next it))"
+   :expect {:value 2 :type :integer}}
+  {:id :iterator/concat-source-boundaries
+   :class :iterator
+   :source "(let [it (Iter/iter-concat [] [1 2] [] [3])] (iter-next it) (iter-next it) (iter-next it))"
+   :expect {:value 3 :type :integer}}
+  {:id :sequence/concat-lazy-surface
+   :class :collection
+   :source "(let [value (concat [1] [2])] (and (seq? value) (not (iter? value)) (= [1 2] (vec value))))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/concat-empty-sources
+   :class :collection
+   :source "(= [] (vec (concat [] [])))"
+   :expect {:value true :type :boolean}}
+  {:id :sequence/concat-iterator-conversion
+   :class :collection
+   :source "(let [it (iter (concat [1] [2]))] (iter-next it) (iter-next it))"
    :expect {:value 2 :type :integer}}
   {:id :iterator/combinators
    :class :iterator

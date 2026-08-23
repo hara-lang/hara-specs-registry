@@ -2,7 +2,7 @@
 
 Status: **draft**
 
-This specification is consumed directly by `code.migrate`. It owns migration
+This specification is consumed directly by `tool.migrate`. It owns migration
 policy and promotion evidence; implementations own only deterministic matching,
 rewriting, staging, and verification.
 
