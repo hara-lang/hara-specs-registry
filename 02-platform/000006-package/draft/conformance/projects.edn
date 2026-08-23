@@ -1,4 +1,20 @@
-[{:case/id :hara.package.case/single-manifest
+[{:case/id :hara.package.case/shared-wasm-import-and-host-flavor
+  :case/type :package-artifact
+  :case/input
+  {:wasm-imports
+   {:filesystem
+    {:artifact/type :wasm
+     :artifact/abi :core.v1
+     :artifact/target :wasm32-wasi-preview1}}
+   :flavors
+   {:jvm {:artifact/type :jar
+          :artifact/abi :hara.provider.jvm.v1
+          :artifact/target :java-21}}}
+  :case/expected
+  {:wasm-imports [:filesystem]
+   :flavors [:jvm]
+   :reject-flavor :wasm}}
+ {:case/id :hara.package.case/single-manifest
   :case/type :project
   :case/input {:files ["project.edn" "src/app/core.hal"]
                :project/extensions {app.native {:provider :wasm :abi :core.v1 :module "artifacts/app.wasm"}}}

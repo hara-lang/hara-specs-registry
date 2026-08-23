@@ -5,6 +5,15 @@ The authoritative document is [`hara-package.edn`](hara-package.edn).
 generates `project.lock.edn`; package building generates the root `package.edn`
 inside a deterministic `.harp`.
 
+## Wasm imports and host flavors
+
+Package metadata separates portable Wasm modules from host-native artifacts.
+`:wasm-imports` contains the digest-bound Wasm modules that every host may
+load through `(:import ...)`. `:flavors` contains host implementations such as
+`:jvm` and `:dotnet`; `:wasm` is not a flavor. Host class or type imports are
+written inside the matching flavor clause, for example
+`(:flavor :jvm [java.lang String])`.
+
 ## Runtime-aware projects
 
 Projects may declare orthogonal `:project/runtime-profiles` for `:jvm` and
