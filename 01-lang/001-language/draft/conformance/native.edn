@@ -401,7 +401,15 @@
    :availability :implemented
    :methods [create synchronize instance? success? error? status data
              error-value context with-context]
-   :method-classification {:native-only :all}}
+   :method-classification {:native-only :all}
+   :dereference
+   {:protocol IDeref
+    :success :return-data
+    :error :throw-result-error
+    :reader-shorthand "@result"
+    :evidence
+    {:fixture "01-lang/001-language/draft/conformance/fixtures/native_behavioral.hal"
+     :cases [:result-deref-success :result-deref-error]}}}
   {:name Schema
    :availability :implemented
    :methods [compile of instance? kind form ast origin]

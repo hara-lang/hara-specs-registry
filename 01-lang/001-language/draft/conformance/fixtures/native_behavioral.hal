@@ -7,7 +7,8 @@
   {:method-local [:canonical-invocation :valid-value :normalized-result]
    :cross-cutting [:arity-failure :type-failure :normalized-error
                    :identity-fast-path :mutation :lifecycle :cleanup
-                   :evaluator-compiler-agreement :browser-wasm]
+                   :evaluator-compiler-agreement :browser-wasm
+                   :result-dereference :reader-shorthand]
    :classification [:portable :capability-specific :inventory-only]})
 
 (def native-calibration-snippets
@@ -468,6 +469,14 @@
    (= 42 (let [value (Obj/new)] (Obj/set value "answer" 42) (Obj/get value "answer")))
    (= 99 (let [value (Bytes/new 1 2)] (Bytes/set value 1 99) (Bytes/get value 1)))
    (= false (let [value (Iter/iter [1 2])] (Iter/iter-close value) (Iter/iter-next? value)))
+   (= [42 42]
+      (let [result (Result/create :success 42)]
+        [(deref result) @result]))
+   (= [[:error :ex.class/result] [:error :ex.class/result]]
+      (let [result (Result/create :error
+                     (Error/new "boom" {:ex/class :ex.class/result}))]
+        [(normalized-outcome (fn [] (deref result)))
+         (normalized-outcome (fn [] @result))]))
    (= true (has? {:a nil} :a))
    (= [true false true]
       [(Base/function? Maths/abs)
@@ -517,6 +526,18 @@
     :points [:lifecycle :cleanup]
     :expected false
     :actual (let [value (Iter/iter [1 2])] (Iter/iter-close value) (Iter/iter-next? value))}
+   {:id :result-deref-success
+    :points [:valid-value :normalized-result :result-dereference :reader-shorthand]
+    :expected [42 42]
+    :actual (let [result (Result/create :success 42)]
+              [(deref result) @result])}
+   {:id :result-deref-error
+    :points [:normalized-error :result-dereference :reader-shorthand]
+    :expected [[:error :ex.class/result] [:error :ex.class/result]]
+    :actual (let [result (Result/create :error
+                           (Error/new "boom" {:ex/class :ex.class/result}))]
+              [(normalized-outcome (fn [] (deref result)))
+               (normalized-outcome (fn [] @result))])}
    {:id :foundation-has-boundary
     :points [:valid-value]
     :expected true :actual (has? {:a nil} :a)}

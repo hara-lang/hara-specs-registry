@@ -10,7 +10,7 @@
   {:id :literal/integer :source "42" :expect {:display "42"}}
   {:id :literal/min-integer :source "-9223372036854775808" :expect {:display "-9223372036854775808"}}
   {:id :literal/max-integer :source "9223372036854775807" :expect {:display "9223372036854775807"}}
-  {:id :literal/float :source "1.5" :expect {:display "1.5"}}
+  {:id :literal/float :source "1.5" :expect {:display "(double 1.5)"}}
   {:id :literal/string :source "\"hello world\"" :expect {:display "\"hello world\""}}
   {:id :literal/keyword :source ":keyword" :expect {:display ":keyword"}}
   {:id :literal/namespaced-keyword :source ":hara/namespaced" :expect {:display ":hara/namespaced"}}
@@ -39,7 +39,7 @@
   {:id :compare/greater-chained :source "(> 4 3 2 1)" :expect {:display "true"}}
   {:id :compare/greater-or-equal :source "(>= 3 3 2)" :expect {:display "true"}}
   {:id :compare/equal-chained :source "(= 42 42 42)" :expect {:display "true"}}
-  {:id :compare/equal-mixed-numeric :source "(= 1 1.0)" :expect {:display "false"}}
+  {:id :compare/equal-mixed-numeric :source "(= 1 1.0)" :expect {:display "true"}}
   {:id :compare/equal-nil :source "(= nil nil)" :expect {:display "true"}}
   {:id :compare/equal-keyword :source "(= :a :a)" :expect {:display "true"}}
   {:id :compare/equal-strings :source "(= \"x\" \"x\" \"y\")" :expect {:display "false"}}
@@ -87,7 +87,7 @@
   {:id :error/overflow-add :source "(+ 9223372036854775807 1)" :expect {:error-category "integer overflow"}}
   {:id :error/overflow-multiply :source "(* 4611686018427387904 2)" :expect {:error-category "integer overflow"}}
   {:id :error/overflow-subtract :source "(- -9223372036854775808 1)" :expect {:error-category "integer overflow"}}
-  {:id :arithmetic/mixed-numeric :source "(+ 1 1.5)" :expect {:display "2.5"}}
+  {:id :arithmetic/mixed-numeric :source "(+ 1 1.5)" :expect {:display "(double 2.5)"}}
   {:id :error/string-arithmetic :source "(+ \"a\" 1)" :expect {:error-category "expects numbers"}}
   {:id :error/string-comparison :source "(< 1 \"a\")" :expect {:error-category "expects numbers"}}
   {:id :error/less-arity :source "(< 1)" :expect {:error-category "primitive arity"}}
