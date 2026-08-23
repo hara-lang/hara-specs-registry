@@ -46,6 +46,7 @@
    :entity/generated true
    :entity/summary "Immutable index generated inside a .harp archive."
    :entity/fields [:harp/format :package :files :resources :extensions
+                   :wasm-imports :flavors
                    :remote-artifacts :integrity]}
   {:entity/id :hara.package/release
    :entity/summary "Immutable accepted package coordinate, version and archive digest."
@@ -135,6 +136,18 @@
   {:requirement/id :hara.package/source-and-hir
    :requirement/level :must
    :requirement/text "Packages may carry HAL, HIR and EDN resources; a compatible verified HIR is preferred and HAL remains the portable fallback when included."}
+  {:requirement/id :hara.package/wasm-import-host-boundary
+   :requirement/level :must
+   :requirement/text "(:import ...) is reserved for Wasm modules. A package declares shared Wasm modules under :wasm-imports, keyed by logical module name; :wasm is never a host flavor."}
+  {:requirement/id :hara.package/host-flavor-boundary
+   :requirement/level :must
+   :requirement/text "Host-native artifacts are declared under :flavors, keyed by host-reserved flavor such as :jvm or :dotnet. Host import specifications belong inside the corresponding (:flavor :jvm [...]) clause and never in :import."}
+  {:requirement/id :hara.package/shared-wasm-loader
+   :requirement/level :must
+   :requirement/text "Every supported host loads the same verified Wasm import module bytes selected by logical module name, digest, target, ABI, capabilities, host calls and lifecycle metadata; host flavor artifacts are selected independently."}
+  {:requirement/id :hara.package/no-wasm-flavor
+   :requirement/level :must
+   :requirement/text "A manifest or namespace declaration using :wasm as a flavor is rejected with a stable diagnostic; Wasm is an artifact/provider boundary, not a host implementation."}
   {:requirement/id :hara.package/no-install-execution
    :requirement/level :must
    :requirement/text "Installing a .harp verifies and extracts bytes but does not execute build hooks, lifecycle scripts or package code."}
