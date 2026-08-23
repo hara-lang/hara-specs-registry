@@ -7,9 +7,13 @@ Foundation-origin libraries.
 documents beneath the family directory:
 
 - `origin.edn` records the pinned Foundation source namespace and original test
-  paths. It is provenance, not a Hara expectation.
+  paths and external `clojure.*` dependency observations with complete
+  extraction accounting. It is provenance, not a Hara expectation.
 - `conformance.edn` is the reviewed Hara contract. It names the Hara target
-  namespaces and the Hara test files that every runtime adapter must execute.
+  namespaces, reviewed external dependency dispositions, and the Hara test
+  files that every runtime adapter must execute.
+- `metadata.edn` records the exact source pins, source/test pairs, and generated
+  artifact digests used to detect publication drift.
 
 Family directories use the complete path identifier (`std_lib_zip`,
 `std_block`, `std_lib_project`, and so on). Runtime adapters must consume the
