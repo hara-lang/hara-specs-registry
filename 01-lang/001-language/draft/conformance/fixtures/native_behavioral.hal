@@ -254,7 +254,10 @@
 
 (def capability-method-groups
   {
-   :kernel/session ['Kernel/session-create 'Kernel/session-close 'Kernel/session-list 'Kernel/session-info 'Kernel/session-eval 'Kernel/session-namespace 'Kernel/session-complete 'Kernel/resource-register 'Kernel/resource-remove 'Kernel/resource-list 'Kernel/filesystem-create 'Kernel/filesystem-attach 'Kernel/filesystem-detach 'Kernel/filesystem-info 'Kernel/filesystem-close 'Kernel/capabilities]
+   :kernel/session ['Kernel/session-create 'Kernel/session-close 'Kernel/session-list 'Kernel/session-info 'Kernel/session-eval 'Kernel/session-namespace 'Kernel/session-complete 'Kernel/resource-register 'Kernel/resource-remove 'Kernel/resource-list 'Kernel/filesystem-create 'Kernel/filesystem-attach 'Kernel/filesystem-detach 'Kernel/filesystem-info 'Kernel/filesystem-close 'Kernel/capabilities
+                    'Kernel/package-build 'Kernel/package-inspect 'Kernel/package-install 'Kernel/package-publish 'Kernel/package-registry-verify
+                    'Kernel/snapshot-build 'Kernel/snapshot-diff 'Kernel/snapshot-inspect 'Kernel/snapshot-verify
+                    'Kernel/tap-add 'Kernel/tap-bootstrap 'Kernel/tap-config-root 'Kernel/tap-initialize 'Kernel/tap-list 'Kernel/tap-mirror-add 'Kernel/tap-remove 'Kernel/tap-verify]
    :sandbox/runtime ['Sandbox/open 'Sandbox/eval 'Sandbox/call 'Sandbox/cancel 'Sandbox/status 'Sandbox/close]
    :package/provider ['Package/catalog 'Package/find 'Package/ensure 'Package/load 'Package/unload 'Package/state]
    :crypto/provider ['Crypto/random-bytes 'Crypto/ed25519-keypair 'Crypto/ed25519-public 'Crypto/ed25519-sign 'Crypto/ed25519-verify 'Crypto/x25519-keypair 'Crypto/x25519-public 'Crypto/x25519-shared 'Crypto/p256-keypair 'Crypto/p256-public 'Crypto/p256-sign 'Crypto/p256-verify 'Crypto/p256-shared]
