@@ -32,3 +32,22 @@ corresponding `:project/runtime-profiles :jvm` replacement.
 [`conformance/projects.edn`](conformance/projects.edn) contains the shared
 normalization and rejection corpus intended for HAL, Rust, and JVM project
 loaders.
+
+## Published typed-schema catalogs
+
+An archive may declare one published typed-schema catalog in `package.edn`:
+
+```edn
+:schema/catalog {:format "std.typed.catalog/1"
+                 :path "catalog/std-typed-catalog.json"
+                 :sha256 "sha256:<digest>"}
+```
+
+The path and digest must also occur in `:files`. The package builder and every
+package reader pass the complete catalog bytes to Hara's canonical
+`std.typed.catalog.document` verifier before the archive can be built,
+published, installed, activated, or used for provider registration. The
+registry owns the descriptor and provenance contract; Hara owns catalog
+normalization, hashes, dependency closure, components, and deterministic
+verification reports. Omitting `:schema/catalog` is valid for packages that
+do not publish a typed-schema catalog.

@@ -46,7 +46,7 @@
    :entity/generated true
    :entity/summary "Immutable index generated inside a .harp archive."
    :entity/fields [:harp/format :package :files :resources :extensions
-                   :wasm-imports :flavors
+                   :wasm-imports :flavors :schema/catalog
                    :remote-artifacts :integrity]}
   {:entity/id :hara.package/release
    :entity/summary "Immutable accepted package coordinate, version and archive digest."
@@ -151,6 +151,9 @@
   {:requirement/id :hara.package/no-install-execution
    :requirement/level :must
    :requirement/text "Installing a .harp verifies and extracts bytes but does not execute build hooks, lifecycle scripts or package code."}
+  {:requirement/id :hara.package/schema-catalog-admission
+   :requirement/level :must
+   :requirement/text "When package.edn declares :schema/catalog, its format, archive-relative path and SHA-256 digest must agree with :files, and the complete catalog bytes must pass the canonical std.typed.catalog.document verifier before build, publication, installation, activation or provider registration. Packages without the field remain valid; catalog admission failures are atomic and produce deterministic diagnostics."}
   {:requirement/id :hara.package/immutable-release
    :requirement/level :must
    :requirement/text "An accepted coordinate and version is bound permanently to one source commit, one project.edn digest and one archive digest."}
@@ -194,4 +197,6 @@
   {:conformance/id :hara.package/coordinates
    :conformance/path "conformance/coordinates.edn"}
   {:conformance/id :hara.package/releases
-   :conformance/path "conformance/releases.edn"}]}
+   :conformance/path "conformance/releases.edn"}
+  {:conformance/id :hara.package/catalog-admission
+   :conformance/path "conformance/catalog-admission.edn"}]}
