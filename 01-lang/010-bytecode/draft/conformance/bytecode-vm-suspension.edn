@@ -93,7 +93,7 @@
             :source/cancel-hook-observed true}}
 
   {:id :host/native-promise
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await (std.native.Host/call \"timer\" \"sleep\" [1]))) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await (Host/call \"timer\" \"sleep\" [1]))) (delayed))"
    :setup {:host/call {:service "timer"
                        :method "sleep"
                        :arguments [1]
@@ -105,7 +105,7 @@
             :result-promise/display "42"}}
 
   {:id :host/wasm32-promise
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await (std.native.Host/call \"timer\" \"sleep\" [1]))) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await (Host/call \"timer\" \"sleep\" [1]))) (delayed))"
    :setup {:target :wasm32
            :host/broker-return {:promise/state :pending}}
    :drive [{:op :javascript/resolve-guest-promise :value 42}

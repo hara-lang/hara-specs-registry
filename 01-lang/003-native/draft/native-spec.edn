@@ -43,7 +43,7 @@
  {:naming/type-symbol "Type"
   :naming/type-namespace "std.native.Type"
   :naming/type-var "std.native/Type"
-  :naming/method-var "std.native.Type/method"
+  :naming/method-var "Type/method"
   :naming/foundation-alias
   "Ordinary non-blank namespaces may resolve Type as an alias for std.native.Type."
   :naming/no-host-name-semantics true}
@@ -163,15 +163,13 @@
    :native/availability :portable
    :native/methods
    [list vector vec set tuple hash-map hash-set atom pointer symbol keyword
-    reduced apply not boolean compare reduced? nil? boolean? string? char?
-    number? long? double? keyword? symbol? pointer? atom? function?
-    bytes? array? object? list? cons? vector? tuple? map? set? sequential? coll?
+    reduced apply number? long?
     satisfies? type instance?]}
   {:native/id :std.native/iter
    :native/symbol Iter :native/namespace std.native.Iter
    :native/availability :portable
    :native/methods
-   [iter iter? iter-finite? iter-materialize iter-has? iter-next iter-close
+   [iter iter-finite? iter-materialize iter-has? iter-next iter-close
     iter-map iter-filter iter-take-while iter-drop-while iter-mapcat iter-keep
     iter-interpose iter-interleave iter-every? iter-any? iter-take iter-drop
     iter-zip iter-cycle iter-partition-pair iter-partition-all iter-partition

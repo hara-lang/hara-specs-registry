@@ -191,7 +191,7 @@
   {:surface/id :foundation/iteration
    :surface/domain :function
    :surface/symbols
-   [range repeat repeatedly iterate take-while drop-while partition-all
+   [seq? iter? range repeat repeatedly iterate take-while drop-while partition-all
     partition interpose interleave map filter take drop mapcat keep cycle zip
     partition-pair every? any? some mapv]
    :surface/classification :native-wrapper

@@ -155,6 +155,19 @@
    :protocol/symbol ILookup :protocol/namespace std.protocol.ilookup
    :protocol/extends [:std.protocol/ifind]
    :protocol/methods {lookup :variadic}}
+  {:protocol/id :std.protocol/ilineartype
+   :protocol/symbol ILinearType :protocol/namespace std.protocol.ilineartype
+   :protocol/extends [:std.protocol/icoll :std.protocol/ipeekfirst
+                     :std.protocol/ipeeklast :std.protocol/icons
+                     :std.protocol/iconj :std.protocol/inth :std.protocol/icount]
+   :protocol/methods {}}
+  {:protocol/id :std.protocol/imaptype
+   :protocol/symbol IMapType :protocol/namespace std.protocol.imaptype
+   :protocol/extends [:std.protocol/icoll :std.protocol/iobjtype
+                     :std.protocol/imetadata :std.protocol/ilookup
+                     :std.protocol/iassoc :std.protocol/idissoc
+                     :std.protocol/ifind :std.protocol/ifn]
+   :protocol/methods {}}
   {:protocol/id :std.protocol/imutable
    :protocol/symbol IMutable :protocol/namespace std.protocol.imutable
    :protocol/methods {}}
@@ -213,6 +226,11 @@
   {:protocol/id :std.protocol/ireset
    :protocol/symbol IReset :protocol/namespace std.protocol.ireset
    :protocol/methods {reset 2}}
+  {:protocol/id :std.protocol/isettype
+   :protocol/symbol ISetType :protocol/namespace std.protocol.isettype
+   :protocol/extends [:std.protocol/icoll :std.protocol/iobjtype
+                     :std.protocol/idissoc :std.protocol/ifind :std.protocol/ifn]
+   :protocol/methods {}}
   {:protocol/id :std.protocol/ispace
    :protocol/symbol ISpace :protocol/namespace std.protocol.ispace
    :protocol/methods

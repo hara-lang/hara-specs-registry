@@ -358,10 +358,10 @@
    :method-classification {:foundation-primitive :all}}
   {:name Runtime
    :availability :implemented
-   :methods [load-string macroexpand-1 gensym var-sym current snapshot vars namespaces
+   :methods [load-string macroexpand-1 gensym ns-publics the-ns ns-name var-sym current snapshot vars namespaces
              namespace module resolve alias-state intern-var eval-in eval]
    :method-classification
-   {:foundation-primitive [load-string macroexpand-1 gensym var-sym]
+   {:foundation-primitive [load-string macroexpand-1 gensym ns-publics the-ns ns-name var-sym]
     :hal-wrapper [current snapshot vars namespaces namespace module resolve alias-state
                   intern-var eval-in eval]}
    :wrapper-source "lib/src/std/foundation.hal"}
@@ -426,10 +426,8 @@
   {:name Base
    :availability :implemented
    :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
-             keyword reduced unreduced apply not boolean compare reduced? nil? boolean?
-             string? char? number? long? double? keyword? symbol?
-             pointer? atom? function? bytes? array? object? list? cons? vector? tuple?
-             map? set? sequential? coll? satisfies? type instance?]
+             keyword reduced unreduced apply number? long?
+             satisfies? special-symbol? type instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Algo
@@ -441,14 +439,14 @@
    :wrapper-source "lib/src/std/lib/collection.hal"}
   {:name Iter
    :availability :implemented
-   :methods [iter iter? iter-finite? iter-materialize iter-next? iter-next
+   :methods [seq iter iter-finite? iter-materialize iter-next? iter-next
              iter-close iter-concat iter-map iter-filter iter-take-while iter-drop-while
              iter-mapcat iter-keep iter-interpose iter-interleave iter-every?
              iter-any? iter-take iter-drop iter-zip iter-cycle
              iter-partition-pair iter-partition-all iter-partition iter-range
              iter-constantly iter-repeatedly iter-iterate]
    :method-classification
-   {:foundation-primitive [iter iter? iter-next? iter-next]
+   {:foundation-primitive [seq seq? iter iter? iter-next? iter-next]
     :native-only [iter-finite? iter-materialize iter-close iter-concat iter-map
                   iter-filter iter-take-while iter-drop-while iter-mapcat
                   iter-keep iter-interpose iter-interleave iter-every?

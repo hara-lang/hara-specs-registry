@@ -386,7 +386,7 @@
 ;; corpus cases. Runtime tests invoke this entrypoint instead of carrying a
 ;; second fixture and a host-owned expected vector.
 (defn protocol-native-value-results []
-  (let [queue (std.native.Algo/queue 1 2)
+  (let [queue (Algo/queue 1 2)
         mutable-queue (std.foundation/to-mutable queue)
         vector (Base/vec [1 2])
         mutable-map (std.foundation/to-mutable {:a 1})]
@@ -394,7 +394,7 @@
        true
        (satisfies? IPushFirst queue))
      (receiver-case :native-value/queue-push-first
-       (std.native.Algo/queue 0 1 2)
+       (Algo/queue 0 1 2)
        (std.protocol.ipushfirst/push-first queue 0))
      (receiver-case :native-value/mutable-queue-push-first-satisfaction
        true

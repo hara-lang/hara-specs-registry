@@ -24,12 +24,6 @@
    :concrete-native-type
    {:source "[(Base/type [1]) (Base/type (Base/vector 1))]"
     :expected [:std.native.Tuple :std.native.Vector]}
-   :collection-capability-predicate
-   {:source "[(Base/coll? (Base/vector 1)) (Base/coll? {:a 1}) (Base/coll? 1) (Base/coll? nil)]"
-    :expected [true true false false]
-    :diagnostic-history
-    [{:observed :foundation-bootstrap-only
-      :reason "coll? was formerly available only as an unclassified Foundation bootstrap intrinsic; Base/coll? now owns the protocol-aware native operation and the HAL facade transparently forwards to it."}]}
    :reduced-round-trip
    {:source "[(Base/unreduced (Base/reduced 42)) (Base/unreduced 42)]"
     :expected [42 42]
@@ -67,6 +61,7 @@
    :inventory/no-constructor "The native surface exposes no portable constructor for a valid receiver."
    :inventory/schema-shape "Schema AST or origin values need a normalized public representation before promotion."
    :inventory/foundation-boundary "A stable value or identity assertion remains owned by the dedicated Foundation boundary suite."
+   :inventory/namespace-introspection "Namespace and reader classification helpers remain owned by the Foundation boundary suite until their normalized observations are promoted."
    :inventory/lazy-observation "The lazy iterator operation needs a bounded deterministic observation before promotion."
    :inventory/unclassified-shape "A stable normalized cross-runtime observation is not yet specified; promotion requires review."
   })
@@ -190,47 +185,22 @@
    'Base/vector [[1 2] (fn [] (Base/vector 1 2))]
    'Base/vec [[1 2] (fn [] (Base/vec '(1 2)))]
    'Base/set [#{1 2} (fn [] (Base/set [1 2 1]))]
-   'Base/tuple [true (fn [] (Base/tuple? (Base/tuple 1 2)))]
+   'Base/tuple [true (fn [] (tuple? (Base/tuple 1 2)))]
    'Base/hash-map [{:a 1} (fn [] (Base/hash-map :a 1))]
    'Base/hash-set [#{1 2} (fn [] (Base/hash-set 1 2))]
    'Base/atom [1 (fn [] (deref (Base/atom 1)))]
    'Base/pointer [:base (fn [] (IPointer/ptr-context (Base/pointer {:context :base})))]
    'Base/symbol ['base/value (fn [] (Base/symbol "base" "value"))]
    'Base/keyword [:base/value (fn [] (Base/keyword "base" "value"))]
-   'Base/reduced [true (fn [] (Base/reduced? (Base/reduced 1)))]
+   'Base/reduced [true (fn [] (= (Base/type (Base/reduced 1)) :std.native.Reduced))]
    'Base/unreduced [1 (fn [] (Base/unreduced (Base/reduced 1)))]
    'Base/apply [42 (fn [] (Base/apply + [19 23]))]
-   'Base/not [true (fn [] (Base/not nil))]
-   'Base/boolean [false (fn [] (Base/boolean nil))]
-   'Base/compare [-1 (fn [] (Base/compare 1 2))]
-   'Base/reduced? [false (fn [] (Base/reduced? 1))]
-   'Base/nil? [true (fn [] (Base/nil? nil))]
-   'Base/boolean? [true (fn [] (Base/boolean? false))]
-   'Base/string? [true (fn [] (Base/string? "hara"))]
-   'Base/char? [true (fn [] (Base/char? \a))]
    'Base/number? [true (fn [] (Base/number? 1.5))]
    'Base/long? [true (fn [] (Base/long? 1))]
-   'Base/double? [true (fn [] (Base/double? (Num/double 1.5)))]
-   'Base/keyword? [true (fn [] (Base/keyword? :a))]
-   'Base/symbol? [true (fn [] (Base/symbol? 'a))]
-   'Base/pointer? [true (fn [] (Base/pointer? (Base/pointer {:context :base})))]
-   'Base/atom? [true (fn [] (Base/atom? (Base/atom 1)))]
-   'Base/function? [true (fn [] (Base/function? Maths/abs))]
-   'Base/bytes? [true (fn [] (Base/bytes? (Bytes/new 1)))]
-   'Base/array? [true (fn [] (Base/array? (Arr/new 1)))]
-   'Base/object? [true (fn [] (Base/object? (Obj/new)))]
-   'Base/list? [true (fn [] (Base/list? (Base/list 1)))]
-   'Base/cons? [true (fn [] (Base/cons? (cons 1 (Base/list 2))))]
-   'Base/vector? [true (fn [] (Base/vector? [1]))]
-   'Base/tuple? [true (fn [] (Base/tuple? (Base/tuple 1)))]
-   'Base/map? [true (fn [] (Base/map? {:a 1}))]
-   'Base/set? [true (fn [] (Base/set? #{1}))]
-   'Base/sequential? [true (fn [] (Base/sequential? [1]))]
-   'Base/coll? [[true false] (fn [] [(Base/coll? [1]) (Base/coll? 1)])]
    'Base/type [:std.native.Vector (fn [] (Base/type (Base/vector 1)))]
    'Base/instance? [true (fn [] (Base/instance? Promise (Promise/from 1)))]
+   'Iter/seq [[1 2] (fn [] (vec (Iter/seq [1 2])))]
    'Iter/iter [1 (fn [] (Iter/iter-next (Iter/iter [1 2])))]
-   'Iter/iter? [true (fn [] (Iter/iter? (Iter/iter [1])))]
    'Iter/iter-finite? [true (fn [] (Iter/iter-finite? [1]))]
    'Iter/iter-materialize [[1 2] (fn [] (Iter/iter-materialize [1 2]))]
    'Iter/iter-next? [true (fn [] (Iter/iter-next? (Iter/iter [1])))]
@@ -284,6 +254,8 @@
    :inventory/no-constructor ['UUID/instance?]
    :inventory/schema-shape ['Schema/of 'Schema/kind 'Schema/form 'Schema/ast 'Schema/origin]
    :inventory/foundation-boundary ['Base/satisfies?]
+   :inventory/namespace-introspection ['Runtime/ns-publics 'Runtime/the-ns 'Runtime/ns-name
+                                       'Base/special-symbol?]
    :inventory/lazy-observation ['Iter/iter-take-while 'Iter/iter-drop-while 'Iter/iter-interpose 'Iter/iter-interleave 'Iter/iter-every? 'Iter/iter-any? 'Iter/iter-partition-all 'Iter/iter-partition 'Iter/iter-repeatedly]
   })
 
@@ -482,8 +454,8 @@
          (normalized-outcome (fn [] @result))]))
    (= true (has? {:a nil} :a))
    (= [true false true]
-      [(Base/function? Maths/abs)
-       (Base/function? (fn [value] value))
+      [(function? Maths/abs)
+       (function? (fn [value] value))
        (fn? (fn [value] value))])])
 
 (defn native-boundary-cases
@@ -553,9 +525,9 @@
    {:id :native-function-versus-hal-fn
     :points [:valid-value :normalized-result]
     :expected [true true false true]
-    :actual [(Base/function? Maths/abs)
-             (Base/function? (fn [value] value))
-             (Base/function? :keyword)
+    :actual [(function? Maths/abs)
+             (function? (fn [value] value))
+             (function? :keyword)
              (fn? :keyword)]}])
 
 (defn native-boundary-results

@@ -28,13 +28,13 @@
   :hidden-protocols []
   :hidden-methods []}
  :inventory
- {:protocol-count 57
+ {:protocol-count 60
   :method-count 109
   :capability-specific-protocol-count 15
   :capability-specific-method-count 20
-  :covered-protocol-count 72
+  :covered-protocol-count 75
   :covered-method-count 129
-  :public-protocol-count 57
+  :public-protocol-count 60
   :public-method-count 109
   :hidden-protocol-count 0
   :hidden-method-count 0}
@@ -69,7 +69,7 @@
  :conformance
  {:fixture "01-lang/001-language/draft/conformance/fixtures/protocol_surface.hal"
   :platforms [:truffle :rust-evaluator :rust-bytecode :browser-wasm]
- :protocol-count 57
+ :protocol-count 60
   :method-count 109
   :invocation :direct-canonical-method-var
   :protocol-type-reference :unqualified
@@ -200,6 +200,12 @@
   {:name IIter :methods {iter 1}}
   {:name IIterator :extends [IIter] :methods {iter-next? 1 iter-next 1}}
   {:name ILookup :extends [IFind] :methods {lookup -1}}
+  {:name ILinearType
+   :extends [IColl IPeekFirst IPeekLast ICons IConj INth ICount]
+   :methods {}}
+  {:name IMapType
+   :extends [IColl IObjType IMetadata ILookup IAssoc IDissoc IFind IFn]
+   :methods {}}
   {:name IMetadata :methods {metatype 1}}
   {:name IMutable :methods {}}
   {:name INamespaced :methods {name 1 namespace 1}}
@@ -221,6 +227,7 @@
   {:name IRealize :methods {realized? 1 realize 1}}
   {:name IReduce :methods {reduce -1}}
   {:name IReset :methods {reset 2}}
+  {:name ISetType :extends [IColl IObjType IDissoc IFind IFn] :methods {}}
   {:name ISpace
    :methods {context-set 4 context-unset 2 context-list 1 context-get 2
              rt-active 1 rt-get 2 rt-start 2 rt-started? 2 rt-stopped? 2 rt-stop 2}}

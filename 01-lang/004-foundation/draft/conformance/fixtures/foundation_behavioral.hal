@@ -405,9 +405,9 @@
     [{:observed :runtime-only-source-omission
       :reason "coll? was callable through a bootstrap seed but missing from the source-owned Foundation surface and corpus."}
      {:observed :bytecode-compiler-stack-overflow
-      :reason "A source declaration that self-referenced the bootstrap coll? binding evaluated in the interpreter but recursively resolved while generating the native Foundation bundle; Base/coll? now owns the native predicate and the Foundation wrapper forwards to it."}
+      :reason "A source declaration that self-referenced the bootstrap coll? binding evaluated in the interpreter but recursively resolved while generating the native Foundation bundle; coll? now delegates directly to (satisfies? IColl value)."}
      {:observed :invalid-inline-composite
-      :reason "The bytecode compiler correctly rejected :inline metadata on a composite approximation because inline functions must be transparent forwarders; the Base/coll? wrapper is transparent and preserves protocol-aware behavior."}]}
+      :reason "The bytecode compiler correctly rejected :inline metadata on a composite approximation; the Foundation coll? wrapper now expands to the protocol query (satisfies? IColl value)."}]}
    :with-macro-spelling
    {:source "[(with-out-string (println \"x\")) (with-template-meta {:a 1} (template-meta)) (with-close [] :closed) (nil? (resolve 'std.foundation/with:out-string)) (nil? (resolve 'std.foundation/with:close)) (nil? (resolve 'std.foundation/with:template-meta))]"
     :expected ["x\n" {:a 1} :closed true true true]

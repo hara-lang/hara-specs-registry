@@ -117,7 +117,7 @@
    :source "(iter-has? (iter [42]))"}
   {:id :iterator/close
    :classification :portable
-   :source "(std.native.Iter/iter-close (iter [1]))"}
+   :source "(Iter/iter-close (iter [1]))"}
   {:id :module/load-resource
    :classification :capability-specific
    :capability :host/jvm-classpath
