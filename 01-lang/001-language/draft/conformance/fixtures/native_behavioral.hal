@@ -272,6 +272,7 @@
    :printer/output ['Printer/p 'Printer/println 'Printer/capture]
    :host/interop ['Host/call 'Host/describe 'Host/capabilities 'Host/capability?]
    :test/runtime ['Test/catalog 'Test/config 'Test/context 'Test/events 'Test/compare 'Test/run 'Test/result 'Test/passed? 'Test/actual 'Test/expected 'Test/failures 'Test/failure-seq 'Test/failure-count 'Test/failure 'Test/failure?]
+   :work/runtime ['Work/default-host 'Work/current-run 'Work/cancelled? 'Work/check-cancelled 'Work/deadline-nanos 'Work/emit 'Work/submit-child 'Work/on-close]
   })
 
 (def inventory-method-groups

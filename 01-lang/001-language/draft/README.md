@@ -28,8 +28,13 @@ namespaces, and modules. The data layer includes:
 The core contract also defines portable evaluation and the `(ns ...)` and
 `(ns+ ...)` forms. `ns` selects a named definition scope; `ns+` reconfigures
 the current scope without accepting a name. Namespace `:config` supports
-`:blank`, `:override`, `:expose`, and `:intrinsics`, whose portable options are
-`:exclude` and `:alias`.
+`:blank`, `:override`, `:only`, `:rename`, `:set-global-alias`, `:set-global`,
+and `:role`. `:rename` controls Foundation library aliases with `:exclude` and
+`:alias`; `:set-global-alias` contributes a namespace alias globally;
+`:set-global` contributes exact qualified Vars as terminal-name imports,
+including compact protocol Vars such as `IColl/start-string`. `:intrinsics`
+remains reserved for native/runtime intrinsic symbols and is not a namespace
+alias operation.
 
 Protocol, Native, and Foundation semantics remain normatively owned by their
 numbered specifications. Their executable inventories and parity corpora are

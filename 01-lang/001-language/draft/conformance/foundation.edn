@@ -18,23 +18,42 @@
   :startup-default-library-aliases
   {edn std.foundation.edn}
   :canonical-protocol-namespace "std.protocol.<ascii-lowercase-protocol-name>"
-  :canonical-protocol-var "std.protocol.<name>/<Protocol>"
-  :canonical-method-var "std.protocol.<name>/<method>"
+  :canonical-protocol-var "std.protocol.<ascii-lowercase-protocol-name>.<Protocol>/<Protocol>"
+  :canonical-method-var "std.protocol.<ascii-lowercase-protocol-name>.<Protocol>/<method>"
   :global-protocol-alias "<Protocol>"
   :global-method-call "<Protocol>/<method>"
-  :example {:canonical std.protocol.ifn/invoke
+  :example {:canonical std.protocol.ifn.IFn/invoke
             :global IFn/invoke}
   :foundation-protocol-alias {:namespace std.foundation
                               :name "<Protocol>"
                               :loads-canonical-object true
-                              :hidden [IColl IMetadata]}
+                              :visibility :public}
   :protocol-method-global-availability
   {:default true
-   :hidden [IColl/start-string
-            IColl/end-string
-            IColl/sep-string
-            IColl/iterator
-            IMetadata/metatype]}}
+   :hidden []}
+
+ :namespace-config
+ {:set-global-alias
+  {:value :unqualified-symbol
+   :effect :global-namespace-alias
+   :conflict :reject-atomically}
+  :set-global
+  {:value :vector-of-qualified-vars
+   :protocol-shorthand "IColl/start-string"
+   :canonical-var "std.protocol.icoll.IColl/start-string"
+   :effect :global-terminal-name-import
+   :whole-namespace false
+   :local-only-vars false
+   :conflict :reject-atomically}
+  :operations [:override :only :blank :set-global-alias :set-global :role :rename]
+  :intrinsics
+  {:reserved-for [:native-types :runtime-symbols]
+   :namespace-config false}
+  :resource-order
+  {:root ["std/foundation.hal" "std/foundation.hbx"]
+   :children ["std/foundation/<name>.hal" "std/foundation/<name>.hbx"]
+   :rule :root-before-child
+   :cache-hit :refresh-foundation-visibility}}
 
  :placement-policy
  {:status :proposed
@@ -44,7 +63,7 @@
   :context-domains [:context :pointer :space]
   :root-domains [:general :collection :hash :mutable :application]
   :close-function std.foundation/close!
-  :hidden-protocols [IColl IMetadata]
+  :hidden-protocols []
   :protocol-dispatch "available everywhere through <Protocol>/<method>"
   :no-reference-subnamespace true
   :examples [{:call IFn/invoke :foundation-wrapper nil}
@@ -324,7 +343,7 @@
  :historical-protocol-method-list
  [IApplicable/apply-default IApplicable/apply-in IApplicable/transform-in IApplicable/transform-out
   IAssoc/assoc ICas/cas IClose/close IColl/start-string
-  IColl/end-string IColl/sep-string IColl/iterator IComponent/props
+  IColl/end-string IColl/sep-string IComponent/props
   IComponent/status IComponent/started? IComponent/stopped? IComponent/start
   IComponent/stop IComponent/kill IComponent/remote? IConj/conj
   ICons/cons IContext/call ICoroutine/status ICoroutine/resume
@@ -350,8 +369,7 @@
 
  :not-accepted-protocol-method-list
  [IApplicable/apply-default IApplicable/apply-in IApplicable/transform-in IApplicable/transform-out
-  IClose/close IColl/start-string IColl/end-string IColl/sep-string
-  IColl/iterator IComponent/props IComponent/status IComponent/started?
+  IClose/close IComponent/props IComponent/status IComponent/started?
   IComponent/stopped? IComponent/start IComponent/stop IComponent/kill
   IComponent/remote? IContext/call ICoroutine/status ICoroutine/resume
   IContextLifeCycle/has-module? IContextLifeCycle/setup-module IContextLifeCycle/teardown-module IContextLifeCycle/has-pointer?
@@ -375,10 +393,6 @@
   {:dispatch IApplicable/transform-in, :target :protocol-only}
   {:dispatch IApplicable/transform-out, :target :protocol-only}
   {:dispatch IClose/close, :target std.foundation/close!}
-  {:dispatch IColl/start-string, :target :hidden}
-  {:dispatch IColl/end-string, :target :hidden}
-  {:dispatch IColl/sep-string, :target :hidden}
-  {:dispatch IColl/iterator, :target :hidden}
   {:dispatch IComponent/props, :target std.lib.component/props}
   {:dispatch IComponent/status, :target std.lib.component/status}
   {:dispatch IComponent/started?, :target std.lib.component/started?}
@@ -410,7 +424,6 @@
   {:dispatch IIterator/iter-next?, :target std.foundation/iter-next?}
   {:dispatch IIterator/iter-next, :target std.foundation/iter-next}
   {:dispatch ILookup/lookup, :target std.foundation/get}
-  {:dispatch IMetadata/metatype, :target :hidden}
   {:dispatch IPeekFirst/peek-first, :target std.foundation/peek-first}
   {:dispatch IPeekLast/peek-last, :target std.foundation/peek-last}
   {:dispatch IPromise/state, :target std.foundation.promise/state}
@@ -495,31 +508,24 @@
    :clojure {:equivalent nil :relation :none}}
   {:protocol IColl :method start-string :arity 1 :domain :collection
    :dispatch IColl/start-string
-   :foundation {:classification :hidden-runtime-interface
+   :foundation {:classification :direct-interface-wrapper
                 :namespace nil
                 :name nil
-                :status :hidden}
+                :status :protocol-only}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IColl :method end-string :arity 1 :domain :collection
    :dispatch IColl/end-string
-   :foundation {:classification :hidden-runtime-interface
+   :foundation {:classification :direct-interface-wrapper
                 :namespace nil
                 :name nil
-                :status :hidden}
+                :status :protocol-only}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IColl :method sep-string :arity 1 :domain :collection
    :dispatch IColl/sep-string
-   :foundation {:classification :hidden-runtime-interface
+   :foundation {:classification :direct-interface-wrapper
                 :namespace nil
                 :name nil
-                :status :hidden}
-   :clojure {:equivalent nil :relation :none}}
-  {:protocol IColl :method iterator :arity 1 :domain :collection
-   :dispatch IColl/iterator
-   :foundation {:classification :hidden-runtime-interface
-                :namespace nil
-                :name nil
-                :status :hidden}
+                :status :protocol-only}
    :clojure {:equivalent nil :relation :none}}
   {:protocol IComponent :method props :arity 1 :domain :component-lifecycle
    :dispatch IComponent/props
@@ -805,10 +811,10 @@
    :clojure {:equivalent "clojure.core/get" :relation :semantic}}
   {:protocol IMetadata :method metatype :arity 1 :domain :metadata
    :dispatch IMetadata/metatype
-   :foundation {:classification :hidden-runtime-interface
+   :foundation {:classification :direct-interface-wrapper
                 :namespace nil
                 :name nil
-                :status :hidden}
+                :status :protocol-only}
    :clojure {:equivalent nil :relation :none}}
   {:protocol INamespaced :method name :arity 1 :domain :symbolic-name
    :dispatch INamespaced/name

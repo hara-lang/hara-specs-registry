@@ -534,10 +534,27 @@
    :source "(host-call nil \"value\")"
    :expect {:error :unbound-symbol
             :message "Unbound symbol: host-call"}}
-  {:id :namespace/config-intrinsics-all
+  {:id :namespace/config-rename-all
    :class :namespace
-   :source "(ns app (:config {:intrinsics :all})) (bytes/count (str/encode-utf8 \"x\"))"
+   :source "(ns app (:config {:rename :all})) (bytes/count (str/encode-utf8 \"x\"))"
    :expect {:value 1 :type :integer}}
+  {:id :namespace/config-set-global-alias
+   :class :namespace
+   :source "(ns conformance.global-source (:config {:set-global-alias source})) (def value 42) (ns conformance.global-consumer) (source/value)"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/config-set-global
+   :class :namespace
+   :source "(ns conformance.global-source (:config {:set-global [conformance.global-source/global-value]})) (def global-value 42) (ns conformance.global-consumer) global-value"
+   :expect {:value 42 :type :integer}}
+  {:id :namespace/config-set-global-compact-protocol
+   :class :namespace
+   :source "(ns conformance.global-protocol (:config {:set-global [IColl/start-string]})) (start-string [])"
+   :expect {:value "[" :type :string}}
+  {:id :namespace/config-set-global-invalid
+   :class :namespace
+   :source "(ns conformance.invalid (:config {:set-global [local]}))"
+   :expect {:error :invalid-ns-config
+            :message ":config :set-global expects qualified Vars"}}
   {:id :namespace/named-selects-definition-scope
    :class :namespace
    :source "(ns conformance.builtins) (def answer 42) answer"
@@ -554,22 +571,22 @@
    :class :namespace
    :source "(ns conformance.override) (ns+ (:config {:override [identity]})) (def identity 42) identity"
    :expect {:value 42 :type :integer}}
-  {:id :namespace/anonymous-config-expose
+  {:id :namespace/anonymous-config-only
    :class :namespace
-   :source "(ns conformance.expose) (ns+ (:config {:expose [identity]})) (identity 42)"
+   :source "(ns conformance.only) (ns+ (:config {:only [identity]})) (identity 42)"
    :expect {:value 42 :type :integer}}
-  {:id :namespace/anonymous-config-expose-omits-unlisted
+  {:id :namespace/anonymous-config-only-omits-unlisted
    :class :namespace
-   :source "(ns conformance.expose.omit) (ns+ (:config {:expose [identity]})) map"
+   :source "(ns conformance.only.omit) (ns+ (:config {:only [identity]})) map"
    :expect {:error :unbound-symbol
             :message "Unbound symbol: map"}}
-  {:id :namespace/anonymous-config-intrinsic-alias
+  {:id :namespace/anonymous-config-rename-alias
    :class :namespace
-   :source "(ns conformance.alias) (ns+ (:config {:intrinsics {:alias {string text}}})) (text/upper \"hara\")"
+   :source "(ns conformance.alias) (ns+ (:config {:rename {:alias {string text}}})) (text/upper \"hara\")"
    :expect {:value "HARA" :type :string}}
-  {:id :namespace/anonymous-config-intrinsic-exclude
+  {:id :namespace/anonymous-config-rename-exclude
    :class :namespace
-   :source "(ns conformance.exclude) (ns+ (:config {:intrinsics {:exclude [string]}})) (str/upper \"hara\")"
+   :source "(ns conformance.exclude) (ns+ (:config {:rename {:exclude [string]}})) (str/upper \"hara\")"
    :expect {:error :unbound-symbol
             :message "Unbound symbol: str/upper"}}
   {:id :namespace/config-blank-override-conflict
@@ -577,11 +594,11 @@
    :source "(ns conformance.invalid (:config {:blank true :override [identity]}))"
    :expect {:error :invalid-ns-config
             :message ":config :blank true cannot be combined with :override"}}
-  {:id :namespace/config-override-expose-conflict
+  {:id :namespace/config-override-only-conflict
    :class :namespace
-   :source "(ns conformance.invalid (:config {:override [identity] :expose [identity]}))"
+   :source "(ns conformance.invalid (:config {:override [identity] :only [identity]}))"
    :expect {:error :invalid-ns-config
-            :message ":config :override cannot be combined with :expose"}}
+            :message ":config :override cannot be combined with :only"}}
   {:id :namespace/config-blank-type
    :class :namespace
    :source "(ns conformance.invalid (:config {:blank :yes}))"
@@ -596,20 +613,20 @@
    :class :namespace
    :source "(and (nil? (resolve 'ns)) (nil? (resolve 'std.native.Builtins)))"
    :expect {:value true :type :boolean}}
-  {:id :namespace/config-exclude-and-alias
+  {:id :namespace/config-rename-exclude-and-alias
    :class :namespace
-   :source "(ns app (:config {:intrinsics {:exclude [bytes] :alias {string text}}})) (text/upper \"hara\")"
+   :source "(ns app (:config {:rename {:exclude [bytes] :alias {string text}}})) (text/upper \"hara\")"
    :expect {:value "HARA" :type :string}}
-  {:id :namespace/config-exclude-removes-alias
+  {:id :namespace/config-rename-exclude-removes-alias
    :class :namespace
-   :source "(ns app (:config {:intrinsics {:exclude [bytes]}})) (bytes/count (bytes 1))"
+   :source "(ns app (:config {:rename {:exclude [bytes]}})) (bytes/count (bytes 1))"
    :expect {:error :unbound-symbol
             :message "Unbound symbol: bytes/count"}}
   {:id :namespace/standalone-intrinsics-invalid
    :class :namespace
    :source "(ns app (:intrinsics :all))"
    :expect {:error :invalid-ns-clause
-            :message ":intrinsics is valid only inside ns :config"}}
+            :message ":intrinsics is not a namespace configuration option"}}
   {:id :namespace/standalone-builtins-invalid
    :class :namespace
    :source "(ns app (:builtins [inc]))"
@@ -625,24 +642,24 @@
    :source "(ns app (:config {:unexpected true}))"
    :expect {:error :invalid-ns-config
             :message "Unsupported :config option: :unexpected"}}
-  {:id :namespace/unknown-intrinsics-option
+  {:id :namespace/intrinsics-is-reserved
    :class :namespace
    :source "(ns app (:config {:intrinsics {:unexpected true}}))"
    :expect {:error :invalid-ns-config
-            :message "Unsupported :config :intrinsics option: :unexpected"}}
+            :message "Unsupported :config option: :intrinsics"}}
   {:id :namespace/unknown-intrinsic-library
    :class :namespace
-   :source "(ns app (:config {:intrinsics {:exclude [unknown]}}))"
+   :source "(ns app (:config {:rename {:exclude [unknown]}}))"
    :expect {:error :invalid-ns-config
             :message "Unknown intrinsic library"}}
   {:id :namespace/exclude-alias-conflict
    :class :namespace
-   :source "(ns app (:config {:intrinsics {:exclude [bytes] :alias {bytes data}}}))"
+   :source "(ns app (:config {:rename {:exclude [bytes] :alias {bytes data}}}))"
    :expect {:error :invalid-ns-config
             :message "both excluded and aliased"}}
   {:id :namespace/alias-collision
    :class :namespace
-   :source "(ns app (:config {:intrinsics {:alias {string data bytes data}}}))"
+   :source "(ns app (:config {:rename {:alias {string data bytes data}}}))"
    :expect {:error :invalid-ns-config
             :message "Duplicate intrinsic alias target"}}
   {:id :namespace/blank-suppresses-referral

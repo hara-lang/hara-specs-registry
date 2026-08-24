@@ -78,6 +78,11 @@
 (extend-type ProtocolUseCase IClose
   (close [fixture] (do (state-put fixture :closed true) nil)))
 
+(extend-type ProtocolUseCase IColl
+  (start-string [fixture] "(")
+  (end-string [fixture] ")")
+  (sep-string [fixture] " "))
+
 (extend-type ProtocolUseCase IComponent
   (props [fixture] {:name :component})
   (status [fixture] (state-get fixture :component-status))
@@ -209,6 +214,9 @@
 (extend-type ProtocolUseCase ILookup
   (lookup [fixture key]
     (get (state-get fixture :collection) key)))
+
+(extend-type ProtocolUseCase IMetadata
+  (metatype [fixture] :object))
 
 (extend-type ProtocolUseCase INamespaced
   (name [fixture] "demo")
@@ -858,6 +866,16 @@
           (state-get fixture :closed)))
      '(std.protocol.iclose/close unsupported))
 
+   (protocol-case :IColl :start-string IColl/start-string
+     (= "(" (IColl/start-string (use-case)))
+     '(IColl/start-string unsupported))
+   (protocol-case :IColl :end-string IColl/end-string
+     (= ")" (IColl/end-string (use-case)))
+     '(IColl/end-string unsupported))
+   (protocol-case :IColl :sep-string IColl/sep-string
+     (= " " (IColl/sep-string (use-case)))
+     '(IColl/sep-string unsupported))
+
    (protocol-case :IComponent :props std.protocol.icomponent/props
      (= {:name :component} (std.protocol.icomponent/props (use-case)))
      '(std.protocol.icomponent/props unsupported))
@@ -1105,6 +1123,10 @@
    (protocol-case :ILookup :lookup std.protocol.ilookup/lookup
      (= 1 (std.protocol.ilookup/lookup (use-case) :a))
      '(std.protocol.ilookup/lookup unsupported :a))
+
+   (protocol-case :IMetadata :metatype IMetadata/metatype
+     (= :object (IMetadata/metatype (use-case)))
+     '(IMetadata/metatype unsupported))
 
    (protocol-case :INamespaced :name std.protocol.inamespaced/name
      (= "demo" (std.protocol.inamespaced/name (use-case)))

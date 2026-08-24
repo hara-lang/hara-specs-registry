@@ -56,7 +56,7 @@
    :blank/native-and-protocol-aliases true}
   :bootstrap/config
   {:config/cardinality :zero-or-one
-   :config/keys #{:blank :override :expose :intrinsics}
+   :config/keys #{:blank :override :only :rename :set-global-alias :set-global :role}
    :config/unknown-key :error}
   :bootstrap/builtins
   {:builtins/status :internal-runtime-accounting
@@ -67,13 +67,21 @@
   :bootstrap/foundation-selection
   {:foundation/default :all
    :foundation/override "Names omitted from startup referral so the namespace may define them."
-   :foundation/expose "Exact Foundation names retained from startup referral."
+   :foundation/only "Exact Foundation names retained from startup referral."
    :foundation/conflicts
-   #{[:blank :override] [:blank :expose] [:override :expose]}}
+   #{[:blank :override] [:blank :only] [:override :only]}}
+  :bootstrap/rename
+  {:rename/default :all
+   :rename/options #{:exclude :alias}
+   :rename/annex :hara/foundation-annex}
+  :bootstrap/global-imports
+  {:set-global-alias :unqualified-symbol
+   :set-global :vector-of-qualified-vars
+   :set-global/import-name :terminal-symbol
+   :set-global/protocol-shorthand true}
   :bootstrap/intrinsics
-  {:intrinsics/default :all
-   :intrinsics/options #{:exclude :alias}
-   :intrinsics/annex :hara/foundation-annex}
+  {:intrinsics/reserved-for [:native-types :runtime-symbols]
+   :intrinsics/namespace-config false}
   :bootstrap/protocol-aliases
   {:aliases/spec :hara/protocol
    :aliases/selection :all}

@@ -23,6 +23,12 @@
   (close [fixture] :iclose/close)
 )
 
+(extend-type ProtocolFixture IColl
+  (start-string [fixture] :icoll/start-string)
+  (end-string [fixture] :icoll/end-string)
+  (sep-string [fixture] :icoll/sep-string)
+)
+
 (extend-type ProtocolFixture IComponent
   (kill [fixture] :icomponent/kill)
   (props [fixture] :icomponent/props)
@@ -169,6 +175,10 @@
   (lookup [fixture arg1] :ilookup/lookup)
 )
 
+(extend-type ProtocolFixture IMetadata
+  (metatype [fixture] :imetadata/metatype)
+)
+
 (extend-type ProtocolFixture INamespaced
   (name [fixture] :inamespaced/name)
   (namespace [fixture] :inamespaced/namespace)
@@ -284,6 +294,12 @@
        methods (= [(std.protocol.iclose/close fixture)]
                   [:iclose/close])]
    {:protocol :IClose :alias alias :methods methods :pass (if alias methods false)})
+ (let [alias (boolean IColl)
+       methods (= [(IColl/end-string fixture)
+                   (IColl/sep-string fixture)
+                   (IColl/start-string fixture)]
+                  [:icoll/end-string :icoll/sep-string :icoll/start-string])]
+   {:protocol :IColl :alias alias :methods methods :pass (if alias methods false)})
  (let [alias (boolean IComponent)
        methods (= [(std.protocol.icomponent/kill fixture) (std.protocol.icomponent/props fixture) (std.protocol.icomponent/remote? fixture) (std.protocol.icomponent/start fixture) (std.protocol.icomponent/started? fixture) (std.protocol.icomponent/status fixture) (std.protocol.icomponent/stop fixture) (std.protocol.icomponent/stopped? fixture)]
                   [:icomponent/kill :icomponent/props :icomponent/remote? :icomponent/start :icomponent/started? :icomponent/status :icomponent/stop :icomponent/stopped?])]
@@ -424,6 +440,10 @@
        methods (= [(std.protocol.ilookup/lookup fixture :arg1)]
                   [:ilookup/lookup])]
    {:protocol :ILookup :alias alias :methods methods :pass (if alias methods false)})
+ (let [alias (boolean IMetadata)
+       methods (= [(IMetadata/metatype fixture)]
+                  [:imetadata/metatype])]
+   {:protocol :IMetadata :alias alias :methods methods :pass (if alias methods false)})
  (let [alias (boolean IMutable)
        methods (= []
                   [])]

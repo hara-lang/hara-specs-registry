@@ -208,7 +208,7 @@
        [:namespace/named-selects-definition-scope
         :namespace/anonymous-reuses-current-scope
         :namespace/anonymous-config-override
-        :namespace/anonymous-config-expose]}]}]}
+        :namespace/anonymous-config-only]}]}]}
 
   {:section/id :hal.core/namespaces
    :section/title "Namespaces and modules"
@@ -226,17 +226,21 @@
     {:requirement/id :namespace/config
      :requirement/level :must
      :requirement/text
-     "The :config map accepts :blank, :override, :expose, and :intrinsics; :intrinsics accepts :exclude and :alias. Invalid combinations fail atomically."
+     "The :config map accepts :blank, :override, :only, :rename, :set-global-alias, :set-global, and :role. :rename accepts :exclude and :alias. :set-global-alias is an unqualified namespace alias. :set-global is a vector of exact qualified Vars, imported by terminal name, including compact protocol Vars such as IColl/start-string; it never imports a whole namespace or local-only Var. :intrinsics is reserved for native/runtime intrinsic symbols. Invalid combinations and conflicts fail atomically."
      :requirement/evidence
      [{:conformance/suite :hal/core
        :conformance/cases
        [:namespace/anonymous-applies-config
         :namespace/anonymous-config-override
-        :namespace/anonymous-config-expose
-        :namespace/anonymous-config-intrinsic-alias
-        :namespace/anonymous-config-intrinsic-exclude
+        :namespace/anonymous-config-only
+        :namespace/anonymous-config-rename-alias
+        :namespace/anonymous-config-rename-exclude
+        :namespace/config-set-global-alias
+        :namespace/config-set-global
+        :namespace/config-set-global-compact-protocol
+        :namespace/config-set-global-invalid
         :namespace/config-blank-override-conflict
-        :namespace/config-override-expose-conflict]}]}
+        :namespace/config-override-only-conflict]}]}
     {:requirement/id :namespace/builtins-internal
      :requirement/level :must
      :requirement/text

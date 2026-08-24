@@ -9,7 +9,7 @@ The authoritative document is
 This layer owns the root `std.foundation` namespace:
 
 - automatic referral and blank namespaces;
-- `:builtins` and `:intrinsics` configuration;
+- `:builtins`, `:rename`, and global namespace configuration;
 - protocol and native-type aliases;
 - portable root functions and macros;
 - narrow evaluator-backed primitives;

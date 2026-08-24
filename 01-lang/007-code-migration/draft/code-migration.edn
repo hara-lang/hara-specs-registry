@@ -45,6 +45,8 @@
 
  :migration/rules
  [{:rule/id :foundation/std-lib-foundation
+   :rule/languages [:clojure :hara]
+   :rule/priority 100
    :rule/layer :foundation
    :rule/phase :dependency
    :rule/kind :dependency
@@ -55,6 +57,8 @@
    :rule/evidence {:source/path "src/std/lib/foundation.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/core-qualified
+   :rule/languages [:clojure :hara]
+   :rule/priority 101
    :rule/layer :clojure
    :rule/phase :dependency
    :rule/kind :dependency
@@ -65,6 +69,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/anonymous-function-reader
+   :rule/languages [:clojure :hara]
+   :rule/priority 200
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :dependency
@@ -75,6 +81,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/single-arity-defn
+   :rule/languages [:clojure]
+   :rule/priority 300
    :rule/layer :clojure
    :rule/phase :definition
    :rule/kind :form-shape
@@ -85,6 +93,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/thread-zero-arity-step
+   :rule/languages [:clojure]
+   :rule/priority 400
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-shape
@@ -95,6 +105,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/iterator-first-pipeline
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-shape
@@ -106,6 +118,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/callable-predicate
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :dependency
@@ -116,6 +130,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/std-lib-walk
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :dependency
    :rule/kind :dependency
@@ -126,6 +142,8 @@
    :rule/evidence {:source/path "src/std/lib/walk.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/std-lib-collection
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :dependency
    :rule/kind :dependency
@@ -136,6 +154,8 @@
    :rule/evidence {:source/path "src/std/lib/collection.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/hash-map-predicate
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :dependency
    :rule/kind :dependency
@@ -146,6 +166,8 @@
    :rule/evidence {:source/path "src/std/lib/collection.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/contains-predicate
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :dependency
    :rule/kind :dependency
@@ -156,6 +178,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/native-result
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :expression
    :rule/kind :form-shape
@@ -166,6 +190,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/native}}
   {:rule/id :clojure/quoted-refer-metadata
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :test
    :rule/kind :metadata-value
@@ -176,6 +202,8 @@
    :rule/evidence {:source/path "test"
                    :target/path "core/lib/test"}}
   {:rule/id :hara/namespace-overrides
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :namespace
    :rule/kind :namespace-clause
@@ -186,6 +214,8 @@
    :rule/evidence {:source/path "src"
                    :target/spec :hara/foundation}}
   {:rule/id :hara/qualified-overrides
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :test
    :rule/kind :symbol-pattern
@@ -196,6 +226,8 @@
    :rule/evidence {:source/path "test/std/lib/zip_test.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/nil-sentinel
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :dependency
    :rule/kind :dependency
@@ -206,6 +238,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/defrecord-native-struct
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :definition
    :rule/kind :form-head
@@ -216,6 +250,8 @@
    :rule/evidence {:source/path "src"
                    :target/spec :hara/native}}
   {:rule/id :foundation/drop-host-printer
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :definition
    :rule/kind :form-head
@@ -226,6 +262,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/native}}
   {:rule/id :clojure/named-recur
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :lexical-form
@@ -236,6 +274,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/empty-catch-body
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-arity
@@ -246,6 +286,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/struct-merge
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :expression
    :rule/kind :form-pattern
@@ -256,6 +298,8 @@
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/jvm-interop
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :expression
    :rule/kind :symbol-pattern
@@ -266,6 +310,8 @@
    :rule/evidence {:source/path "src"
                    :target/spec :hara/native}}
   {:rule/id :clojure/character-whitespace
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-pattern
@@ -276,6 +322,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/native}}
   {:rule/id :clojure/character-literal
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :literal
@@ -286,6 +334,8 @@
    :rule/evidence {:source/path "src/std/block"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/nil-set
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :literal
@@ -296,6 +346,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/ratio-literal
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :literal
@@ -306,6 +358,8 @@
    :rule/evidence {:source/path "test/std/block/check_test.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/escaped-character-first
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :test
    :rule/kind :form-pattern
@@ -316,6 +370,8 @@
    :rule/evidence {:source/path "test/std/block/check_test.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/nil-membership
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-pattern
@@ -326,6 +382,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/map-entry-traversal
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-pattern
@@ -336,6 +394,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/native-number-taxonomy
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :definition
    :rule/kind :form-pattern
@@ -346,6 +406,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :clojure/string-starts-with
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :clojure
    :rule/phase :expression
    :rule/kind :form-pattern
@@ -356,6 +418,8 @@
    :rule/evidence {:source/path "src/std/block/check.clj"
                    :target/spec :hara/native}}
   {:rule/id :foundation/swap-return
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :dependency
    :rule/kind :dependency
@@ -368,6 +432,8 @@
                    :target/path "core/lib/src/std/foundation.hal"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/resource-semantic-recipe
+   :rule/languages [:clojure :hara]
+   :rule/priority 1000
    :rule/layer :foundation
    :rule/phase :cleanup
    :rule/kind :target-recipe
@@ -379,6 +445,8 @@
                    :test/path "test/std/lib/resource_test.clj"
                    :target/spec :hara/foundation}}
   {:rule/id :foundation/context-semantic-recipe
+   :rule/languages [:clojure :hara]
+   :rule/priority 900
    :rule/layer :foundation
    :rule/phase :cleanup
    :rule/kind :target-recipe
@@ -389,6 +457,24 @@
    :rule/evidence {:source/path "src/std/lib/context"
                    :test/path "test/std/lib/context"
                    :target/spec :hara/foundation}}
+  {:rule/id :foundation/jvm-interop-function
+   :rule/languages [:clojure :hara]
+   :rule/priority 901
+   :rule/layer :foundation
+   :rule/phase :expression
+   :rule/kind :function
+   :rule/match {:clojure {:text "jvm-interop"}
+                :hara {:text "host-interop"}}
+   :rule/rewrite nil
+   :rule/function
+   {:clojure {:match tool.migrate.policy.foundation.resolver/match-jvm-interop
+              :rewrite tool.migrate.policy.foundation.resolver/rewrite-jvm-interop}
+    :hara {:match tool.migrate.policy.foundation.resolver/match-jvm-interop
+           :rewrite tool.migrate.policy.foundation.resolver/rewrite-jvm-interop}}
+   :rule/safety :manual
+   :rule/disposition :host-adapted
+   :rule/evidence {:source/path "src"
+                   :target/spec :hara/native}}
  ]
 
  :migration/targets

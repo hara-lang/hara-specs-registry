@@ -27,6 +27,18 @@
    :requirement/level :must
    :requirement/text
    "Every rule identifies its source authority and the target contract it implements."}
+  {:requirement/id :migration/language-aware
+   :requirement/level :must
+   :requirement/text
+   "Every rule declares the source languages it understands; language-specific match and rewrite branches are used when Clojure and Hara syntax differ."}
+  {:requirement/id :migration/function-rules
+   :requirement/level :must
+   :requirement/text
+   "Function rules store qualified symbols in EDN and are resolved only through an explicitly injected resolver; catalogs never embed executable functions."}
+  {:requirement/id :migration/priority
+   :requirement/level :must
+   :requirement/text
+   "Rules are ordered by phase and explicit priority, with deterministic rule identifiers as the final tie-breaker."}
   {:requirement/id :migration/deterministic
    :requirement/level :must
    :requirement/text
