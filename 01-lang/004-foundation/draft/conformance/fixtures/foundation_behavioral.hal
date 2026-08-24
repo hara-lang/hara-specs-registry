@@ -129,7 +129,6 @@
  std.foundation/inc
  std.foundation/insert-at
  std.foundation/instance?
- std.foundation/integer?
  std.foundation/interleave
  std.foundation/intern-all
  std.foundation/intern-in
@@ -541,7 +540,6 @@
                                   (coll? 1)
                                   (coll? nil)])]
    'std.foundation/number? [true (fn [] (number? 1))]
-   'std.foundation/integer? [true (fn [] (integer? 1))]
    'std.foundation/long? [true (fn [] (long? 1))]
    'std.foundation/double? [true (fn [] (double? (double 1)))]
    'std.foundation/keyword? [true (fn [] (keyword? :a))]

@@ -508,10 +508,6 @@
                                        :kind :defn,
                                        :signature "[descriptor value]"}],
                        :name instance?}
-                      {:declarations [{:doc "Returns true when value is an integer.",
-                                       :kind :defn,
-                                       :signature "[value]"}],
-                       :name integer?}
                       {:declarations [{:doc "Returns alternating source items, stopping at the shortest source. The first\n   source controls result mode.",
                                        :kind :defn,
                                        :signature "[value & values]"}],

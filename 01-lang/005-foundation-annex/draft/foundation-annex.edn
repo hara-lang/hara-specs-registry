@@ -253,14 +253,6 @@
                                             :binding/source-line 112
                                            }
                                         {
-                                            :binding/name integer?
-                                            :binding/kind :defn
-                                            :binding/signature "[value]"
-                                            :binding/doc "Returns true when value is an integer."
-                                            :binding/source-path "std/foundation.hal"
-                                            :binding/source-line 114
-                                           }
-                                        {
                                             :binding/name decimal?
                                             :binding/kind :defn
                                             :binding/signature "[value]"

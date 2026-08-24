@@ -31,6 +31,14 @@
    :class :reader
    :source "9223372036854775808"
    :expect {:error :invalid-number :message "Invalid number"}}
+  {:id :reader/non-finite-float
+   :class :reader
+   :source "1e309"
+   :expect {:error :non-finite-number :message "non-finite number"}}
+  {:id :reader/non-finite-symbolic
+   :class :reader
+   :source "##NaN"
+   :expect {:error :non-finite-number :message "non-finite number"}}
   {:id :reader/quote
    :class :reader
    :source "'value"

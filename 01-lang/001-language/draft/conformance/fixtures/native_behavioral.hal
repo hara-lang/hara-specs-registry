@@ -209,7 +209,6 @@
    'Base/string? [true (fn [] (Base/string? "hara"))]
    'Base/char? [true (fn [] (Base/char? \a))]
    'Base/number? [true (fn [] (Base/number? 1.5))]
-   'Base/integer? [true (fn [] (Base/integer? 1))]
    'Base/long? [true (fn [] (Base/long? 1))]
    'Base/double? [true (fn [] (Base/double? (Num/double 1.5)))]
    'Base/keyword? [true (fn [] (Base/keyword? :a))]

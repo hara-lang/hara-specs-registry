@@ -427,7 +427,7 @@
    :availability :implemented
    :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
              keyword reduced unreduced apply not boolean compare reduced? nil? boolean?
-             string? char? number? integer? long? double? keyword? symbol?
+             string? char? number? long? double? keyword? symbol?
              pointer? atom? function? bytes? array? object? list? cons? vector? tuple?
              map? set? sequential? coll? satisfies? type instance?]
    :method-classification {:hal-wrapper :all}

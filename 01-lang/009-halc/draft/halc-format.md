@@ -62,7 +62,7 @@ Every value starts with a one-byte opcode:
 | 1 | false | none |
 | 2 | true | none |
 | 3 | integer | signed 64-bit two's-complement bytes |
-| 4 | float | 8-byte IEEE 754 binary64 bits |
+| 4 | float | 8-byte finite IEEE 754 binary64 bits |
 | 5 | big integer | canonical decimal string |
 | 6 | decimal | canonical decimal string |
 | 7 | string | string |
@@ -79,7 +79,7 @@ Every value starts with a one-byte opcode:
 
 No opcode contains evaluation state or host identity. Unsupported opcodes are invalid.
 
-Big integers use `0` or an optional leading `-` followed by digits with no redundant leading zeroes. Decimals use the portable HAL decimal spelling and round-trip without locale-dependent formatting. Floats preserve binary64 bits; encoders use canonical quiet-NaN bits `0x7ff8000000000000` for every NaN.
+Big integers use `0` or an optional leading `-` followed by digits with no redundant leading zeroes. Decimals use the portable HAL decimal spelling and round-trip without locale-dependent formatting. Floats preserve finite binary64 bits; encoders and decoders reject every NaN and positive or negative infinity bit pattern.
 
 Characters must be Unicode scalar values; surrogate code points and values above `0x10ffff` are invalid.
 

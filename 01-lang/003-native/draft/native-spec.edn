@@ -164,7 +164,7 @@
    :native/methods
    [list vector vec set tuple hash-map hash-set atom pointer symbol keyword
     reduced apply not boolean compare reduced? nil? boolean? string? char?
-    number? integer? long? double? keyword? symbol? pointer? atom? function?
+    number? long? double? keyword? symbol? pointer? atom? function?
     bytes? array? object? list? cons? vector? tuple? map? set? sequential? coll?
     satisfies? type instance?]}
   {:native/id :std.native/iter
