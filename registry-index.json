@@ -5,7 +5,7 @@
     "ref": "main",
     "manifestPath": "spec-manifest.json",
     "manifestDigest": "sha256:37ec09d16abd72eb09c6dd01bd4ad2c8a00e3e1a3657de81b6c3f3af3c1375d8",
-    "catalogueDigest": "sha256:6ad1458aeff5f9cd41546e1323ca0616af05c15f2cffdee4eb5d7e48035c841e",
+    "catalogueDigest": "sha256:7059e82f9d1bebfebfdf167c3bd406310fc2c24e405e8213006c03405fdba271",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 59,
     "ready": 0,
     "executable": 32,
-    "requirements": 378,
+    "requirements": 393,
     "materialized": 59,
     "pinnedSource": 0,
     "layers": [
@@ -1251,7 +1251,7 @@
       "slug": "hara-package",
       "coordinate": "hara/package",
       "title": "Hara project and package contract",
-      "summary": "Normative single-manifest project, dependency resolution, deterministic package build, release and installation contract.",
+      "summary": "Normative single-manifest project, dependency resolution, deterministic package build, prebuilt route-artifact selection, release and installation contract.",
       "type": "hara/tap-protocol",
       "version": "0.0.0-alpha",
       "status": "draft",
@@ -1260,7 +1260,7 @@
       "classification": "hara",
       "sourcePath": "02-platform/000006-package/draft/hara-package.edn",
       "documentationPath": "02-platform/000006-package/draft/README.md",
-      "requirements": 24,
+      "requirements": 39,
       "formats": [
         "application/edn"
       ],
