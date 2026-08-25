@@ -183,9 +183,25 @@
    'Base/pointer [:base (fn [] (IPointer/ptr-context (Base/pointer {:context :base})))]
    'Base/symbol ['base/value (fn [] (Base/symbol "base" "value"))]
    'Base/keyword [:base/value (fn [] (Base/keyword "base" "value"))]
-   'Base/uuid [:std.native.UUID (fn [] (Base/type (Base/uuid "00000000-0000-0000-0000-000000000000")))]
+   'Base/uuid [[true :std.native.UUID true true true true false true true true true]
+              (fn [] (let [fixed (Base/uuid "00000000-0000-0000-0000-000000000000")
+                           byte-uuid (Base/uuid (std.native.Bytes/new 1 2 -1))
+                           keyword (Base/uuid :demo/value)
+                           bits (Base/uuid 0 1)]
+                       [(uuid? (Base/uuid))
+                        (Base/type fixed)
+                        (uuid? fixed)
+                        (uuid? byte-uuid)
+                        (uuid? keyword)
+                        (uuid? bits)
+                        (uuid? :demo/value)
+                        (= fixed (Base/uuid "00000000-0000-0000-0000-000000000000"))
+                        (= byte-uuid (Base/uuid "4f989b1a-c8e4-3ab1-9569-6571104cfb67"))
+                        (= keyword (Base/uuid "00000000-6d44-1e45-0000-000006ac9171"))
+                        (= bits (Base/uuid "00000000-0000-0000-0000-000000000001"))]))]
    'Base/reduced [true (fn [] (= (Base/type (Base/reduced 1)) :std.native.Reduced))]
    'Base/unreduced [1 (fn [] (Base/unreduced (Base/reduced 1)))]
+   'Base/hash [true (fn [] (= (Base/hash [1 2]) (Base/hash (list 1 2))))]
    'Base/apply [42 (fn [] (Base/apply + [19 23]))]
    'Base/number? [true (fn [] (Base/number? 1.5))]
    'Base/long? [true (fn [] (Base/long? 1))]

@@ -2,9 +2,9 @@ import crypto from "node:crypto";
 
 const HASH = /^sha256:[0-9a-f]{64}$/;
 const REVISION = /^[0-9a-f]{40}$/;
-const FORMAT = "std.typed.catalog/1";
-const HASH_EPOCH = "std.typed.schema/catalog-v1";
-const COMPONENT_EPOCH = "std.typed.catalog/component-v1";
+const FORMAT = "std.typed.catalog/2";
+const HASH_EPOCH = "std.typed.schema/catalog-v2";
+const COMPONENT_EPOCH = "std.typed.catalog/component-v2";
 
 const finding = (code, message, location = null) => ({
   code,
@@ -26,21 +26,18 @@ const coordinateKey = (coordinate) => JSON.stringify(coordinate);
 
 const compareCoordinate = (left, right) =>
   left[1].localeCompare(right[1])
-  || left[2] - right[2]
-  || left[3].localeCompare(right[3]);
+  || left[2].localeCompare(right[2]);
 
 const coordinateDisplay = (coordinate) =>
-  `[:schema :${coordinate[1]} ${coordinate[2]} ${JSON.stringify(coordinate[3])}]`;
+  `[:schema :${coordinate[1]} ${JSON.stringify(coordinate[2])}]`;
 
 const coordinateValid = (coordinate) =>
   Array.isArray(coordinate)
-  && coordinate.length === 4
+  && coordinate.length === 3
   && coordinate[0] === "schema"
   && typeof coordinate[1] === "string"
   && /^[^/\s:]+\/[^/\s:]+$/.test(coordinate[1])
-  && Number.isSafeInteger(coordinate[2])
-  && coordinate[2] >= 0
-  && HASH.test(coordinate[3]);
+  && HASH.test(coordinate[2]);
 
 const componentId = (members) => {
   const rendered = members
@@ -176,23 +173,22 @@ export function validateSchemaCatalog(catalog) {
       continue;
     }
     const id = entry["schema/id"];
-    const version = entry["schema/version"];
     const hash = entry["schema/hash"];
     const coordinate = entry["schema/coordinate"];
     if (typeof id !== "string" || !/^[^/\s:]+\/[^/\s:]+$/.test(id)) {
       findings.push(finding("SCHEMA_ID_INVALID", "Schema id must be a qualified keyword name without a leading colon.", `${location}/schema/id`));
     }
-    if (!Number.isSafeInteger(version) || version < 0) {
-      findings.push(finding("SCHEMA_VERSION_INVALID", "Schema version must be a non-negative safe integer.", `${location}/schema/version`));
+    if (Object.hasOwn(entry, "schema/version")) {
+      findings.push(finding("SCHEMA_VERSION_FORBIDDEN", "Schema entries must not carry per-entry versions.", `${location}/schema/version`));
     }
     if (typeof hash !== "string" || !HASH.test(hash)) {
       findings.push(finding("SCHEMA_HASH_INVALID", "Schema hash must be canonical lowercase SHA-256.", `${location}/schema/hash`));
     }
     if (!coordinateValid(coordinate)) {
-      findings.push(finding("SCHEMA_COORDINATE_INVALID", "Schema coordinate must be [schema, qualified-id, version, sha256].", `${location}/schema/coordinate`));
+      findings.push(finding("SCHEMA_COORDINATE_INVALID", "Schema coordinate must be [schema, qualified-id, sha256].", `${location}/schema/coordinate`));
       continue;
     }
-    if (coordinate[1] !== id || coordinate[2] !== version || coordinate[3] !== hash) {
+    if (coordinate[1] !== id || coordinate[2] !== hash) {
       findings.push(finding("SCHEMA_COORDINATE_MISMATCH", "Schema coordinate does not match entry identity.", `${location}/schema/coordinate`));
     }
     if (typeof entry["schema/form"] !== "string" || entry["schema/form"].length === 0) {
@@ -221,12 +217,12 @@ export function validateSchemaCatalog(catalog) {
     }
     entryByCoordinate.set(key, entry);
     coordinates.push(coordinate);
-    const identity = `${coordinate[1]}\u0000${coordinate[2]}`;
+    const identity = coordinate[1];
     const previous = identityHashes.get(identity);
-    if (previous && previous !== coordinate[3]) {
-      findings.push(finding("SCHEMA_IDENTITY_CONFLICT", "One id/version has conflicting immutable hashes.", location));
+    if (previous && previous !== coordinate[2]) {
+      findings.push(finding("SCHEMA_IDENTITY_CONFLICT", "One id has conflicting immutable hashes.", location));
     }
-    identityHashes.set(identity, coordinate[3]);
+    identityHashes.set(identity, coordinate[2]);
   }
 
   const sortedEntries = entries
@@ -346,25 +342,6 @@ export function validateSchemaCatalog(catalog) {
     findings.push(finding("COMPONENT_GRAPH_CYCLIC", "The condensed component graph contains a cycle.", "catalog/components"));
   } else if (!Array.isArray(declaredOrder) || JSON.stringify(declaredOrder) !== JSON.stringify(expectedOrder)) {
     findings.push(finding("COMPONENT_ORDER_MISMATCH", "catalog/component-order is not the deterministic dependency-first order.", "catalog/component-order"));
-  }
-
-  const tooling = catalog["catalog/tooling"];
-  if (!tooling || typeof tooling !== "object" || tooling["execution-may-use-latest"] !== false) {
-    findings.push(finding("CATALOG_LATEST_EXECUTION_POLICY_INVALID", "Tooling latest views must be explicit and forbidden for execution.", "catalog/tooling"));
-  } else {
-    const latest = tooling.latest;
-    if (!latest || typeof latest !== "object" || Array.isArray(latest)) {
-      findings.push(finding("CATALOG_LATEST_VIEW_INVALID", "Tooling latest must be an id-to-coordinate object.", "catalog/tooling/latest"));
-    } else {
-      const expectedLatest = {};
-      for (const coordinate of coordinates.filter(coordinateValid)) {
-        const previous = expectedLatest[coordinate[1]];
-        if (!previous || previous[2] < coordinate[2]) expectedLatest[coordinate[1]] = coordinate;
-      }
-      if (stableStringify(latest) !== stableStringify(expectedLatest)) {
-        findings.push(finding("CATALOG_LATEST_VIEW_MISMATCH", "Tooling latest does not select each highest exact version.", "catalog/tooling/latest"));
-      }
-    }
   }
 
   const documentDigest = catalog["catalog/document-digest"];

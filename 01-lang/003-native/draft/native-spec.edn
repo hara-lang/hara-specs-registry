@@ -76,7 +76,8 @@
                     exp floor pow sin sinh sqrt tan tanh]}
   {:native/id :std.native/num
    :native/symbol Num :native/namespace std.native.Num
-   :native/availability :portable :native/methods [long double]}
+   :native/availability :portable
+   :native/methods [long double parse-long parse-double]}
   {:native/id :std.native/bits
    :native/symbol Bits :native/namespace std.native.Bits
    :native/availability :portable
@@ -88,11 +89,18 @@
    [session-create session-close session-list session-info session-eval
     session-namespace session-complete resource-register resource-remove
     resource-list filesystem-create filesystem-attach filesystem-detach
-    filesystem-info filesystem-close capabilities]}
+    filesystem-info filesystem-close capabilities package-build package-inspect
+    package-install package-publish package-registry-verify tap-config-root
+    tap-add tap-bootstrap tap-remove tap-list tap-mirror-add tap-initialize
+    tap-verify snapshot-build snapshot-verify snapshot-inspect snapshot-diff]}
   {:native/id :std.native/sandbox
    :native/symbol Sandbox :native/namespace std.native.Sandbox
    :native/availability :capability-gated :native/capability :sandbox
    :native/methods [open eval call cancel status close]}
+  {:native/id :std.native/package
+   :native/symbol Package :native/namespace std.native.Package
+   :native/availability :capability-gated :native/capability :kernel
+   :native/methods [catalog find ensure load unload state]}
   {:native/id :std.native/string
    :native/symbol String :native/namespace std.native.String
    :native/availability :portable
@@ -105,6 +113,24 @@
    :native/symbol Bytes :native/namespace std.native.Bytes
    :native/availability :portable
    :native/methods [new count get set copy slice u8 s8]}
+  {:native/id :std.native/crypto
+   :native/symbol Crypto :native/namespace std.native.Crypto
+   :native/availability :portable
+   :native/methods
+   [sha256 sha512 hmac-sha256 hmac-sha512 random-bytes secure-equal?
+    ed25519-keypair ed25519-public ed25519-sign ed25519-verify x25519-keypair
+    x25519-public x25519-shared p256-keypair p256-public p256-sign p256-verify
+    p256-shared]}
+  {:native/id :std.native/os
+   :native/symbol OS :native/namespace std.native.OS
+   :native/availability :portable
+   :native/methods [platform arch cwd env getenv time-ms time-ns]}
+  {:native/id :std.native/process
+   :native/symbol Process :native/namespace std.native.Process
+   :native/availability :capability-gated :native/capability :native-runtime
+   :native/methods
+   [spawn alive? write close-input stdout stderr stdout-stream stderr-stream
+    wait kill]}
   {:native/id :std.native/file
    :native/symbol File :native/namespace std.native.File
    :native/availability :capability-gated :native/capability :file
@@ -114,7 +140,7 @@
   {:native/id :std.native/socket
    :native/symbol Socket :native/namespace std.native.Socket
    :native/availability :capability-gated :native/capability :network
-   :native/methods [connect listen endpoint events next send close]}
+   :native/methods [connect listen endpoint events next send close receive-stream]}
   {:native/id :std.native/promise
    :native/symbol Promise :native/namespace std.native.Promise
    :native/availability :portable
@@ -123,6 +149,10 @@
    :native/symbol Coroutine :native/namespace std.native.Coroutine
    :native/availability :portable
    :native/methods [create yield await]}
+  {:native/id :std.native/stream
+   :native/symbol Stream :native/namespace std.native.Stream
+   :native/availability :portable
+   :native/methods [create generate next]}
   {:native/id :std.native/arr
    :native/symbol Arr :native/namespace std.native.Arr
    :native/availability :portable
@@ -135,23 +165,48 @@
   {:native/id :std.native/runtime
    :native/symbol Runtime :native/namespace std.native.Runtime
    :native/availability :portable
-   :native/methods [load-string macroexpand-1 gensym var-sym]}
+   :native/methods
+   [load-string macroexpand-1 gensym ns-publics the-ns ns-name var-sym current
+    snapshot vars namespaces namespace module resolve alias-state intern-var
+    eval-in eval]}
   {:native/id :std.native/printer
    :native/symbol Printer :native/namespace std.native.Printer
-   :native/availability :portable :native/methods [p println]}
+   :native/availability :portable :native/methods [p println capture]}
+  {:native/id :std.native/document
+   :native/symbol Document :native/namespace std.native.Document
+   :native/availability :portable
+   :native/methods [element text fragment annotate pass escaped group line break
+                    nest align normalize valid? render]}
   {:native/id :std.native/edn
    :native/symbol Edn :native/namespace std.native.Edn
-   :native/availability :portable :native/methods [read]}
+   :native/availability :portable
+   :native/methods [read read-forms write pretty]}
   {:native/id :std.native/json
    :native/symbol Json :native/namespace std.native.Json
-   :native/availability :portable :native/methods [read write pretty]}
+   :native/availability :portable
+   :native/methods [read write pretty]}
   {:native/id :std.native/host
    :native/symbol Host :native/namespace std.native.Host
    :native/availability :capability-gated :native/capability :host-call
    :native/methods [call describe capabilities capability?]}
+  {:native/id :std.native/test
+   :native/symbol Test :native/namespace std.native.Test
+   :native/availability :portable
+   :native/methods [catalog config context events compare run result passed? actual
+                    expected failures failure-seq failure-count failure failure?]}
   {:native/id :std.native/regexp
    :native/symbol RegExp :native/namespace std.native.RegExp
-   :native/availability :portable :native/methods [compile pattern find? find matches replace split]}
+   :native/availability :portable
+   :native/methods [compile pattern find? find matches replace split]}
+  {:native/id :std.native/result
+   :native/symbol Result :native/namespace std.native.Result
+   :native/availability :portable
+   :native/methods [create synchronize success? error? status data error-value
+                    context with-context]}
+  {:native/id :std.native/schema
+   :native/symbol Schema :native/namespace std.native.Schema
+   :native/availability :portable
+   :native/methods [compile of kind form ast origin]}
   {:native/id :std.native/exception
    :native/symbol Exception :native/namespace std.native.Exception
    :native/availability :portable :native/methods [new message class]}
@@ -160,17 +215,28 @@
    :native/availability :portable
    :native/methods
    [list vector vec set tuple hash-map hash-set atom pointer symbol keyword
-    uuid reduced apply number? long?
-    satisfies? type instance?]}
+    uuid reduced unreduced hash apply number? long? satisfies? special-symbol?
+    type instance?]}
+  {:native/id :std.native/algo
+   :native/symbol Algo :native/namespace std.native.Algo
+   :native/availability :portable
+   :native/methods [deque ordered-map ordered-set priority-map queue sorted-map
+                    sorted-set trie deque? ordered-map? ordered-set? priority-map?
+                    queue? sorted-map? sorted-set? trie?]}
   {:native/id :std.native/iter
    :native/symbol Iter :native/namespace std.native.Iter
    :native/availability :portable
    :native/methods
-   [iter iter-finite? iter-materialize iter-has? iter-next iter-close
-    iter-map iter-filter iter-take-while iter-drop-while iter-mapcat iter-keep
-    iter-interpose iter-interleave iter-every? iter-any? iter-take iter-drop
-    iter-zip iter-cycle iter-partition-pair iter-partition-all iter-partition
-    iter-range iter-constantly iter-repeatedly iter-iterate]}]
+   [seq iter iter-finite? iter-materialize iter-next? iter-next iter-close
+    iter-concat iter-map iter-filter iter-take-while iter-drop-while iter-mapcat
+    iter-keep iter-interpose iter-interleave iter-every? iter-any? iter-take
+    iter-drop iter-zip iter-cycle iter-partition-pair iter-partition-all
+    iter-partition iter-range iter-constantly iter-repeatedly iter-iterate]}
+  {:native/id :std.native/work
+   :native/symbol Work :native/namespace std.native.Work
+   :native/availability :capability-gated :native/capability :native-runtime
+   :native/methods [default-host current-run cancelled? check-cancelled
+                    deadline-nanos emit submit-child on-close]}]
 
 
  :native/file
@@ -278,7 +344,9 @@
    {:capability/id :sandbox
     :capability/grants #{:sandbox-control}}
    {:capability/id :host-call
-    :capability/grants #{:embedding-declared-services}}]
+    :capability/grants #{:embedding-declared-services}}
+   {:capability/id :native-runtime
+    :capability/grants #{:runtime-native-services}}]
   :capability/check-time :method-invocation
   :capability/namespace-load-effect :none
   :capability/denial :native/capability-denied}

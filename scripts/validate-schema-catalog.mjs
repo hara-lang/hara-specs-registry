@@ -7,7 +7,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const fixture = process.argv[2]
   ? path.resolve(process.argv[2])
-  : path.join(root, "01-lang/011-typed-catalog/draft/conformance/catalog-v1.json");
+  : path.join(root, "01-lang/011-typed-catalog/draft/conformance/catalog-v2.json");
 const jsonOutput = process.argv.includes("--json");
 
 let catalog;

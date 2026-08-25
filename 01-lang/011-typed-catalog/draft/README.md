@@ -11,11 +11,10 @@ provenance, and structural admission checks over those Hara-derived values.
 ## Published artifacts
 
 - `std-typed-catalog.edn` — normative draft contract.
-- `conformance/catalog-v1.json` — pinned identified-schema catalog fixture.
+- `conformance/catalog-v2.json` — pinned identified-schema catalog fixture.
 
-The fixture includes multiple versions, exact dependencies, a self-recursive
-schema, dependency-first component evidence, and an explicitly tooling-only
-latest-version view.
+The fixture includes exact dependencies, a self-recursive schema, and
+dependency-first component evidence.
 
 Run:
 
@@ -28,7 +27,7 @@ npm run check
 The JavaScript validator deliberately does **not** normalize HAL schema forms or
 recompute semantic schema hashes. It verifies immutable envelope identity,
 canonical ordering, exact dependency completeness, recursive components,
-provenance, tooling/latest isolation, and the registry document digest.
+provenance and the registry document digest.
 
 The fixture pins the exact Hara revision and source paths from which its hashes
 and graph evidence were derived. A Hara integration gate must read these

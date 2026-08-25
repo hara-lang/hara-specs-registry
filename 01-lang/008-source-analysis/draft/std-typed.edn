@@ -4,7 +4,7 @@
  :document/status :draft
  :document/title "Portable schemas and conservative inference for Hara"
  :document/summary
- "Defines the portable interpretation of ^{:schema ...} metadata, normalized schema data, directional assignment, conservative inference, project schema indexes, and integration with non-evaluating source analysis."
+ "Defines the portable interpretation of ^{:schema ...} metadata, typed struct declaration schemas, normalized schema data, directional assignment, conservative inference, project schema indexes, and integration with non-evaluating source analysis."
 
  :typed/scope
  {:scope/metadata-site :definition-symbol
@@ -44,6 +44,9 @@
   {:requirement/id :std.typed/index-before-analysis
    :requirement/level :must
    :requirement/text "A project-wide schema index is built before individual files are analyzed so forward, aliased, referred, qualified, and recursive references have a stable resolution environment."}
+  {:requirement/id :std.typed/declaration-registry
+   :requirement/level :must
+   :requirement/text "defstruct and defmutable use their typed field vector as the sole declaration source; a legacy symbol field is :any, a typed field may carry properties, and the type Var plus generated ->Type and map->Type products share one first-class :struct schema descriptor."}
   {:requirement/id :std.typed/metadata-precedence
    :requirement/level :must
    :requirement/text "Resolved metadata contracts take precedence over pinned profile signatures; profile signatures remain the fallback when metadata is absent or unknown."}
@@ -93,6 +96,13 @@
    :map {:surface [:map [field-name field-type] & fields]
          :normal :map
          :duplicate-fields :invalid}
+   :struct {:surface [:struct properties? (var qualified/type) & fields]
+            :properties #{:mutable?}
+            :field-surface [field-name field-type]
+            :field-properties [field-name properties field-type]
+            :normal :struct
+            :qualified-name :required
+            :duplicate-fields :invalid}
    :fn {:surface [:fn [fixed-inputs & rest-input] output]
         :normal :fn
         :single-arity true
@@ -129,6 +139,10 @@
   :tuple {:kind :tuple :items [:normal-form]}
   :map {:kind :map
         :fields [{:name :field-name :type :normal-form}]}
+  :struct {:kind :struct
+           :name qualified/type
+           :mutable? :boolean
+           :fields [{:name :field-name :type :normal-form}]}
   :fn {:kind :fn
        :inputs {:fixed [:normal-form]
                 :rest :normal-form-or-nil}
@@ -165,6 +179,8 @@
     :invalid-arity
     :invalid-map-field
     :duplicate-map-field
+    :invalid-struct-field
+    :duplicate-struct-field
     :invalid-function-inputs
     :invalid-function-rest
     :empty-function
@@ -254,6 +270,7 @@
    :value #{def}}
   :function-requirement "A resolved schema on defn or defn- is :fn or :function."
   :value-requirement "A resolved schema on def describes the initializer value."
+  :declaration-requirement "A defstruct or defmutable field vector is normalized into a :struct schema; declaration metadata is derived from fields rather than a second schema annotation."
   :named-schema-definition "A def initializer that itself normalizes as a schema may be indexed when reachable from an annotation."
   :collection
   {:source :recovering-std.block-tree
@@ -268,6 +285,8 @@
   {:definitions :map-qualified-symbol-to-reachable-normal-form
    :values :map-qualified-symbol-to-resolved-value-contract
    :functions :map-qualified-symbol-to-resolved-function-contract
+   :types :map-qualified-symbol-to-resolved-struct-schema
+   :declarations :map-qualified-symbol-to-declaration-descriptor
    :inferred-functions :map-qualified-symbol-to-inferred-function-schema
    :mode #{:off :warn :error}}
   :resolution
@@ -281,11 +300,12 @@
    :external-unavailable :unknown
    :external-supplied :schema-index-option}
   :reachability
-  {:definitions "Only named schema definitions reachable from annotation roots are published."
+  {:definitions "Named schema definitions and declaration types are published from the project declaration registry."
+   :generated-products "Each struct declaration publishes positional and map constructor contracts derived from the same descriptor."
    :invalid-reachable-definition :invalid-schema
    :unreferenced-schema-like-def :not-contractual}
   :external-index
-  {:keys [:definitions :values :functions :inferred-functions]
+  {:keys [:definitions :values :functions :types :declarations :inferred-functions]
    :merge-precedence :project-over-external-for-project-definitions}
   :consumer-output "analyze-source and lint-project return the public normalized schema index for LSP and other consumers."}
 
@@ -308,6 +328,9 @@
   {:tool.lint/invalid-schema
    {:requirement :tool.source-analysis/schema-normalization
     :trigger "An inline or reachable named schema is malformed or unsupported."}
+   :tool.lint/invalid-declaration
+   {:requirement :tool.source-analysis/declaration-collection
+    :trigger "A defstruct or defmutable declaration has an invalid field vector or duplicate field name."}
    :tool.lint/unresolved-schema
    {:requirement :tool.source-analysis/schema-resolution
     :trigger "A schema reference targets a project namespace but cannot be resolved from the project index."}

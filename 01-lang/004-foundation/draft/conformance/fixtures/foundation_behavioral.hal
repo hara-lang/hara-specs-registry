@@ -277,6 +277,8 @@
  std.foundation/unreduced
  std.foundation/update
  std.foundation/update-in
+ std.foundation/uuid
+ std.foundation/uuid?
  std.foundation/val
  std.foundation/vals
  std.foundation/var-sym
@@ -628,6 +630,9 @@
    'std.foundation/assoc-in [{:a {:b 2}} (fn [] (assoc-in {} [:a :b] 2))]
    'std.foundation/update [{:a 2} (fn [] (update {:a 1} :a inc))]
    'std.foundation/update-in [{:a {:b 2}} (fn [] (update-in {:a {:b 1}} [:a :b] inc))]
+   'std.foundation/uuid [:std.native.UUID (fn [] (type (std.foundation/uuid "00000000-0000-0000-0000-000000000000")))]
+   'std.foundation/uuid? [true (fn [] (and (std.foundation/uuid? (std.foundation/uuid "00000000-0000-0000-0000-000000000000"))
+                                            (not (std.foundation/uuid? :not-a-uuid))))]
    'std.foundation/merge [{:a 1 :b 2} (fn [] (merge {:a 1} {:b 2}))]
    'std.foundation/select-keys [{:b 2} (fn [] (select-keys {:a 1 :b 2} [:b]))]
    'std.foundation/range [[0 1 2] (fn [] (vec (range 3)))]

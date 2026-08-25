@@ -4,8 +4,8 @@
     "repository": "hara-lang/hara-specs-registry",
     "ref": "main",
     "manifestPath": "spec-manifest.json",
-    "manifestDigest": "sha256:37ec09d16abd72eb09c6dd01bd4ad2c8a00e3e1a3657de81b6c3f3af3c1375d8",
-    "catalogueDigest": "sha256:d0224fb4e756bd24a1885196762fc06ea1abbbbaf6d9dba29e4439f751098ca3",
+    "manifestDigest": "sha256:cecc1ae1203ef447421cf1cc5ef6211a21bcffce05d0e53e66aa687deab37068",
+    "catalogueDigest": "sha256:13320a9c55ab21c24ce3599581170d04dfa2b26ef2e48011444a85e857161d8d",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -857,7 +857,7 @@
       "classification": "hara",
       "sourcePath": "01-lang/011-typed-catalog/draft/std-typed-catalog.edn",
       "documentationPath": "01-lang/011-typed-catalog/draft/README.md",
-      "requirements": 10,
+      "requirements": 9,
       "formats": [
         "application/edn"
       ],
@@ -1003,7 +1003,7 @@
       "slug": "tool-source-analysis",
       "coordinate": "tool/source-analysis",
       "title": "Static source analysis for Hara",
-      "summary": "Portable rules and generated-profile inputs for non-evaluating Hara source analysis, including canonical ^{:schema ...} metadata collection and checking.",
+      "summary": "Portable rules and generated-profile inputs for non-evaluating Hara source analysis, including canonical schema metadata, typed struct declarations, and checking.",
       "type": "tool/source-analysis-spec",
       "version": "alpha",
       "status": "draft",
@@ -1012,7 +1012,7 @@
       "classification": "hara",
       "sourcePath": "01-lang/008-source-analysis/draft/source-analysis.edn",
       "documentationPath": "01-lang/008-source-analysis/draft/README.md",
-      "requirements": 20,
+      "requirements": 21,
       "formats": [
         "application/edn"
       ],

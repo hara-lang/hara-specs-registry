@@ -6,7 +6,7 @@ The authoritative document is
 [`native-spec.edn`](native-spec.edn). It conforms to the
 [`Hara native-boundary meta-spec`](../metaspec/README.md).
 
-This layer owns 22 guest-visible native descriptors and their canonical
+This layer owns 33 guest-visible native descriptors and their canonical
 `Type/method` Vars. The short form resolves through the descriptor registry to
 the canonical `std.native.Type/method` identity. It defines capability checks
 and runtime-profile parity without exposing general Java, Rust, JavaScript, or

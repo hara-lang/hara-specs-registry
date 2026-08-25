@@ -4,7 +4,7 @@
  :document/status :draft
  :document/title "Static source analysis for Hara"
  :document/summary
- "Portable rules and generated-profile inputs for non-evaluating Hara source analysis, including canonical ^{:schema ...} metadata collection and checking."
+ "Portable rules and generated-profile inputs for non-evaluating Hara source analysis, including canonical schema metadata, typed struct declarations, and checking."
 
  :analysis/scope
  {:scope/input :std.block/recovering-tree
@@ -47,6 +47,9 @@
   {:requirement/id :tool.source-analysis/schema-collection
    :requirement/level :must
    :requirement/text "The analyzer collects ^{:schema ...} metadata, annotated values, and reachable named schema Vars from recovering source trees without evaluating code."}
+  {:requirement/id :tool.source-analysis/declaration-collection
+   :requirement/level :must
+   :requirement/text "The analyzer collects defstruct and defmutable field vectors into one declaration registry; legacy symbol fields normalize to :any, typed fields retain their properties, and generated type and constructor products share the declaration schema."}
   {:requirement/id :tool.source-analysis/schema-normalization
    :requirement/level :must
    :requirement/text "Every collected schema is normalized by std.typed; malformed or unsupported inline schemas and reachable named schemas produce invalid-schema findings."}
@@ -116,6 +119,7 @@
   :style-finding-types [:tool.lint/redundant-vec]
   :schema-finding-types
   [:tool.lint/invalid-schema
+   :tool.lint/invalid-declaration
    :tool.lint/unresolved-schema
    :tool.lint/invalid-function-schema
    :tool.lint/schema-arity-mismatch
@@ -123,6 +127,6 @@
    :tool.lint/schema-value-mismatch
    :tool.lint/schema-return-mismatch]
   :schema-index-required
-  [:definitions :values :functions :inferred-functions :mode]
+  [:definitions :values :functions :types :declarations :inferred-functions :mode]
   :exit-policy {:errors 1 :warnings 0 :clean 0}
   :formats [:text :edn]}}

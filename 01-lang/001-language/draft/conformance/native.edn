@@ -105,7 +105,7 @@
   :global-aliases
   [Maths Num Bits Kernel Sandbox Package String Bytes Crypto OS Process File Socket
    Promise Coroutine Stream Arr Obj Runtime Printer Document Edn Json Host Work Test
-   RegExp Result Schema Error Base Algo Iter]
+   RegExp Result Schema Exception Base Algo Iter]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
   :blank-namespaces true
@@ -414,14 +414,14 @@
    :availability :implemented
    :methods [compile of kind form ast origin]
    :method-classification {:native-only :all}}
-  {:name Error
+  {:name Exception
    :availability :implemented
    :methods [new message class]
    :method-classification {:foundation-primitive :all}}
   {:name Base
    :availability :implemented
    :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
-             keyword uuid reduced unreduced apply number? long?
+             keyword uuid reduced unreduced hash apply number? long?
              satisfies? special-symbol? type instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}

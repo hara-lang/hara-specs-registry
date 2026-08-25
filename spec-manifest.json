@@ -1334,7 +1334,7 @@
       "owner": "hara-lang"
     },
     {
-      "path": "01-lang/011-typed-catalog/draft/conformance/catalog-v1.json",
+      "path": "01-lang/011-typed-catalog/draft/conformance/catalog-v2.json",
       "kind": "json",
       "classification": "hara",
       "owner": "hara-lang"

@@ -1100,6 +1100,14 @@
                                        :kind :defn,
                                        :signature "[value keys function & args]"}],
                        :name update-in}
+                      {:declarations [{:doc "Creates a random UUID or constructs one from a value or two bit halves.",
+                                       :kind :defn,
+                                       :signature ""}],
+                       :name uuid}
+                      {:declarations [{:doc "Returns true when value has the portable UUID type.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name uuid?}
                       {:declarations [{:doc "Returns the value of a map entry.",
                                        :kind :defn,
                                        :signature "[entry]"}],
