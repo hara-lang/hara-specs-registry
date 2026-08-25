@@ -28,7 +28,7 @@
             :method Maths/sin
             :wrapper std.foundation/sin}
   :constructor new
-  :predicate instance?
+  :type-observation type
   :interface-prefix false}
 
  :source-resolution
@@ -105,7 +105,7 @@
   :global-aliases
   [Maths Num Bits Kernel Sandbox Package String Bytes Crypto OS Process File Socket
    Promise Coroutine Stream Arr Obj Runtime Printer Document Edn Json Host Work Test
-   RegExp UUID Result Schema Error Base Algo Iter]
+   RegExp Result Schema Error Base Algo Iter]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
   :blank-namespaces true
@@ -273,10 +273,10 @@
    :wrapper-source "lib/src/std/foundation/string.hal"}
   {:name Bytes
    :availability :implemented
-   :methods [new instance? count get set copy slice u8 s8]
+   :methods [new count get set copy slice u8 s8]
    :method-classification
    {:hal-wrapper [count get set copy slice u8 s8]
-    :foundation-primitive [new instance?]}
+    :foundation-primitive [new]}
    :wrapper-source "lib/src/std/foundation/bytes.hal"}
   {:name Crypto
    :availability :implemented
@@ -291,7 +291,7 @@
    :method-classification {:native-only :all}}
   {:name Process
    :availability :capability-gated
-   :methods [spawn instance? alive? write close-input stdout stderr
+   :methods [spawn alive? write close-input stdout stderr
              stdout-stream stderr-stream wait kill]
    :method-classification {:native-only :all}
    :streaming
@@ -331,30 +331,29 @@
                 :hal-callbacks :evaluator-thread}}}
   {:name Promise
    :availability :implemented
-   :methods [run new from all delay instance?]
+   :methods [run new from all delay]
    :method-classification
-   {:hal-wrapper [run new from all delay]
-    :foundation-primitive [instance?]}
+   {:hal-wrapper [run new from all delay]}
    :wrapper-source "lib/src/std/foundation/promise.hal"}
   {:name Coroutine
    :availability :implemented
-   :methods [create yield await instance?]
+   :methods [create yield await]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation/coroutine.hal"}
   {:name Stream
    :availability :implemented
-   :methods [create generate next instance?]
+   :methods [create generate next]
    :method-classification {:hal-wrapper [generate]
-                           :native-only [create next instance?]}
+                           :native-only [create next]}
    :wrapper-source "lib/src/std/foundation.hal"}
   {:name Arr
    :availability :implemented
-   :methods [new instance? get set push-first push-last pop-first pop-last
+   :methods [new get set push-first push-last pop-first pop-last
              insert remove clone slice map filter fold-left fold-right]
    :method-classification {:foundation-primitive :all}}
   {:name Obj
    :availability :implemented
-   :methods [new instance? get set has? delete clone assign keys vals pairs]
+   :methods [new get set has? delete clone assign keys vals pairs]
    :method-classification {:foundation-primitive :all}}
   {:name Runtime
    :availability :implemented
@@ -393,18 +392,14 @@
    :method-classification {:native-only :all}}
   {:name RegExp
    :availability :implemented
-   :methods [instance? compile pattern find? find matches replace split]
+   :methods [compile pattern find? find matches replace split]
    :method-classification
    {:hal-wrapper [compile pattern find matches replace split]
-    :foundation-primitive [instance? find?]}
+    :foundation-primitive [find?]}
    :wrapper-source "lib/src/std/foundation.hal"}
-  {:name UUID
-   :availability :implemented
-   :methods [instance?]
-   :method-classification {:foundation-primitive :all}}
   {:name Result
    :availability :implemented
-   :methods [create synchronize instance? success? error? status data
+   :methods [create synchronize success? error? status data
              error-value context with-context]
    :method-classification {:native-only :all}
    :dereference
@@ -417,7 +412,7 @@
      :cases [:result-deref-success :result-deref-error]}}}
   {:name Schema
    :availability :implemented
-   :methods [compile of instance? kind form ast origin]
+   :methods [compile of kind form ast origin]
    :method-classification {:native-only :all}}
   {:name Error
    :availability :implemented
@@ -426,7 +421,7 @@
   {:name Base
    :availability :implemented
    :methods [list vector vec set tuple hash-map hash-set atom pointer symbol
-             keyword reduced unreduced apply number? long?
+             keyword uuid reduced unreduced apply number? long?
              satisfies? special-symbol? type instance?]
    :method-classification {:hal-wrapper :all}
    :wrapper-source "lib/src/std/foundation.hal"}
@@ -446,7 +441,7 @@
              iter-partition-pair iter-partition-all iter-partition iter-range
              iter-constantly iter-repeatedly iter-iterate]
    :method-classification
-   {:foundation-primitive [seq seq? iter iter? iter-next? iter-next]
+   {:foundation-primitive [seq iter iter-next? iter-next]
     :native-only [iter-finite? iter-materialize iter-close iter-concat iter-map
                   iter-filter iter-take-while iter-drop-while iter-mapcat
                   iter-keep iter-interpose iter-interleave iter-every?

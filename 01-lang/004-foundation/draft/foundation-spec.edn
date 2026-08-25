@@ -153,6 +153,18 @@
    [zero? pos? neg? even? odd? nil? false? true? has? empty?
     distinct?]
    :surface/classification :portable-hal}
+  {:surface/id :foundation/protocol-predicates
+   :surface/domain :function
+   :surface/symbols
+   [iterable? iterator? counted? reducible? indexed? associative?
+    findable? lookupable? derefable? resettable? casable? watchable?
+    applicable? mutable? persistent?]
+   :surface/classification :portable-hal
+   :surface/requirements
+   [{:requirement/id :foundation/protocol-predicate-ownership
+     :requirement/level :must
+     :requirement/text
+     "Protocol capability predicates are Foundation wrappers over satisfies? and are not duplicate Base or Iter native methods."}]}
   {:surface/id :foundation/value-classification
    :surface/domain :function
    :surface/symbols [type vector? tuple? pair? coll?]
@@ -308,6 +320,10 @@
     :requirement/level :must
     :requirement/text
     "Persistent collections, arrays, and objects rebuild eagerly without source mutation; explicit seqs and iterators, strings, bytes, and otherwise unsupported iterables remain lazy. Multi-source operations and concat use the first source, while zero-source concat returns an empty lazy sequence."}
+   {:requirement/id :foundation/indexed-sequence-access
+    :requirement/level :must
+    :requirement/text
+    "first and last are implemented in std.foundation. When a value satisfies INth and ICount, first reads index 0 and last reads count minus one before consulting peek protocols or iterating; empty indexed values return nil."}
    {:requirement/id :foundation/result-family-details
     :requirement/level :must
     :requirement/text

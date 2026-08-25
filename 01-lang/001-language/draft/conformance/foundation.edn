@@ -249,13 +249,13 @@
     parse-long parse-double
     bit-and bit-or bit-xor bit-not bit-shift-left bit-shift-right]
    :truffle-only
-   [var-sym regexp? load-string select-keys merge]
+   [var-sym regexp? load-string select-keys merge uuid]
    :rust-only []
    :missing-both
    [map-juxt filter-keys filter-vals sid
     map-indexed keep-indexed flatten min-key max-key
     rand-int rand-nth random-sample shuffle
-    var-ns bound? unbound? error? uuid
+    var-ns bound? unbound? error?
     quot rem nan? infinite?
     bit-and-not bit-clear bit-flip bit-set bit-test rand
     wrapped wrapped?]

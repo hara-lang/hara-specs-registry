@@ -1168,6 +1168,66 @@
                                        :kind :defn,
                                        :signature "[value & values]"}],
                        :name zip}
+                      {:declarations [{:doc "Returns true when value satisfies IApplicable.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name applicable?}
+                      {:declarations [{:doc "Returns true when value satisfies IAssoc.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name associative?}
+                      {:declarations [{:doc "Returns true when value satisfies ICas.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name casable?}
+                      {:declarations [{:doc "Returns true when value satisfies ICount.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name counted?}
+                      {:declarations [{:doc "Returns true when value satisfies IDeref.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name derefable?}
+                      {:declarations [{:doc "Returns true when value satisfies IFind.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name findable?}
+                      {:declarations [{:doc "Returns true when value satisfies IIter.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name iterable?}
+                      {:declarations [{:doc "Returns true when value satisfies IIterator.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name iterator?}
+                      {:declarations [{:doc "Returns true when value satisfies INth.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name indexed?}
+                      {:declarations [{:doc "Returns true when value satisfies ILookup.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name lookupable?}
+                      {:declarations [{:doc "Returns true when value satisfies IMutable.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name mutable?}
+                      {:declarations [{:doc "Returns true when value satisfies IPersistent.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name persistent?}
+                      {:declarations [{:doc "Returns true when value satisfies IReduce.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name reducible?}
+                      {:declarations [{:doc "Returns true when value satisfies IReset.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name resettable?}
+                      {:declarations [{:doc "Returns true when value satisfies IWatch.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name watchable?}
                       {:declarations [{:doc "Returns a map of map-keys to map-values, stopping at the shorter input.",
                                        :kind :defn,
                                        :signature "[map-keys map-values]"}],

@@ -29,7 +29,15 @@
     "rust/web/hta-browser.spec.js"]}]
 
  :suite/profiles
- [{:profile/id :hta/portable
+ [{:profile/id :hta/jvm-rust-wire
+   :profile/implementations [:hta/truffle :hta/rust]
+   :profile/required-cases
+   [:hta.case/golden-vector
+    :hta.case/portable-round-trip
+    :hta.case/canonical-collections
+    :hta.case/malformed-frame]
+   :profile/portable true}
+  {:profile/id :hta/portable
    :profile/implementations [:hta/truffle :hta/rust :hta/browser]
    :profile/required-cases
    [:hta.case/manifest
@@ -84,7 +92,7 @@
    :case/method :exact-bytes
    :case/input ["x" 42 true]
    :case/expect
-   [72 84 65 49
+   [72 84 65 48
     9 0 0 0 3
     4 0 0 0 1 120
     3 0 0 0 0 0 0 0 42

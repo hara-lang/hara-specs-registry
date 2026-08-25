@@ -104,7 +104,7 @@
   {:native/id :std.native/bytes
    :native/symbol Bytes :native/namespace std.native.Bytes
    :native/availability :portable
-   :native/methods [new instance? count get set copy slice u8 s8]}
+   :native/methods [new count get set copy slice u8 s8]}
   {:native/id :std.native/file
    :native/symbol File :native/namespace std.native.File
    :native/availability :capability-gated :native/capability :file
@@ -118,20 +118,20 @@
   {:native/id :std.native/promise
    :native/symbol Promise :native/namespace std.native.Promise
    :native/availability :portable
-   :native/methods [run new from all delay instance?]}
+   :native/methods [run new from all delay]}
   {:native/id :std.native/coroutine
    :native/symbol Coroutine :native/namespace std.native.Coroutine
    :native/availability :portable
-   :native/methods [create yield await instance?]}
+   :native/methods [create yield await]}
   {:native/id :std.native/arr
    :native/symbol Arr :native/namespace std.native.Arr
    :native/availability :portable
-   :native/methods [new instance? get set push-first push-last pop-first pop-last
+   :native/methods [new get set push-first push-last pop-first pop-last
                     insert remove clone slice map filter fold-left fold-right]}
   {:native/id :std.native/obj
    :native/symbol Obj :native/namespace std.native.Obj
    :native/availability :portable
-   :native/methods [new instance? get set has? delete clone assign keys vals pairs]}
+   :native/methods [new get set has? delete clone assign keys vals pairs]}
   {:native/id :std.native/runtime
    :native/symbol Runtime :native/namespace std.native.Runtime
    :native/availability :portable
@@ -151,10 +151,7 @@
    :native/methods [call describe capabilities capability?]}
   {:native/id :std.native/regexp
    :native/symbol RegExp :native/namespace std.native.RegExp
-   :native/availability :portable :native/methods [instance?]}
-  {:native/id :std.native/uuid
-   :native/symbol UUID :native/namespace std.native.UUID
-   :native/availability :portable :native/methods [instance?]}
+   :native/availability :portable :native/methods [compile pattern find? find matches replace split]}
   {:native/id :std.native/error
    :native/symbol Error :native/namespace std.native.Error
    :native/availability :portable :native/methods [new message class]}
@@ -163,7 +160,7 @@
    :native/availability :portable
    :native/methods
    [list vector vec set tuple hash-map hash-set atom pointer symbol keyword
-    reduced apply number? long?
+    uuid reduced apply number? long?
     satisfies? type instance?]}
   {:native/id :std.native/iter
    :native/symbol Iter :native/namespace std.native.Iter
