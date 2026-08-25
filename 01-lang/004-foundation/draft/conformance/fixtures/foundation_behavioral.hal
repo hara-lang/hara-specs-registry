@@ -28,6 +28,7 @@
  std.foundation/apply-as
  std.foundation/apply-in
  std.foundation/apply-with
+ std.foundation/array
  std.foundation/array?
  std.foundation/asin
  std.foundation/asinh
@@ -101,6 +102,7 @@
  std.foundation/eval-in-ns
  std.foundation/even?
  std.foundation/every?
+ std.foundation/ex?
  std.foundation/exp
  std.foundation/false?
  std.foundation/ffirst
@@ -172,6 +174,7 @@
  std.foundation/not-nil?
  std.foundation/ns-alias-state
  std.foundation/number?
+ std.foundation/object
  std.foundation/object?
  std.foundation/odd?
  std.foundation/pair
@@ -564,8 +567,11 @@
    'std.foundation/persistent? [true (fn [] (persistent? [1]))]
    'std.foundation/function? [true (fn [] (function? (fn [value] value)))]
    'std.foundation/bytes? [true (fn [] (bytes? (bytes 1)))]
-   'std.foundation/array? [true (fn [] (array? (array 1)))]
-   'std.foundation/object? [true (fn [] (object? (object "a" 1)))]
+   'std.foundation/array [true (fn [] (array? (std.foundation/array 1)))]
+   'std.foundation/array? [true (fn [] (array? (std.foundation/array 1)))]
+   'std.foundation/ex? [true (fn [] (ex? (Exception/new "fixture" {:kind :fixture})))]
+   'std.foundation/object [true (fn [] (object? (std.foundation/object "a" 1)))]
+   'std.foundation/object? [true (fn [] (object? (std.foundation/object "a" 1)))]
    'std.foundation/list? [true (fn [] (list? '(1)))]
    'std.foundation/cons? [true (fn [] (cons? (cons 1 '(2))))]
    'std.foundation/vector? [true (fn [] (vector? [1]))]
@@ -932,7 +938,7 @@
   [error]
   (let [data (ex-data error)
         declared (get data :ex/class)
-        native (Error/class error)]
+        native (Exception/class error)]
     (cond
       (keyword? declared) declared
       (keyword? native) native

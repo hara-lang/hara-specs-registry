@@ -152,8 +152,8 @@
   {:native/id :std.native/regexp
    :native/symbol RegExp :native/namespace std.native.RegExp
    :native/availability :portable :native/methods [compile pattern find? find matches replace split]}
-  {:native/id :std.native/error
-   :native/symbol Error :native/namespace std.native.Error
+  {:native/id :std.native/exception
+   :native/symbol Exception :native/namespace std.native.Exception
    :native/availability :portable :native/methods [new message class]}
   {:native/id :std.native/base
    :native/symbol Base :native/namespace std.native.Base

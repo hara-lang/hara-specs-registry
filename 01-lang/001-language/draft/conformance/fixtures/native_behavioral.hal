@@ -19,11 +19,11 @@
    {:source "(ns blank.native (:config {:blank true})) [(std.foundation/= Iter std.native.Iter) (Iter/iter-next (Iter/iter-map (fn [value] value) [1]))]"
     :expected [true 1]}
    :exact-error-class
-   {:source "[(Error/message (Error/new \"native failure\" {})) (normalized-error-class (Error/new \"native failure\" {:ex/class :ex.class/native-failure}))]"
+   {:source "[(Exception/message (Exception/new \"native failure\" {})) (normalized-error-class (Exception/new \"native failure\" {:ex/class :ex.class/native-failure}))]"
     :expected ["native failure" :ex.class/native-failure]}
    :concrete-native-type
-   {:source "[(Base/type [1]) (Base/type (Base/vector 1))]"
-    :expected [:std.native.Tuple :std.native.Vector]}
+   {:source "[(Base/type [1]) (Base/type (Base/vector 1)) (Base/type (Exception/new \"fixture\" {}))]"
+    :expected [:std.native.Tuple :std.native.Vector :std.native.Exception]}
    :reduced-round-trip
    {:source "[(Base/unreduced (Base/reduced 42)) (Base/unreduced 42)]"
     :expected [42 42]
@@ -165,13 +165,13 @@
    'Result/error? [true (fn [] (Result/error? (Result/create :error "boom")))]
    'Result/status [:error (fn [] (Result/status (Result/create :error "boom")))]
    'Result/data [42 (fn [] (Result/data (Result/create :success 42)))]
-   'Result/error-value ["boom" (fn [] (Error/message (Result/error-value (Result/create :error "boom"))))]
+   'Result/error-value ["boom" (fn [] (Exception/message (Result/error-value (Result/create :error "boom"))))]
    'Result/context [{:trace 7} (fn [] (Result/context (Result/create :success 42 {:trace 7})))]
    'Result/with-context [{:trace 8} (fn [] (Result/context (Result/with-context (Result/create :success 42) {:trace 8})))]
    'Schema/compile [:std.native.SchemaType (fn [] (type (Schema/compile :int)))]
-   'Error/new ["boom" (fn [] (Error/message (Error/new "boom" {:ex/class :ex.class/demo})))]
-   'Error/message ["boom" (fn [] (Error/message (Error/new "boom" {})))]
-   'Error/class [:ex.class/demo (fn [] (normalized-error-class (Error/new "boom" {:ex/class :ex.class/demo})))]
+   'Exception/new ["boom" (fn [] (Exception/message (Exception/new "boom" {:ex/class :ex.class/demo})))]
+   'Exception/message ["boom" (fn [] (Exception/message (Exception/new "boom" {})))]
+   'Exception/class [:ex.class/demo (fn [] (normalized-error-class (Exception/new "boom" {:ex/class :ex.class/demo})))]
    'Base/list ['(1 2) (fn [] (Base/list 1 2))]
    'Base/vector [[1 2] (fn [] (Base/vector 1 2))]
    'Base/vec [[1 2] (fn [] (Base/vec '(1 2)))]
@@ -365,7 +365,7 @@
   [error]
   (let [data (ex-data error)
         declared (get data :ex/class)
-        native (Error/class error)]
+        native (Exception/class error)]
     (cond
       (keyword? declared) declared
       (keyword? native) native
@@ -428,7 +428,7 @@
   [(= 2 (Maths/abs -2))
    (= [:error :native/error] (normalized-outcome (fn [] (Maths/abs))))
    (= [:error :native/error] (normalized-outcome (fn [] (Maths/abs "bad"))))
-   (= :ex.class/demo (normalized-error-class (Error/new "boom" {:ex/class :ex.class/demo})))
+   (= :ex.class/demo (normalized-error-class (Exception/new "boom" {:ex/class :ex.class/demo})))
    (= [1 2] (Base/vec [1 2]))
    (= #{1 2} (Base/set [1 2 1]))
    (= 9 (let [value (Arr/new 1 2)] (Arr/set value 1 9) (Arr/get value 1)))
@@ -440,7 +440,7 @@
         [(deref result) @result]))
    (= [[:error :ex.class/result] [:error :ex.class/result]]
       (let [result (Result/create :error
-                     (Error/new "boom" {:ex/class :ex.class/result}))]
+                     (Exception/new "boom" {:ex/class :ex.class/result}))]
         [(normalized-outcome (fn [] (deref result)))
          (normalized-outcome (fn [] @result))]))
    (= true (has? {:a nil} :a))
@@ -465,11 +465,11 @@
    {:id :exact-error-class
     :points [:normalized-result :normalized-error]
     :expected :ex.class/demo
-    :actual (normalized-error-class (Error/new "boom" {:ex/class :ex.class/demo}))}
+    :actual (normalized-error-class (Exception/new "boom" {:ex/class :ex.class/demo}))}
    {:id :concrete-native-type
     :points [:valid-value :normalized-result]
-    :expected [:std.native.Tuple :std.native.Vector]
-    :actual [(Base/type [1]) (Base/type (Base/vector 1))]}
+    :expected [:std.native.Tuple :std.native.Vector :std.native.Exception]
+    :actual [(Base/type [1]) (Base/type (Base/vector 1)) (Base/type (Exception/new "fixture" {}))]}
    {:id :persistent-vector-value
     :points [:valid-value :identity-fast-path]
     :expected [1 2] :actual (Base/vec [1 2])}
@@ -501,7 +501,7 @@
     :points [:normalized-error :result-dereference :reader-shorthand]
     :expected [[:error :ex.class/result] [:error :ex.class/result]]
     :actual (let [result (Result/create :error
-                           (Error/new "boom" {:ex/class :ex.class/result}))]
+                           (Exception/new "boom" {:ex/class :ex.class/result}))]
               [(normalized-outcome (fn [] (deref result)))
                (normalized-outcome (fn [] @result))])}
    {:id :foundation-has-boundary

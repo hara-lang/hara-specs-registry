@@ -2969,8 +2969,8 @@
                             :native/profiles [:jvm :rust :wasm]
                            }
                          {
-                            :native/name Error
-                            :native/internal-namespace std.native.Error
+                            :native/name Exception
+                            :native/internal-namespace std.native.Exception
                             :native/status :implemented
                             :native/profiles [:jvm :rust :wasm]
                            }

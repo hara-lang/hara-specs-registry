@@ -104,6 +104,10 @@
                                        :kind :defn,
                                        :signature ""}],
                        :name apply-with}
+                      {:declarations [{:doc "Creates a mutable array from values.",
+                                       :kind :defn,
+                                       :signature "[& values]"}],
+                       :name array}
                       {:declarations [{:doc "Returns true when value is a mutable array.",
                                        :kind :defn,
                                        :signature "[value]"}],
@@ -396,6 +400,10 @@
                                        :kind :defn,
                                        :signature ""}],
                        :name every?}
+                      {:declarations [{:doc "Returns true when value has the portable Exception type.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name ex?}
                       {:declarations [{:doc "Returns Euler's number raised to value.",
                                        :kind :defn,
                                        :signature "[value]"}],
@@ -680,6 +688,10 @@
                                        :kind :defn,
                                        :signature "[value]"}],
                        :name number?}
+                      {:declarations [{:doc "Creates a mutable object from alternating keys and values.",
+                                       :kind :defn,
+                                       :signature "[& entries]"}],
+                       :name object}
                       {:declarations [{:doc "Returns true when value is a mutable object.",
                                        :kind :defn,
                                        :signature "[value]"}],

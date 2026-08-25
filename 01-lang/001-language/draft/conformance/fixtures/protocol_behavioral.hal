@@ -36,7 +36,7 @@
         (assoc (state fixture) key value))
       value))
 
-(defn thrown? [f]
+(defn raises? [f]
   (try
     (do (f) false)
     (catch Throwable error true)))
@@ -56,7 +56,7 @@
   (result protocol
           method
           success
-          (thrown? (fn [] (method-var)))
+          (raises? (fn [] (method-var)))
           unsupported-form))
 
 (extend-type ProtocolUseCase IApplicable
@@ -301,7 +301,7 @@
         fixture)))
 
 (extend-type ProtocolUseCase IToMutable
-  (to-mutable [fixture] (std.native.Arr/new 1 2 3)))
+  (to-mutable [fixture] (std.foundation/array 1 2 3)))
 
 (extend-type ProtocolUseCase IToPersistent
   (to-persistent [fixture] [1 2 3]))
@@ -552,10 +552,10 @@
             (nil? (resolve 'collection?)))
           (receiver-case :predicate/non-ifn-immutable-rejected
             true
-            (thrown? (fn [] ((ProtocolPredicatePlain 1)))))
+            (raises? (fn [] ((ProtocolPredicatePlain 1)))))
           (receiver-case :predicate/non-ifn-mutable-rejected
             true
-            (thrown? (fn [] ((ProtocolPredicateMutablePlain 2)))))]))))
+            (raises? (fn [] ((ProtocolPredicateMutablePlain 2)))))]))))
 
 ;; Cross-cutting protocol behavior is kept beside the per-method corpus so
 ;; every runtime executes the same extension, reload, collision, mutability,
@@ -606,7 +606,7 @@
        (defprotocol ProtocolReloadExample
          (protocol-reload-read [receiver]))
        (def protocol-reload-cleared
-         (thrown? (fn [] (protocol-reload-read (ProtocolReloadBox 41)))))
+         (raises? (fn [] (protocol-reload-read (ProtocolReloadBox 41)))))
        (extend-type ProtocolReloadBox ProtocolReloadExample
          (protocol-reload-read [receiver] (+ 1 (:value receiver))))
        (def protocol-reload-after
@@ -614,15 +614,15 @@
 
        (def protocol-collision-method 7)
        (def protocol-collision-rejected
-         (thrown?
+         (raises?
            (fn []
              (eval
                '(defprotocol ProtocolCollisionExample
                   (protocol-collision-fresh [receiver])
                   (protocol-collision-method [receiver]))))))
        (def protocol-collision-atomic
-         [(thrown? (fn [] (eval 'ProtocolCollisionExample)))
-          (thrown? (fn [] (eval 'protocol-collision-fresh)))
+         [(raises? (fn [] (eval 'ProtocolCollisionExample)))
+          (raises? (fn [] (eval 'protocol-collision-fresh)))
           (= 7 protocol-collision-method)])
 
        [(receiver-case :inheritance/parent-required
