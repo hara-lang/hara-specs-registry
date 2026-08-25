@@ -6,9 +6,9 @@
   {:canonical
    {:namespace-prefix "std.protocol."
     :namespace-suffix :ascii-lowercase-protocol-name
-    :protocol-identity "<namespace>/<Protocol>"
+    :protocol-identity "<namespace>.<Protocol>/<Protocol>"
     :guest-type-reference false
-    :method-var "<namespace>/<method>"}
+    :method-var "<namespace>.<Protocol>/<method>"}
    :foundation-alias
    {:namespace "std.foundation"
     :protocol-type "<Protocol>"

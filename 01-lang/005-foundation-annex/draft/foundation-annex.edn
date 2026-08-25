@@ -3100,12 +3100,6 @@
                             :native/status :implemented
                             :native/profiles [:jvm :rust :wasm]
                            }
-                         {
-                            :native/name UUID
-                            :native/internal-namespace std.native.UUID
-                            :native/status :implemented
-                            :native/profiles [:jvm :rust :wasm]
-                           }
                         ]
  :annex/migrations [
                      {

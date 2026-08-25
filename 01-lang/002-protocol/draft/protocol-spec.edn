@@ -40,11 +40,11 @@
  :protocol/naming
  {:naming/protocol-symbol "IName"
   :naming/namespace-rule
-  "Lower-case the protocol symbol and append it to std.protocol."
+  "Lower-case the protocol symbol and append it to std.protocol as the base namespace."
   :naming/protocol-var-rule
-  "The protocol descriptor is std.protocol.<lowercase>/IName."
+  "The protocol descriptor is std.protocol.<lowercase>.IName/IName."
   :naming/method-var-rule
-  "Every method is a public Var in the same canonical protocol namespace."
+  "Every method is a public Var in std.protocol.<lowercase>.IName/<method>."
   :naming/root-alias
   "std.foundation and ordinary non-blank namespaces alias each protocol symbol to its canonical namespace."}
 
