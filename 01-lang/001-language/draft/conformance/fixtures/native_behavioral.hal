@@ -102,7 +102,7 @@
    'String/includes? [true (fn [] (String/includes? "hara" "ar"))]
    'String/starts-with? [true (fn [] (String/starts-with? "hara" "ha"))]
    'String/ends-with? [true (fn [] (String/ends-with? "hara" "ra"))]
-   'String/char-at ["a" (fn [] (String/char-at "hara" 1))]
+   'String/char-at [\a (fn [] (String/char-at "hara" 1))]
    'String/slice ["ar" (fn [] (String/slice "hara" 1 3))]
    'String/index-of [1 (fn [] (String/index-of "hara" "ar"))]
    'String/last-index-of [3 (fn [] (String/last-index-of "ababa" "ba"))]
