@@ -688,7 +688,7 @@
    'std.foundation.string/includes? [true (fn [] (str/includes? "hara" "ar"))]
    'std.foundation.string/starts-with? [true (fn [] (str/starts-with? "hara" "ha"))]
    'std.foundation.string/ends-with? [true (fn [] (str/ends-with? "hara" "ra"))]
-   'std.foundation.string/char-at ["a" (fn [] (str/char-at "hara" 1))]
+   'std.foundation.string/char-at [\a (fn [] (str/char-at "hara" 1))]
    'std.foundation.string/slice ["ar" (fn [] (str/slice "hara" 1 3))]
    'std.foundation.string/index-of [1 (fn [] (str/index-of "hara" "ar"))]
    'std.foundation.string/last-index-of [3 (fn [] (str/last-index-of "ababa" "ba"))]
