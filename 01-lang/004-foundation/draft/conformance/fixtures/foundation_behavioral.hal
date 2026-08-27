@@ -91,13 +91,12 @@
  std.foundation/drop-last
  std.foundation/drop-while
  std.foundation/empty?
- std.foundation/env-current
+ std.foundation/ns-current
  std.foundation/env-module
- std.foundation/env-namespace
- std.foundation/env-namespaces
- std.foundation/env-resolve
+ std.foundation/ns-info
+ std.foundation/ns-list
  std.foundation/env-snapshot
- std.foundation/env-vars
+ std.foundation/ns-vars
  std.foundation/eval
  std.foundation/eval-in-ns
  std.foundation/even?
@@ -173,6 +172,12 @@
  std.foundation/not-empty
  std.foundation/not-nil?
  std.foundation/ns-alias-state
+ std.foundation/ns-aliases
+ std.foundation/ns-create
+ std.foundation/ns-find
+ std.foundation/ns-name
+ std.foundation/ns-publics
+ std.foundation/resolve
  std.foundation/number?
  std.foundation/object
  std.foundation/object?
@@ -877,11 +882,14 @@
    :async/stream
    '[std.foundation/stream]
    :runtime/environment
-   '[std.foundation/*template-meta* std.foundation/env-current
-     std.foundation/env-snapshot std.foundation/env-vars
-     std.foundation/env-namespaces std.foundation/env-namespace
-     std.foundation/env-module std.foundation/env-resolve
-     std.foundation/ns-alias-state std.foundation/intern-var
+   '[std.foundation/*template-meta* std.foundation/ns-current
+     std.foundation/env-snapshot std.foundation/ns-vars
+     std.foundation/ns-list std.foundation/ns-info
+     std.foundation/env-module std.foundation/ns-aliases
+     std.foundation/ns-find std.foundation/ns-create
+     std.foundation/ns-name std.foundation/ns-publics
+     std.foundation/resolve std.foundation/ns-alias-state
+     std.foundation/intern-var
      std.foundation/eval-in-ns std.foundation/eval
      std.foundation/apply-in std.foundation/apply-as
      std.foundation/invoke-as std.foundation/with-ns

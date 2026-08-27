@@ -166,7 +166,7 @@
    :native/symbol Runtime :native/namespace std.native.Runtime
    :native/availability :portable
    :native/methods
-   [load-string macroexpand-1 gensym ns-publics the-ns ns-name var-sym current
+   [load-string macroexpand-1 gensym ns-publics ns-aliases ns-find ns-create ns-name var-sym current
     snapshot vars namespaces namespace module resolve alias-state intern-var
     eval-in eval]}
   {:native/id :std.native/printer

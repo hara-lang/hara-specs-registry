@@ -261,7 +261,7 @@
    :inventory/codec-format ['Edn/pretty 'Json/pretty]
    :inventory/schema-shape ['Schema/of 'Schema/kind 'Schema/form 'Schema/ast 'Schema/origin]
    :inventory/foundation-boundary ['Base/satisfies?]
-   :inventory/namespace-introspection ['Runtime/ns-publics 'Runtime/the-ns 'Runtime/ns-name
+   :inventory/namespace-introspection ['Runtime/ns-publics 'Runtime/ns-aliases 'Runtime/ns-find 'Runtime/ns-create 'Runtime/ns-name
                                        'Base/special-symbol?]
    :inventory/lazy-observation ['Iter/iter-take-while 'Iter/iter-drop-while 'Iter/iter-interpose 'Iter/iter-interleave 'Iter/iter-every? 'Iter/iter-any? 'Iter/iter-partition-all 'Iter/iter-partition 'Iter/iter-repeatedly]
   })
