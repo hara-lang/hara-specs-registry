@@ -132,7 +132,7 @@
   {:id :fn/as-value :source "(fn [x] x)" :expect {:display "<fn>"}}
   {:id :fn/called-in-loop :source "(let [inc (fn [x] (+ x 1))] (loop [i 0 acc 0] (if (< i 100) (recur (inc i) (+ acc i)) acc)))" :expect {:display "4950"}}
   {:id :fn/coroutine-yield-resume
-   :source "(do (def stream (std.foundation.coroutine/create (fn [] (std.foundation.coroutine/yield 42)))) (def yielded (std.protocol.icoroutine/resume stream)) (std.protocol.icoroutine/resume stream) yielded)"
+   :source "(do (def stream (std.foundation.coroutine/create (fn [] (std.foundation.coroutine/yield 42)))) (def yielded (std.protocol.icoroutine.ICoroutine/resume stream)) (std.protocol.icoroutine.ICoroutine/resume stream) yielded)"
    :expect {:display "42"}}
 
   ;; ---- defn lowering: direct bindings, shadowing, self-recursion ----
