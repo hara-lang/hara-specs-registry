@@ -399,7 +399,7 @@
   "Arithmetic and comparison semantics live exactly once in the shared value-level boundary. The VM never re-implements numeric semantics inside the machine."
   :operators
   [{"+" Add} {"-" Subtract} {"*" Multiply} {"/" Divide}
-   {"%" Remainder} {"mod" Remainder}
+   {"mod" Modulo}
    {"=" Equal} {"<" Less} {"<=" LessOrEqual}
    {">" Greater} {">=" GreaterOrEqual}
    {"count" Count} {"get" Get} {"meta" Meta}
@@ -409,12 +409,12 @@
   "Vectors, maps, and sets containing only literal forms may be pooled as constants. Pure primitive calls over literal arguments may be folded when evaluation succeeds; failures retain runtime error behavior. first(rest x) may lower to second(x)."
   :error-spelling
   {"integer overflow" "checked arithmetic overflowed"
-   "division by zero" "divide or remainder by zero"
+   "division by zero" "divide or modulo by zero"
    "{op} expects numbers" "a non-numeric argument reached an arithmetic or comparison operator"
    "{op} expects arguments" "an arithmetic operator received no arguments"
    "{op} expects at least two arguments" "an ordering comparison received fewer than two arguments"
    "= expects at least 2 arguments" "equality received fewer than two arguments"}
-  :mod-reporting "`mod` reports errors as `%`, matching the existing evaluator."
+  :mod-reporting "`mod` is the canonical named modulo operation."
   :numeric-tower
   "Current semantics are the existing evaluator semantics: i64 checked arithmetic; mixed numeric types (for example integer plus float) are errors, not coercions."}
 

@@ -30,7 +30,7 @@
   {:id :arith/subtract :source "(- 10 1 2 3)" :expect {:display "4"}}
   {:id :arith/multiply :source "(* 2 3 4)" :expect {:display "24"}}
   {:id :arith/divide :source "(/ 100 4 5)" :expect {:display "5"}}
-  {:id :arith/remainder :source "(% 100 7)" :expect {:display "2"}}
+  {:id :arith/remainder :source "(mod 100 7)" :expect {:display "2"}}
   {:id :arith/mod-negative :source "(mod -7 3)" :expect {:display "-1"}}
 
   ;; ---- comparisons ----
@@ -82,7 +82,7 @@
 
   ;; ---- runtime errors: both paths must fail in the same category ----
   {:id :error/divide-by-zero :source "(/ 1 0)" :expect {:error-category "division by zero"}}
-  {:id :error/remainder-by-zero :source "(% 1 0)" :expect {:error-category "division by zero"}}
+  {:id :error/remainder-by-zero :source "(mod 1 0)" :expect {:error-category "division by zero"}}
   {:id :error/mod-by-zero :source "(mod 1 0)" :expect {:error-category "division by zero"}}
   {:id :error/overflow-add :source "(+ 9223372036854775807 1)" :expect {:error-category "integer overflow"}}
   {:id :error/overflow-multiply :source "(* 4611686018427387904 2)" :expect {:error-category "integer overflow"}}
@@ -132,7 +132,7 @@
   {:id :fn/as-value :source "(fn [x] x)" :expect {:display "<fn>"}}
   {:id :fn/called-in-loop :source "(let [inc (fn [x] (+ x 1))] (loop [i 0 acc 0] (if (< i 100) (recur (inc i) (+ acc i)) acc)))" :expect {:display "4950"}}
   {:id :fn/coroutine-yield-resume
-   :source "(do (def stream (std.foundation.coroutine/create (fn [] (std.foundation.coroutine/yield 42)))) (def yielded (std.protocol.icoroutine/resume stream)) (std.protocol.icoroutine/resume stream) yielded)"
+   :source "(do (def stream (std.foundation.coroutine/create (fn [] (std.foundation.coroutine/yield 42)))) (def yielded (std.protocol.icoroutine.ICoroutine/resume stream)) (std.protocol.icoroutine.ICoroutine/resume stream) yielded)"
    :expect {:display "42"}}
 
   ;; ---- defn lowering: direct bindings, shadowing, self-recursion ----
