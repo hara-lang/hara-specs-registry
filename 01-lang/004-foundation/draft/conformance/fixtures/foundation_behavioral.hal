@@ -24,6 +24,21 @@
  std.foundation/acos
  std.foundation/acosh
  std.foundation/any?
+ std.foundation/applicable?
+ std.foundation/associative?
+ std.foundation/casable?
+ std.foundation/counted?
+ std.foundation/derefable?
+ std.foundation/findable?
+ std.foundation/indexed?
+ std.foundation/iterable?
+ std.foundation/iterator?
+ std.foundation/lookupable?
+ std.foundation/mutable?
+ std.foundation/persistent?
+ std.foundation/reducible?
+ std.foundation/resettable?
+ std.foundation/watchable?
  std.foundation/apply
  std.foundation/apply-as
  std.foundation/apply-in
