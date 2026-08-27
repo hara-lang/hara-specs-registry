@@ -356,34 +356,58 @@
                                        :kind :defn,
                                        :signature "[value]"}],
                        :name empty?}
-                      {:declarations [{:doc "Returns the active namespace symbol.",
-                                       :kind :defn,
-                                       :signature "[]"}],
-                       :name env-current}
                       {:declarations [{:doc "Returns the loaded module descriptor for path, or nil.",
                                        :kind :defn,
                                        :signature "[path]"}],
                        :name env-module}
-                      {:declarations [{:doc "Returns a namespace descriptor, or nil when unknown.",
-                                       :kind :defn,
-                                       :signature "[namespace]"}],
-                       :name env-namespace}
-                      {:declarations [{:doc "Returns descriptors for every known namespace.",
-                                       :kind :defn,
-                                       :signature "[]"}],
-                       :name env-namespaces}
-                      {:declarations [{:doc "Resolves symbol without triggering namespace or package loading.",
-                                       :kind :defn,
-                                       :signature "[symbol]"}],
-                       :name env-resolve}
                       {:declarations [{:doc "Returns a stable descriptor of the current environment.",
                                        :kind :defn,
                                        :signature "[]"}],
                        :name env-snapshot}
+                      {:declarations [{:doc "Returns aliases declared by a loaded namespace.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name ns-aliases}
+                      {:declarations [{:doc "Returns load state for an alias in the active or supplied namespace.",
+                                       :kind :defn,
+                                       :signature ""}],
+                       :name ns-alias-state}
+                      {:declarations [{:doc "Creates and returns a namespace for an unqualified symbol.",
+                                       :kind :defn,
+                                       :signature "[symbol]"}],
+                       :name ns-create}
+                      {:declarations [{:doc "Returns the active namespace symbol.",
+                                       :kind :defn,
+                                       :signature "[]"}],
+                       :name ns-current}
+                      {:declarations [{:doc "Returns the loaded namespace identified by value, or nil when unknown.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name ns-find}
+                      {:declarations [{:doc "Returns a namespace descriptor, or nil when unknown.",
+                                       :kind :defn,
+                                       :signature "[namespace]"}],
+                       :name ns-info}
+                      {:declarations [{:doc "Returns descriptors for every known namespace.",
+                                       :kind :defn,
+                                       :signature "[]"}],
+                       :name ns-list}
+                      {:declarations [{:doc "Returns the symbol naming a loaded namespace.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name ns-name}
+                      {:declarations [{:doc "Returns the public Vars owned by a loaded namespace.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name ns-publics}
                       {:declarations [{:doc "Returns Vars owned by the active or supplied namespace.",
                                        :kind :defn,
                                        :signature ""}],
-                       :name env-vars}
+                       :name ns-vars}
+                      {:declarations [{:doc "Resolves symbol without triggering namespace or package loading.",
+                                       :kind :defn,
+                                       :signature "[symbol]"}],
+                       :name resolve}
                       {:declarations [{:doc "Evaluates one form value in the active namespace.",
                                        :kind :defn,
                                        :signature "[form]"}],
@@ -680,10 +704,6 @@
                                        :kind :defn,
                                        :signature "[value]"}],
                        :name not-nil?}
-                      {:declarations [{:doc "Returns load state for an alias in the active or supplied namespace.",
-                                       :kind :defn,
-                                       :signature ""}],
-                       :name ns-alias-state}
                       {:declarations [{:doc "Returns true when value is numeric.",
                                        :kind :defn,
                                        :signature "[value]"}],

@@ -7,31 +7,31 @@ This annex separates the current portable Foundation API from automatic aliases,
 ## Pinned source
 
 - Repository: `https://github.com/hara-lang/hara`
-- Ref: `237298a67d74d4530dd73cb3b344d5d270ad2dde`
-- Commit: `237298a67d74d4530dd73cb3b344d5d270ad2dde`
+- Ref: `210ef029bc8a1e6e892e830c749cb3fa8a4a9607`
+- Commit: `210ef029bc8a1e6e892e830c749cb3fa8a4a9607`
 - Manifest schema: `2`
-- Surface digest: `sha256:b773906f67eed9250920862fa1c66e2a948ad182083e0ce0b78fcd85411f9438`
-- Migration digest: `sha256:b82361b350af7af09212597e6ac042767cadf52c6c2964fd67da2063ef868437`
+- Surface digest: `sha256:7885d6c4624babc066adb85a70df7111a1aa396d913a7d9979685cd7a001297a`
+- Migration digest: `sha256:6aed929f395bb42db7f11f2ce819c64c10880eb2fba178d3dd426bc14f1fe11f`
 
 ## Current Foundation surface
 
-The root `std.foundation` namespace contains **266** public bindings. It is represented separately from the **5** child namespaces.
+The root `std.foundation` namespace contains **336** public bindings. It is represented separately from the **5** child namespaces.
 
 | Current child namespace | Alias | Public bindings | Profiles |
 | --- | --- | ---: | --- |
-| `std.foundation.bytes` | `bytes` | 7 | jvm, rust, wasm |
+| `std.foundation.bytes` | `bytes` | 8 | jvm, rust, wasm |
 | `std.foundation.coroutine` | `co` | 7 | jvm, rust, wasm |
 | `std.foundation.pretty` | `pretty` | 13 | jvm, rust, wasm |
 | `std.foundation.promise` | `promise` | 11 | jvm, rust, wasm |
-| `std.foundation.string` | `str` | 42 | jvm, rust, wasm |
+| `std.foundation.string` | `str` | 49 | jvm, rust, wasm |
 
-Current children contain **80** public bindings in total.
+Current children contain **88** public bindings in total.
 
 ## Native static objects
 
 These runtime objects are recorded separately and do not contribute to the namespace count:
 
-`Algo`, `Arr`, `Base`, `Bits`, `Bytes`, `Coroutine`, `Crypto`, `Document`, `Duplex`, `Edn`, `Env`, `Error`, `File`, `Host`, `Iter`, `Json`, `Kernel`, `Maths`, `Numbers`, `OS`, `Obj`, `Package`, `Printer`, `Process`, `Promise`, `RegExp`, `Result`, `Runtime`, `Schema`, `Socket`, `Stream`, `String`, `Test`, `UUID`.
+`Algo`, `Arr`, `Base`, `Bits`, `Bytes`, `Coroutine`, `Crypto`, `Document`, `Edn`, `Exception`, `File`, `Host`, `Iter`, `Json`, `Kernel`, `Maths`, `Num`, `OS`, `Obj`, `Package`, `Printer`, `Process`, `Promise`, `RegExp`, `Result`, `Runtime`, `Sandbox`, `Schema`, `Socket`, `Stream`, `String`, `Test`, `Work`.
 
 ## Historical migrations
 

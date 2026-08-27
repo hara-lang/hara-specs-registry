@@ -220,14 +220,14 @@
    :surface/domain :function
    :surface/symbols
    [read-forms load-string macroexpand macroexpand-all apply-in apply-as
-    invoke-as current-namespace current-symbols ns-state ns-loaded?
-    ns-name ns-publics ns-aliases resolve var-sym]
+    invoke-as ns-current current-symbols ns-state ns-loaded?
+    ns-list ns-info ns-vars ns-name ns-publics ns-aliases ns-find ns-create
+    resolve var-sym]
    :surface/classification :narrow-runtime-primitive}
   {:surface/id :foundation/environment-native
    :surface/domain :function
    :surface/symbols
-   [env-current env-snapshot env-vars env-namespaces env-namespace env-module
-    env-resolve ns-alias-state intern-var eval-in-ns eval]
+   [env-snapshot env-module ns-alias-state intern-var eval-in-ns eval]
    :surface/classification :native-wrapper
    :surface/native-spec :hara/native}
   {:surface/id :foundation/macros
@@ -430,7 +430,7 @@
    {:requirement/id :sandbox/no-foundation-duplicates
     :requirement/level :must
     :requirement/text
-    "The existing std.foundation/env-* functions and :env/* snapshot keys remain unchanged; no runtime-* or sandbox lifecycle duplicates are added to std.foundation."}
+    "Namespace inspection uses the canonical std.foundation/ns-* functions; only std.foundation/env-snapshot and std.foundation/env-module remain as environment wrappers, while :env/* snapshot keys remain unchanged. No runtime-* or sandbox lifecycle duplicates are added to std.foundation."}
    {:requirement/id :sandbox/thin-facade
     :requirement/level :must
     :requirement/text

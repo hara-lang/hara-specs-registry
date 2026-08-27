@@ -357,10 +357,10 @@
    :method-classification {:foundation-primitive :all}}
   {:name Runtime
    :availability :implemented
-   :methods [load-string macroexpand-1 gensym ns-publics the-ns ns-name var-sym current snapshot vars namespaces
+   :methods [load-string macroexpand-1 gensym ns-publics ns-aliases ns-find ns-create ns-name var-sym current snapshot vars namespaces
              namespace module resolve alias-state intern-var eval-in eval]
    :method-classification
-   {:foundation-primitive [load-string macroexpand-1 gensym ns-publics the-ns ns-name var-sym]
+   {:foundation-primitive [load-string macroexpand-1 gensym ns-publics ns-aliases ns-find ns-create ns-name var-sym]
     :hal-wrapper [current snapshot vars namespaces namespace module resolve alias-state
                   intern-var eval-in eval]}
    :wrapper-source "lib/src/std/foundation.hal"}

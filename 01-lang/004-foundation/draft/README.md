@@ -22,7 +22,10 @@ qualified libraries belong to `005-foundation-annex`.
 The explicitly required `std.sandbox` library is specified here as a thin
 portable facade over the capability-gated native Sandbox descriptor. It is not
 root-referred and adds no aliases or lifecycle duplicates to `std.foundation`;
-the existing `env-*` names remain the portable Runtime wrappers.
+namespace inspection uses the canonical `ns-*` names (`ns-current`, `ns-list`,
+`ns-info`, `ns-vars`, `ns-find`, `ns-create`, `ns-name`, `ns-publics`, and
+`ns-aliases`); only `env-snapshot` and `env-module` remain as environment
+wrappers.
 
 The surface catalog is a draft baseline. Candidate promotion requires an exact
 fresh-context `ns-publics` comparison for JVM, Rust, and Wasm.
