@@ -632,10 +632,6 @@
                                        :kind :defn,
                                        :signature ""}],
                        :name map}
-                      {:declarations [{:doc "Returns true when value is a map entry.",
-                                       :kind :defn,
-                                       :signature "[value]"}],
-                       :name map-entry?}
                       {:declarations [{:doc "Returns a vector of function applied to each index and value.",
                                        :kind :defn,
                                        :signature "[function values]"}],

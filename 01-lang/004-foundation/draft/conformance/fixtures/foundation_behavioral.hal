@@ -153,7 +153,6 @@
  std.foundation/macroexpand
  std.foundation/macroexpand-all
  std.foundation/map
- std.foundation/map-entry?
  std.foundation/map-indexed
  std.foundation/map-keys
  std.foundation/map-vals
@@ -522,7 +521,7 @@
    'std.foundation/vec [[1 2] (fn [] (vec '(1 2)))]
    'std.foundation/set [#{1 2} (fn [] (set [1 2 1]))]
    'std.foundation/pair [[:a 1] (fn [] (vec (pair :a 1)))]
-   'std.foundation/pair? [true (fn [] (pair? (pair :a 1)))]
+   'std.foundation/pair? [true (fn [] (pair? (first {:a 1})))]
    'std.foundation/tuple [[1 2] (fn [] (vec (tuple 1 2)))]
    'std.foundation/hash-map [{:a 1} (fn [] (hash-map :a 1))]
    'std.foundation/hash-set [#{1 2} (fn [] (hash-set 1 2 1))]
@@ -584,7 +583,6 @@
    'std.foundation/vector? [true (fn [] (vector? [1]))]
    'std.foundation/tuple? [true (fn [] (tuple? (tuple 1)))]
    'std.foundation/map? [true (fn [] (map? {:a 1}))]
-   'std.foundation/map-entry? [true (fn [] (map-entry? (first {:a 1})))]
    'std.foundation/set? [true (fn [] (set? #{1}))]
    'std.foundation/sequential? [true (fn [] (sequential? [1]))]
    'std.foundation/satisfies? [true (fn [] (satisfies? ICount [1]))]
