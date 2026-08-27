@@ -167,7 +167,7 @@
    :native/availability :portable
    :native/methods
    [load-string macroexpand-1 gensym ns-publics ns-aliases ns-find ns-create ns-name var-sym current
-    snapshot vars namespaces namespace module resolve alias-state intern-var
+    snapshot vars namespaces namespace module alias-state intern-var
     eval-in eval]}
   {:native/id :std.native/printer
    :native/symbol Printer :native/namespace std.native.Printer
@@ -214,8 +214,8 @@
    :native/symbol Base :native/namespace std.native.Base
    :native/availability :portable
    :native/methods
-   [list vector vec set tuple hash-map hash-set atom pointer symbol keyword
-    uuid reduced unreduced hash apply number? long? satisfies? special-symbol?
+   [list vector vec set tuple hash-map hash-set bytes atom pointer symbol keyword
+    uuid reduced unreduced hash apply resolve number? long? satisfies? special-symbol?
     type instance?]}
   {:native/id :std.native/algo
    :native/symbol Algo :native/namespace std.native.Algo
