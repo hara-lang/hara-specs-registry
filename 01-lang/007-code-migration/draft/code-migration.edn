@@ -68,6 +68,46 @@
    :rule/disposition :root-wrapper
    :rule/evidence {:source/path "src/std/lib/zip.clj"
                    :target/spec :hara/foundation}}
+  {:rule/id :clojure/set-root
+   :rule/languages [:clojure]
+   :rule/priority 102
+   :rule/layer :clojure
+   :rule/phase :dependency
+   :rule/kind :token-prefix
+   :rule/match clojure.set
+   :rule/rewrite {:op :replace-token-prefix :text "std.foundation"}
+   :rule/safety :safe
+   :rule/disposition :root-wrapper
+   :rule/evidence {:source/path "https://clojure.github.io/clojure/clojure.set-api.html"
+                   :target/spec :hara/foundation}}
+  {:rule/id :foundation/set-root
+   :rule/languages [:clojure :hara]
+   :rule/priority 103
+   :rule/layer :foundation
+   :rule/phase :dependency
+   :rule/kind :token-prefix
+   :rule/match std.foundation.set
+   :rule/rewrite {:op :replace-token-prefix :text "std.foundation"}
+   :rule/safety :safe
+   :rule/disposition :superseded
+   :rule/evidence {:source/path "core/lib/src/std/foundation.hal"
+                   :target/spec :hara/foundation}}
+  {:rule/id :clojure/disj-to-dissoc
+   :rule/languages [:clojure]
+   :rule/priority 104
+   :rule/layer :clojure
+   :rule/phase :expression
+   :rule/kind :function
+   :rule/match {:clojure {:text "disj"}}
+   :rule/rewrite nil
+   :rule/function
+   {:clojure {:match tool.migrate.common.clojure/match-disj
+              :rewrite tool.migrate.common.clojure/rewrite-disj}}
+   :rule/safety :safe
+   :rule/disposition :rename
+   :rule/message "Clojure core disj is represented by Hara dissoc."
+   :rule/evidence {:source/path "https://clojure.github.io/clojure/clojure.core-api.html#clojure.core/disj"
+                   :target/spec :hara/foundation}}
   {:rule/id :clojure/anonymous-function-reader
    :rule/languages [:clojure :hara]
    :rule/priority 200

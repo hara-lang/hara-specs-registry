@@ -4,7 +4,7 @@
  :purpose :clojure-inspired-non-protocol-function-control
  :namespace-policy
  {:general std.foundation
-  :sets {:namespace std.foundation.set :call-prefix set}
+  :sets {:namespace std.foundation}
   :strings {:namespace std.foundation.string :call-prefix str}
   :bytes {:namespace std.foundation.bytes :call-prefix bytes}
   :rule "Protocol methods are tracked in protocols.edn. Hara-specific
@@ -233,8 +233,7 @@
     {:name load-string :clojure clojure.core/load-string
      :classification :host-primitive}]}
 
-  {:namespace std.foundation.set
-   :call-prefix set
+  {:namespace std.foundation
    :classification :portable-hal
    :functions
    [{:name union :clojure clojure.set/union}
@@ -277,7 +276,12 @@
     {:name dedupe :clojure clojure.core/dedupe}]}]
 
  :excluded
- [{:name load-file :reason :load-string-only}
+ [{:names [disj]
+   :reason :hara-set-removal-uses-dissoc
+   :migration {:target std.foundation/dissoc
+               :relation :semantic
+               :arity :variadic}}
+  {:name load-file :reason :load-string-only}
   {:name requiring-resolve :reason :not-required}
   {:pattern "iter-*"
    :reason :implementation-detail-except-iter-next?-and-iter-next}

@@ -162,8 +162,7 @@
 
   :libraries
   {:set
-   {:namespace std.foundation.set
-    :call-prefix set
+   {:namespace std.foundation
     :implementation :portable-hal
     :functions
     [union intersection difference select subset? superset?]}
@@ -221,7 +220,6 @@
   :method :source-and-hal-activation-audit
   :checked-against
   ["lib/src/std/foundation.hal"
-   "lib/src/std/foundation/set.hal"
    "lib/src/std/foundation/string.hal"
    "lib/src/std/foundation/bytes.hal"
    "lib/src/std/foundation/edn.hal"
