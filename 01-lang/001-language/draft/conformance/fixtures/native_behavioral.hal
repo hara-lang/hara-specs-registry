@@ -23,7 +23,7 @@
     :expected ["native failure" :ex.class/native-failure]}
    :concrete-native-type
    {:source "[(Base/type [1]) (Base/type (Base/vector 1)) (Base/type (Exception/new \"fixture\" {}))]"
-    :expected [:std.native.Tuple :std.native.Vector :std.native.Exception]}
+    :expected [:std.native.Vector :std.native.Vector :std.native.Exception]}
    :reduced-round-trip
    {:source "[(Base/unreduced (Base/reduced 42)) (Base/unreduced 42)]"
     :expected [42 42]
@@ -176,7 +176,6 @@
    'Base/vector [[1 2] (fn [] (Base/vector 1 2))]
    'Base/vec [[1 2] (fn [] (Base/vec '(1 2)))]
    'Base/set [#{1 2} (fn [] (Base/set [1 2 1]))]
-   'Base/tuple [true (fn [] (tuple? (Base/tuple 1 2)))]
    'Base/hash-map [{:a 1} (fn [] (Base/hash-map :a 1))]
    'Base/hash-set [#{1 2} (fn [] (Base/hash-set 1 2))]
    'Base/bytes [true (fn [] (bytes? (Base/bytes 1 2 -3)))]
@@ -486,7 +485,7 @@
     :actual (normalized-error-class (Exception/new "boom" {:ex/class :ex.class/demo}))}
    {:id :concrete-native-type
     :points [:valid-value :normalized-result]
-    :expected [:std.native.Tuple :std.native.Vector :std.native.Exception]
+    :expected [:std.native.Vector :std.native.Vector :std.native.Exception]
     :actual [(Base/type [1]) (Base/type (Base/vector 1)) (Base/type (Exception/new "fixture" {}))]}
    {:id :persistent-vector-value
     :points [:valid-value :identity-fast-path]

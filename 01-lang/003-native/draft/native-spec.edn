@@ -214,7 +214,7 @@
    :native/symbol Base :native/namespace std.native.Base
    :native/availability :portable
    :native/methods
-   [list vector vec set tuple hash-map hash-set bytes atom pointer symbol keyword
+   [list vector vec set hash-map hash-set bytes atom pointer symbol keyword
     uuid reduced unreduced hash apply resolve number? long? satisfies? special-symbol?
     type instance?]}
   {:native/id :std.native/algo

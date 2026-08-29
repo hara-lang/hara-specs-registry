@@ -54,7 +54,7 @@
   {:requirement/id :data-structures/vector-public-type
    :requirement/level :must
    :requirement/text
-   "Compact tuple-backed vectors and persistent-tree-backed vectors are one public value category. Both report :hara/Vector from type and satisfy vector?; no public :hara/Tuple type descriptor exists."}
+   "Compact tuple-backed vectors and persistent-tree-backed vectors are one public value category. Both report :std.native.Vector from type and satisfy vector?; no public tuple type descriptor or tuple? predicate exists."}
   {:requirement/id :data-structures/vector-compact-boundary
    :requirement/level :must
    :requirement/text
@@ -62,7 +62,7 @@
   {:requirement/id :data-structures/vector-backend-observation
    :requirement/level :must
    :requirement/text
-   "tuple? is the explicit representation predicate: it is true only for the compact tuple backend. pair? and map-entry? are true only for the dedicated MapEntry representation, never for an ordinary compact tuple, vector, or list. Map entries preserve two-element iteration, positional lookup, destructuring, and display semantics without becoming vectors or tuples."}]
+   "The compact tuple backend is an internal implementation detail and has no public representation predicate. pair? and map-entry? are exact predicates for dedicated MapEntry values; ordinary vectors and lists are false even when their count is two. These predicates do not alter equality, hashing, iteration, positional lookup, destructuring, or display semantics."}]
 
  :data-structures/hash-functions
  [{:hash/id :system
@@ -85,15 +85,15 @@
 
  :data-structures/hash-composition
  {:composition/seed
-  "hashSeed = \"::\" + ObjType name, hashed with String.hashCode. SEQUENTIAL covers vector, list, queue, deque, cons, seq, and tuple2 (NOT per-structure names); MAP covers map, ordered-map, sorted-map, priority-map, and trie; SET covers set, ordered-set, and sorted-set."
+  "hashSeed = \"::\" + ObjType name, hashed with String.hashCode. SEQUENTIAL covers vector, list, queue, deque, cons, seq, and MapEntry (NOT per-structure names); MAP covers map, ordered-map, sorted-map, priority-map, and trie; SET covers set, ordered-set, and sorted-set."
   :composition/ordered
   "ISequentialType: acc starts at the seed (widened to long); acc = acc*31 + hash(item) per item, wrapping 64-bit."
   :composition/unordered
-  "Map and set types: acc starts at the seed; acc += hash(item) per item (order-insensitive sum), wrapping 64-bit. Map items are entries, hashed as tuple2."
+  "Map and set types: acc starts at the seed; acc += hash(item) per item (order-insensitive sum), wrapping 64-bit. Map items are dedicated MapEntry values."
   :composition/entry
-  "A map entry hashes as a Tup2 under the SEQUENTIAL seed: (seed*31 + hash(key))*31 + hash(value)."
+  "A map entry hashes as a MapEntry under the SEQUENTIAL seed: (seed*31 + hash(key))*31 + hash(value)."
   :composition/trie
-  "Trie overrides unordered composition: acc += hash(key) + hash(value) per entry - NOT the tuple2 entry composition."
+  "Trie overrides unordered composition: acc += hash(key) + hash(value) per entry - NOT the MapEntry entry composition."
   :composition/string-type
   "Keyword and symbol hash the string hashSeed + \"|\" + toString under the requested hash function; SIP returns -1. See :data-structures/deviations for the standardised toString forms."}
 
@@ -118,7 +118,7 @@
    :structure/iteration "index order 0..count-1"
    :structure/hash :ordered-sequential
    :structure/note
-   "The public :hara/Vector category has compact tuple (counts 0..8 when constructed by bracket/BUILD_VECTOR) and persistent tree backends. tuple? exposes the compact backend; neither backend satisfies pair?."}
+   "The public :std.native.Vector category has compact tuple (counts 0..8 when constructed by bracket/BUILD_VECTOR) and persistent tree backends. The compact backend is not publicly distinguishable from the vector category."}
   {:structure/id :list
    :structure/family :positional
    :structure/ops [conj push-first push-last pop-first pop-last nth]
@@ -150,7 +150,7 @@
    :structure/iteration "key then value"
    :structure/hash :ordered-sequential
    :structure/note
-   "Map iteration yields dedicated MapEntry values. A map entry has count 2, supports positional access at 0 and 1, and satisfies pair? and map-entry? while remaining distinct from vector and tuple representations."}
+   "Map iteration yields dedicated MapEntry values. A map entry has count 2, supports positional access at 0 and 1, and satisfies pair? and map-entry? while remaining distinct from vector representations."}
   {:structure/id :set
    :structure/family :hashed-associative
    :structure/ops [conj dissoc find]
@@ -213,7 +213,7 @@
   {:deviation/id :sorted-map-identity-hash
    :deviation/status :standardised
    :deviation/text
-   "Java's SortedMap iterator yields raw SortedMap.Node objects which do not override hashCode, so G.hashCalc over sorted maps sums identity hashes and is non-deterministic across JVM processes (same defect class as Keyword.toString). The standardised hash is the unordered map composition over tuple2 entries, identical to :map; the collections corpus emits the standardised value. Sorted-set is unaffected: its iterator yields elements directly."}
+   "Java's SortedMap iterator yields raw SortedMap.Node objects which do not override hashCode, so G.hashCalc over sorted maps sums identity hashes and is non-deterministic across JVM processes (same defect class as Keyword.toString). The standardised hash is the unordered map composition over MapEntry values, identical to :map; the collections corpus emits the standardised value. Sorted-set is unaffected: its iterator yields elements directly."}
   {:deviation/id :subnormal-double-formatting
    :deviation/status :known-divergence
    :deviation/text
@@ -255,9 +255,9 @@
  {:conformance/hash-parity
   {:corpus/path "conformance/hash-parity.edn"
    :corpus/generator "specs/scripts/hashdump/HashDump.java (Java reference runtime)"
-   :corpus/case-count 276
+   :corpus/case-count 275
    :corpus/format
-   "{:cases [{:id :<hash>/<label> :hash :system|:rapid|:murmur3|:sip :kind :string|:int|:long|:double|:bigint|:decimal|:bool|:char|:bytes|:nil|:seed|:keyword|:symbol|:collection :input <edn> :expect <java-long>}]}. :input is an EDN form per :kind; :expect is the decimal Java long with 32-bit hashes sign-extended. Collection cases add :structure and encode queue/tuple2 inputs as vectors."}
+   "{:cases [{:id :<hash>/<label> :hash :system|:rapid|:murmur3|:sip :kind :string|:int|:long|:double|:bigint|:decimal|:bool|:char|:bytes|:nil|:seed|:keyword|:symbol|:collection :input <edn> :expect <java-long>}]}. :input is an EDN form per :kind; :expect is the decimal Java long with 32-bit hashes sign-extended. Collection cases add :structure and encode queue, compact-vector2, and map-entry inputs as vectors."}
   :conformance/collections
   {:corpus/path "conformance/collections.edn"
    :corpus/generator "specs/scripts/hashdump/CollectionDump.java (Java reference runtime)"

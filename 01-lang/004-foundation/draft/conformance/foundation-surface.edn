@@ -8,7 +8,7 @@
  :source-manifest
  {:schema-version 2,
   :inventory "core/rust/standard-library.namespaces",
-  :semantic-surface-digest "sha256:d2d75c2ab58bee209afa64942ab431c346cb58a68df271a479811cda55ad4e60",
+  :semantic-surface-digest "sha256:54102b5ac431442726d2972f65c5e7645696322528ea90acf29495d37d26fe62",
   :counting :effective-public-var-declaration-once},
  :profile-dispositions
  {:profiles [:jvm :rust :wasm],
@@ -716,6 +716,10 @@
                                        :kind :defn,
                                        :signature "[value]"}],
                        :name odd?}
+                      {:declarations [{:doc "Returns true when value is a map entry pair.",
+                                       :kind :defn,
+                                       :signature "[value]"}],
+                       :name map-entry?}
                       {:declarations [{:doc "Creates a key/value pair.",
                                        :kind :defn,
                                        :signature "[left right]"}],
@@ -1080,14 +1084,6 @@
                                        :kind :defn,
                                        :signature "[value]"}],
                        :name true?}
-                      {:declarations [{:doc "Creates a fixed-width tuple from values.",
-                                       :kind :defn,
-                                       :signature "[& values]"}],
-                       :name tuple}
-                      {:declarations [{:doc "Returns true when value is a tuple.",
-                                       :kind :defn,
-                                       :signature "[value]"}],
-                       :name tuple?}
                       {:declarations [{:doc "Returns value's portable runtime type keyword.",
                                        :kind :defn,
                                        :signature "[value]"}],
