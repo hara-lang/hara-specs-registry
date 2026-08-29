@@ -444,6 +444,9 @@
     :diagnostic-history
     [{:observed [:hara/Vector :hara/Vector]
       :reason "Rejected public-category normalization; type reports the concrete std.native descriptor for each value."}]}
+   :map-entry-boundary
+   {:source "(let [entry (first {:key 42})] [(type entry) (map-entry? entry) (pair? entry) (vector? entry) (count entry) (key entry) (val entry) (nth entry 0) (nth entry 1) (vec entry) (pair? [:key 42]) (into {} [[:key 42]])])"
+    :expected [:std.native.MapEntry true true false 2 :key 42 :key 42 [:key 42] false {:key 42}]}
    :protocol-aliases
    {:source "[(not (nil? IWork)) (not (nil? IStringLike)) (satisfies? IHash [1]) (satisfies? IHashCached [1])]"
     :expected [true true true true]}

@@ -33,6 +33,7 @@
    :profile/implementations [:hta/truffle :hta/rust]
    :profile/required-cases
    [:hta.case/golden-vector
+    :hta.case/map-entry
     :hta.case/portable-round-trip
     :hta.case/canonical-collections
     :hta.case/malformed-frame]
@@ -42,6 +43,7 @@
    :profile/required-cases
    [:hta.case/manifest
     :hta.case/golden-vector
+    :hta.case/map-entry
     :hta.case/portable-round-trip
     :hta.case/named-value-boundary
     :hta.case/canonical-collections
@@ -60,7 +62,7 @@
  {:acceptance/portable
   "Every implementation passes every portable case using the same fixtures and exact bytes or semantic outcomes."
   :acceptance/extensions
-  "Tags above 12 require an advertised extension profile except for the standardized portable struct tag 33; portable consumers reject every other unknown tag deterministically."
+  "Tags above 12 require an advertised extension profile except for the standardized portable struct tag 33 and MapEntry tag 38; portable consumers reject every other unknown tag deterministically."
   :acceptance/skips
   "A missing optional WASM artifact may skip a local integration case, but release conformance requires the artifact and forbids the skip."
   :acceptance/regression
@@ -97,6 +99,18 @@
     4 0 0 0 1 120
     3 0 0 0 0 0 0 0 42
     2]}
+  {:case/id :hta.case/map-entry
+   :case/level :must
+   :case/method :exact-bytes-and-negative-corpus
+   :case/input [:key 42]
+   :case/expect
+   {:bytes
+    [72 84 65 48
+     38 0 0 0 2
+     6 0 0 0 3 107 101 121
+     3 0 0 0 0 0 0 0 42]
+    :decoded/type :std.native.MapEntry
+    :decode-errors :hta/value-malformed}}
   {:case/id :hta.case/portable-round-trip
    :case/level :must
    :case/method :cross-runtime-matrix
