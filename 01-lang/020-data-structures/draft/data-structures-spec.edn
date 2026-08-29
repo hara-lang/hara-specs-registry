@@ -62,7 +62,7 @@
   {:requirement/id :data-structures/vector-backend-observation
    :requirement/level :must
    :requirement/text
-   "tuple? is the explicit representation predicate: it is true only for the compact tuple backend. pair? is true for a two-element compact tuple (including map-entry pairs) and false for an ordinary two-element persistent vector or list. These predicates do not alter equality, hashing, iteration, positional lookup, destructuring, or display semantics."}]
+   "tuple? is the explicit representation predicate: it is true only for the compact tuple backend. pair? and map-entry? are true only for the dedicated MapEntry representation, never for an ordinary compact tuple, vector, or list. Map entries preserve two-element iteration, positional lookup, destructuring, and display semantics without becoming vectors or tuples."}]
 
  :data-structures/hash-functions
  [{:hash/id :system
@@ -118,7 +118,7 @@
    :structure/iteration "index order 0..count-1"
    :structure/hash :ordered-sequential
    :structure/note
-   "The public :hara/Vector category has compact tuple (counts 0..8 when constructed by bracket/BUILD_VECTOR) and persistent tree backends. tuple? exposes the compact backend; a compact count-2 value also satisfies pair?."}
+   "The public :hara/Vector category has compact tuple (counts 0..8 when constructed by bracket/BUILD_VECTOR) and persistent tree backends. tuple? exposes the compact backend; neither backend satisfies pair?."}
   {:structure/id :list
    :structure/family :positional
    :structure/ops [conj push-first push-last pop-first pop-last nth]
@@ -144,6 +144,13 @@
    :structure/iteration
    "CHAMP hash order: implementation-defined, stable for a given structure. The Java layout is pinned exactly in the corpus; conforming runtimes must iterate the same entry set and match count/lookup/hash."
    :structure/hash :unordered-entry}
+  {:structure/id :map-entry
+   :structure/family :map-element
+   :structure/ops [key val nth]
+   :structure/iteration "key then value"
+   :structure/hash :ordered-sequential
+   :structure/note
+   "Map iteration yields dedicated MapEntry values. A map entry has count 2, supports positional access at 0 and 1, and satisfies pair? and map-entry? while remaining distinct from vector and tuple representations."}
   {:structure/id :set
    :structure/family :hashed-associative
    :structure/ops [conj dissoc find]
