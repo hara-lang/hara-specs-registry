@@ -7,15 +7,15 @@ This annex separates the current portable Foundation API from automatic aliases,
 ## Pinned source
 
 - Repository: `https://github.com/hara-lang/hara`
-- Ref: `210ef029bc8a1e6e892e830c749cb3fa8a4a9607`
-- Commit: `210ef029bc8a1e6e892e830c749cb3fa8a4a9607`
+- Ref: `df48836e9d9e10b34e4481b13194ec29f4068515`
+- Commit: `df48836e9d9e10b34e4481b13194ec29f4068515`
 - Manifest schema: `2`
-- Surface digest: `sha256:7885d6c4624babc066adb85a70df7111a1aa396d913a7d9979685cd7a001297a`
+- Surface digest: `sha256:54102b5ac431442726d2972f65c5e7645696322528ea90acf29495d37d26fe62`
 - Migration digest: `sha256:6aed929f395bb42db7f11f2ce819c64c10880eb2fba178d3dd426bc14f1fe11f`
 
 ## Current Foundation surface
 
-The root `std.foundation` namespace contains **336** public bindings. It is represented separately from the **5** child namespaces.
+The root `std.foundation` namespace contains **338** public bindings. It is represented separately from the **5** child namespaces.
 
 | Current child namespace | Alias | Public bindings | Profiles |
 | --- | --- | ---: | --- |

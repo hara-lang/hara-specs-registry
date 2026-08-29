@@ -420,11 +420,11 @@
    :method-classification {:foundation-primitive :all}}
   {:name Base
    :availability :implemented
-   :methods [list vector vec set tuple hash-map hash-set bytes atom pointer symbol
+   :methods [list vector vec set hash-map hash-set bytes atom pointer symbol
              keyword uuid reduced unreduced hash apply resolve number? long?
              satisfies? special-symbol? type instance?]
    :method-classification
-   {:hal-wrapper [list vector vec set tuple hash-map hash-set atom pointer symbol
+   {:hal-wrapper [list vector vec set hash-map hash-set atom pointer symbol
                   keyword uuid reduced unreduced hash apply resolve number? long?
                   satisfies? special-symbol? type instance?]
     :foundation-primitive [bytes]}

@@ -167,17 +167,17 @@
      "Protocol capability predicates are Foundation wrappers over satisfies? and are not duplicate Base or Iter native methods."}]}
   {:surface/id :foundation/value-classification
    :surface/domain :function
-   :surface/symbols [type vector? tuple? pair? coll?]
+   :surface/symbols [type vector? pair? map-entry? coll?]
    :surface/classification :narrow-runtime-primitive
    :surface/requirements
    [{:requirement/id :foundation/vector-type
      :requirement/level :must
      :requirement/text
-     "type returns the concrete descriptor :std.native.Tuple for compact tuple values and :std.native.Vector for persistent vectors."}
+     "type returns :std.native.Vector for both compact tuple-backed vectors and persistent vectors, and :std.native.MapEntry for dedicated map entries."}
     {:requirement/id :foundation/vector-predicates
      :requirement/level :must
      :requirement/text
-     "vector? accepts both vector backends; tuple? accepts only the compact backend; pair? accepts a compact tuple of count two and does not accept an ordinary persistent vector or list merely because its count is two."}
+     "vector? accepts both vector backends; pair? and map-entry? accept only dedicated MapEntry values; compact vectors, persistent vectors, and lists are false even when their count is two."}
     {:requirement/id :foundation/collection-predicate
      :requirement/level :must
      :requirement/text

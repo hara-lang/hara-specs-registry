@@ -18,11 +18,13 @@ Java-parity hashing stack (RAPID default; SYSTEM, MURMUR3, SIP).
 at both ends. `priority-map` is a persistent map ordered by ascending natural
 priority; equal-priority keys retain stable insertion order.
 
-Vector is one public `:hara/Vector` category with two runtime backends. Bracket
-literals and portable `BUILD_VECTOR` use compact tuples for counts 0 through 8
-and persistent vectors from count 9. `tuple?` deliberately exposes that backend
-choice; `pair?` additionally recognises compact two-tuples. Equality, hashing,
-iteration, lookup, destructuring, metadata, and display remain vector semantics.
+Vector is one public `:std.native.Vector` category with two runtime backends.
+Bracket literals and portable `BUILD_VECTOR` use compact tuples for counts 0
+through 8 and persistent vectors from count 9. The compact backend is hidden;
+`pair?` and `map-entry?` recognise only dedicated `:std.native.MapEntry`
+values. Equality, hashing, iteration, lookup, destructuring, metadata, and
+display remain vector semantics, while maps accept only MapEntry values through
+`conj`.
 
 It does not own reader syntax for collection literals
 ([01-lang/001-language](../../001-language)) or protocol dispatch
@@ -30,7 +32,7 @@ It does not own reader syntax for collection literals
 
 ## Executable evidence
 
-- [`conformance/hash-parity.edn`](conformance/hash-parity.edn) — 276 cases
+- [`conformance/hash-parity.edn`](conformance/hash-parity.edn) — 275 cases
   pinning raw hash functions, canonical number hashing, string-type
   (keyword/symbol) hashing, hash seeds, and collection hash composition.
 - [`conformance/collections.edn`](conformance/collections.edn) — 54
@@ -73,6 +75,6 @@ coherent behaviour; `hara.lang.data.QueueTest` passes (5/5).
 A third finding was standardised rather than repaired: Java's
 `SortedMap.Node` does not override `hashCode`, so Java's own sorted-map
 `hashCalc` is identity-based and non-deterministic across JVM processes.
-The corpus pins the standardised unordered tuple2-entry composition
+The corpus pins the standardised unordered MapEntry composition
 (identical to the CHAMP map formula), matching the Rust runtime; see
 `:sorted-map-identity-hash` in the spec.

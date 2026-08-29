@@ -171,6 +171,7 @@
  std.foundation/map-indexed
  std.foundation/map-keys
  std.foundation/map-vals
+ std.foundation/map-entry?
  std.foundation/map?
  std.foundation/mapcat
  std.foundation/mapv
@@ -287,8 +288,6 @@
  std.foundation/topological-top
  std.foundation/transpose
  std.foundation/true?
- std.foundation/tuple
- std.foundation/tuple?
  std.foundation/type
  std.foundation/union
  std.foundation/unqualified-keys
@@ -438,12 +437,12 @@
     :diagnostic-history
     [{:observed :colon-qualified-public-names
       :reason "Foundation public bindings now use the ordinary with-* spelling; the former with:* names must not resolve."}]}
-   :compact-tuple-type-boundary
+   :compact-vector-type-boundary
    {:source "[(type [1]) (type (vec [1]))]"
-    :expected [:std.native.Tuple :std.native.Vector]
+    :expected [:std.native.Vector :std.native.Vector]
     :diagnostic-history
     [{:observed [:hara/Vector :hara/Vector]
-      :reason "Rejected public-category normalization; type reports the concrete std.native descriptor for each value."}]}
+      :reason "Compact tuple storage is internal; both vector backends expose the same std.native vector descriptor."}]}
    :map-entry-boundary
    {:source "(let [entry (first {:key 42})] [(type entry) (map-entry? entry) (pair? entry) (vector? entry) (count entry) (key entry) (val entry) (nth entry 0) (nth entry 1) (vec entry) (pair? [:key 42]) (into {} [[:key 42]])])"
     :expected [:std.native.MapEntry true true false 2 :key 42 :key 42 [:key 42] false {:key 42}]}
@@ -540,7 +539,6 @@
    'std.foundation/set [#{1 2} (fn [] (set [1 2 1]))]
    'std.foundation/pair [[:a 1] (fn [] (vec (pair :a 1)))]
    'std.foundation/pair? [true (fn [] (pair? (first {:a 1})))]
-   'std.foundation/tuple [[1 2] (fn [] (vec (tuple 1 2)))]
    'std.foundation/hash-map [{:a 1} (fn [] (hash-map :a 1))]
    'std.foundation/hash-set [#{1 2} (fn [] (hash-set 1 2 1))]
    'std.foundation/atom [1 (fn [] (deref (atom 1)))]
@@ -599,7 +597,7 @@
    'std.foundation/list? [true (fn [] (list? '(1)))]
    'std.foundation/cons? [true (fn [] (cons? (cons 1 '(2))))]
    'std.foundation/vector? [true (fn [] (vector? [1]))]
-   'std.foundation/tuple? [true (fn [] (tuple? (tuple 1)))]
+   'std.foundation/map-entry? [true (fn [] (map-entry? (pair :a 1)))]
    'std.foundation/map? [true (fn [] (map? {:a 1}))]
    'std.foundation/set? [true (fn [] (set? #{1}))]
    'std.foundation/sequential? [true (fn [] (sequential? [1]))]
@@ -642,10 +640,10 @@
    'std.foundation/reduce [6 (fn [] (reduce + 0 [1 2 3]))]
    'std.foundation/reduce-kv [{:a 2} (fn [] (reduce-kv (fn [out key value] (assoc out key (inc value))) {} {:a 1}))]
    'std.foundation/empty? [true (fn [] (empty? []))]
-   'std.foundation/first [[1 1] (fn [] [(first [1 2]) (first (tuple 1 2))])]
+   'std.foundation/first [[1 1] (fn [] [(first [1 2]) (first [1 2])])]
    'std.foundation/second [2 (fn [] (second [1 2]))]
    'std.foundation/rest [[2] (fn [] (vec (rest [1 2])))]
-   'std.foundation/last [[2 2] (fn [] [(last [1 2]) (last (tuple 1 2))])]
+   'std.foundation/last [[2 2] (fn [] [(last [1 2]) (last [1 2])])]
    'std.foundation/reverse ['(2 1) (fn [] (reverse [1 2]))]
    'std.foundation/get-in [2 (fn [] (get-in {:a {:b 2}} [:a :b]))]
    'std.foundation/assoc-in [{:a {:b 2}} (fn [] (assoc-in {} [:a :b] 2))]

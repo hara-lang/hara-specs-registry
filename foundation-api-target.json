@@ -1,6 +1,6 @@
 {
   "repository": "hara-lang/hara",
-  "commit": "210ef029bc8a1e6e892e830c749cb3fa8a4a9607",
+  "commit": "df48836e9d9e10b34e4481b13194ec29f4068515",
   "manifestSchemaVersion": 2,
   "status": "pinned-source",
   "note": "Update this immutable Hara source revision and regenerate the annex EDN, README, and registry index together."
