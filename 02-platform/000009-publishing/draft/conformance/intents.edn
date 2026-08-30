@@ -4,11 +4,12 @@
                :intent/tap "hara"
                :intent/coordinate "hara/graph"
                :intent/version "1.2.3"
-               :intent/repository-id 123456789
-               :intent/tag "v1.2.3"
+               :intent/repository "git@github.com:hara-lang/hara-native.git"
+               :intent/tag "1.2.3"
                :intent/commit "0123456789abcdef0123456789abcdef01234567"
                :intent/project-sha256 "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-               :intent/identity-revision "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+               :intent/recipe-sha256 "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+               :intent/identity-revision "0123456789abcdef0123456789abcdef01234567"}
   :case/expected :accepted}
  {:case/id :hara.publishing.case/project-mismatch
   :case/type :publication-intent
