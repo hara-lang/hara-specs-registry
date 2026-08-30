@@ -192,8 +192,14 @@
   {:native/id :std.native/test
    :native/symbol Test :native/namespace std.native.Test
    :native/availability :portable
-   :native/methods [catalog config context events compare run result passed? actual
-                    expected failures failure-seq failure-count failure failure?]}
+   :native/methods [catalog config context events compare check register facts get remove purge
+                    reset run-fact run summary result passed? actual expected failures
+                    failure-seq failure-count failure failure?]}
+  {:native/id :std.native/command
+   :native/symbol Command :native/namespace std.native.Command
+   :native/availability :portable
+   :native/methods [create config install uninstall routes snapshot restore reset closed? close
+                    parse dispatch run]}
   {:native/id :std.native/regexp
    :native/symbol RegExp :native/namespace std.native.RegExp
    :native/availability :portable

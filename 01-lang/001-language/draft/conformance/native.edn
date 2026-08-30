@@ -104,7 +104,7 @@
   :global-alias "<Type>"
   :global-aliases
   [Maths Num Bits Kernel Sandbox Package String Bytes Crypto OS Process File Socket
-   Promise Coroutine Stream Arr Obj Runtime Printer Document Edn Json Host Work Test
+   Promise Coroutine Stream Arr Obj Runtime Printer Document Edn Json Host Work Test Command
    RegExp Result Schema Exception Base Algo Iter]
   :identity :same-native-type-object
   :identity-example "(= Maths std.native.Maths std.foundation/Maths)"
@@ -387,8 +387,14 @@
    :method-classification {:native-only :all}}
   {:name Test
    :availability :implemented
-   :methods [catalog config context events compare run result passed? actual expected
-             failures failure-seq failure-count failure failure?]
+   :methods [catalog config context events compare check register facts get remove purge reset
+             run-fact run summary result passed? actual expected failures failure-seq
+             failure-count failure failure?]
+   :method-classification {:native-only :all}}
+  {:name Command
+   :availability :implemented
+   :methods [create config install uninstall routes snapshot restore reset closed? close parse
+             dispatch run]
    :method-classification {:native-only :all}}
   {:name RegExp
    :availability :implemented
