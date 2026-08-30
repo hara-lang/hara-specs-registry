@@ -5,7 +5,7 @@
     "ref": "main",
     "manifestPath": "spec-manifest.json",
     "manifestDigest": "sha256:cecc1ae1203ef447421cf1cc5ef6211a21bcffce05d0e53e66aa687deab37068",
-    "catalogueDigest": "sha256:13320a9c55ab21c24ce3599581170d04dfa2b26ef2e48011444a85e857161d8d",
+    "catalogueDigest": "sha256:5973a1c0361dda765f12c49723f30b8c7b41683bd5c4639db92c65d134ce596b",
     "transitional": false,
     "migration": {
       "repository": "hara-lang/hara-specs",
@@ -17,7 +17,7 @@
     "draft": 59,
     "ready": 0,
     "executable": 32,
-    "requirements": 395,
+    "requirements": 398,
     "materialized": 59,
     "pinnedSource": 0,
     "layers": [
@@ -1329,7 +1329,7 @@
       "classification": "hara",
       "sourcePath": "02-platform/000009-publishing/draft/hara-publishing.edn",
       "documentationPath": "02-platform/000009-publishing/draft/README.md",
-      "requirements": 8,
+      "requirements": 11,
       "formats": [
         "application/edn"
       ],
