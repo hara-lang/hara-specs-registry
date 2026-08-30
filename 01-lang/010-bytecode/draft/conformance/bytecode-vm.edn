@@ -132,7 +132,7 @@
   {:id :fn/as-value :source "(fn [x] x)" :expect {:display "<fn>"}}
   {:id :fn/called-in-loop :source "(let [inc (fn [x] (+ x 1))] (loop [i 0 acc 0] (if (< i 100) (recur (inc i) (+ acc i)) acc)))" :expect {:display "4950"}}
   {:id :fn/coroutine-yield-resume
-   :source "(do (def stream (std.foundation.coroutine/create (fn [] (std.foundation.coroutine/yield 42)))) (def yielded (std.protocol.icoroutine.ICoroutine/resume stream)) (std.protocol.icoroutine.ICoroutine/resume stream) yielded)"
+   :source "(do (def stream (std.native.Coroutine/create (fn [] (std.native.Coroutine/yield 42)))) (def yielded (std.protocol.icoroutine.ICoroutine/resume stream)) (std.protocol.icoroutine.ICoroutine/resume stream) yielded)"
    :expect {:display "42"}}
 
   ;; ---- defn lowering: direct bindings, shadowing, self-recursion ----
@@ -154,8 +154,14 @@
   ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
   {:id :workload/function-call :source "(loop [i 0 acc 0] (if (< i 2500) (recur (+ i 1) ((fn [x] (+ x 1)) acc)) acc))" :expect {:display "2500"}}
   {:id :workload/persistent-vector :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (nth [1 2 3 4 5 6 7 8] (mod i 8)))) acc))" :expect {:display "2242"}}
-  {:id :workload/persistent-map :source "(loop [i 0 value {}] (if (< i 500) (recur (+ i 1) (assoc value i (+ i 1))) (get value 499)))" :expect {:display "500"}}
-  {:id :workload/sequence-navigation :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (first (rest [1 2])))) acc))" :expect {:display "1000"}}
+  {:id :workload/persistent-map :source "(loop [i 0 value {}] (if (< i 500) (recur (+ i 1) (IAssoc/assoc value i (+ i 1))) (ILookup/lookup value 499)))" :expect {:display "500"}}
+  {:id :workload/sequence-navigation :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (IPeekFirst/peek-first (IPopFirst/pop-first (quote (1 2)))))) acc))" :expect {:display "1000"}}
+  {:id :native/vector-protocols
+   :source "(let [updated (IAssoc/assoc [1 2 3] 1 42)] [(ILookup/lookup updated 1) (INth/nth updated 1) (IPeekFirst/peek-first updated)])"
+   :expect {:display "[42 42 1]"}}
+  {:id :native/map-entry-protocols
+   :source "(let [entry (IFind/find {:key 42} :key)] [(IPair/key entry) (IPair/value entry)])"
+   :expect {:display "[:key 42]"}}
 
   ;; ---- function errors: both paths must fail in the same category ----
   {:id :error/fn-arity-high :source "((fn [x] x) 1 2)" :expect {:error-category "function arity"}}
@@ -198,10 +204,10 @@
 
   ;; ---- persistent and mutable named values ----
   {:id :named-value/defstruct-constructors
-   :source "(do (defstruct Point [x y]) (+ (get (Point 1 2) :x) (get (->Point 3 4) :x) (get (map->Point {:x 5}) :x)))"
+   :source "(do (defstruct Point [x y]) (+ (ILookup/lookup (Point 1 2) :x) (ILookup/lookup (->Point 3 4) :x) (ILookup/lookup (map->Point {:x 5}) :x)))"
    :expect {:display "9"}}
   {:id :named-value/defstruct-keyword-lookup
-   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9})] [(:x point) (:missing point 7) (:extra point) (get point :x) (type point)]))"
+   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9})] [(:x point) (:missing point 7) (:extra point) (ILookup/lookup point :x) (type point)]))"
    :expect {:display "[1 7 nil 1 :user.Point]"}}
   {:id :named-value/defstruct-map-destructuring
    :source "(do (defstruct Point [x y]) [(let [{:keys [x y missing] :or {missing 7} :as point} (Point 1 2)] [x y missing (type point)]) ((fn [{:keys [x y]}] [x y]) (Point 3 4))])"

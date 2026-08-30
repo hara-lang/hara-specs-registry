@@ -286,7 +286,7 @@
              p256-keypair p256-public p256-sign p256-verify p256-shared]
    :method-classification {:native-only :all}}
   {:name OS
-   :availability :implemented
+   :availability :capability-gated
    :methods [platform arch cwd env getenv time-ms time-ns]
    :method-classification {:native-only :all}}
   {:name Process
