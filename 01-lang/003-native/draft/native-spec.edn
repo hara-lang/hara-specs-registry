@@ -123,7 +123,7 @@
     p256-shared]}
   {:native/id :std.native/os
    :native/symbol OS :native/namespace std.native.OS
-   :native/availability :portable
+   :native/availability :capability-gated :native/capability :native-runtime
    :native/methods [platform arch cwd env getenv time-ms time-ns]}
   {:native/id :std.native/process
    :native/symbol Process :native/namespace std.native.Process

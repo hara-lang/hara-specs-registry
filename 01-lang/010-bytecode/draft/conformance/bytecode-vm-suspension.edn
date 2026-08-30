@@ -10,7 +10,7 @@
 
  :cases
  [{:id :await/fulfilled-fast-path
-   :source "(std.foundation.coroutine/await source)"
+   :source "(std.native.Coroutine/await source)"
    :setup {:source {:promise/state :fulfilled :promise/value 42}}
    :drive []
    :expect {:initial/state :completed
@@ -18,7 +18,7 @@
             :suspended false}}
 
   {:id :await/pending-resume
-   :source "(std.foundation.coroutine/await source)"
+   :source "(std.native.Coroutine/await source)"
    :setup {:source {:promise/state :pending}}
    :drive [{:op :promise/resolve :var source :value 42}
            {:op :fiber/poll}]
@@ -28,7 +28,7 @@
             :terminal/display "42"}}
 
   {:id :await/rejected-catch
-   :source "(try (std.foundation.coroutine/await source) (catch Exception error error))"
+   :source "(try (std.native.Coroutine/await source) (catch Exception error error))"
    :setup {:source {:promise/state :pending}}
    :drive [{:op :promise/reject :var source :message "failed"}
            {:op :fiber/poll}]
@@ -37,7 +37,7 @@
             :terminal/display "\"failed\""}}
 
   {:id :await/fulfilled-finally
-   :source "(do (def marker 0) (defn inner [p] (try (std.foundation.coroutine/await p) (finally (set! marker 1)))) (defn outer [p] [(inner p) marker]) (outer source))"
+   :source "(do (def marker 0) (defn inner [p] (try (std.native.Coroutine/await p) (finally (set! marker 1)))) (defn outer [p] [(inner p) marker]) (outer source))"
    :setup {:source {:promise/state :pending}}
    :drive [{:op :promise/resolve :var source :value 41}
            {:op :fiber/poll}]
@@ -46,7 +46,7 @@
             :terminal/display "[41 1]"}}
 
   {:id :await/rejected-finally-before-outer-catch
-   :source "(do (def marker 0) (defn inner [p] (try (std.foundation.coroutine/await p) (finally (set! marker 1)))) (try (inner source) (catch Exception error [error marker])))"
+   :source "(do (def marker 0) (defn inner [p] (try (std.native.Coroutine/await p) (finally (set! marker 1)))) (try (inner source) (catch Exception error [error marker])))"
    :setup {:source {:promise/state :pending}}
    :drive [{:op :promise/reject :var source :message "failed"}
            {:op :fiber/poll}]
@@ -55,7 +55,7 @@
             :terminal/display "[\"failed\" 1]"}}
 
   {:id :yield/resume-value
-   :source "(std.foundation.coroutine/yield 41)"
+   :source "(std.native.Coroutine/yield 41)"
    :setup {}
    :drive [{:op :fiber/resume-yield :value 42}]
    :expect {:initial/state :yielded
@@ -64,7 +64,7 @@
             :terminal/display "42"}}
 
   {:id :async/settled-result-promise
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await source)) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.native.Coroutine/await source)) (delayed))"
    :setup {:source {:promise/state :fulfilled :promise/value 42}}
    :drive []
    :expect {:initial/state :completed
@@ -73,7 +73,7 @@
             :result-promise/display "42"}}
 
   {:id :async/pending-result-promise
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await source)) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.native.Coroutine/await source)) (delayed))"
    :setup {:source {:promise/state :pending}}
    :drive [{:op :promise/resolve :var source :value 42}
            {:op :scheduler/poll}]
@@ -84,7 +84,7 @@
             :result-promise/display "42"}}
 
   {:id :async/cancellation-propagates
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await source)) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.native.Coroutine/await source)) (delayed))"
    :setup {:source {:promise/state :pending
                    :promise/cancel-hook :observe}}
    :drive [{:op :result-promise/cancel}]
@@ -93,7 +93,7 @@
             :source/cancel-hook-observed true}}
 
   {:id :host/native-promise
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await (Host/call \"timer\" \"sleep\" [1]))) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.native.Coroutine/await (Host/call \"timer\" \"sleep\" [1]))) (delayed))"
    :setup {:host/call {:service "timer"
                        :method "sleep"
                        :arguments [1]
@@ -105,7 +105,7 @@
             :result-promise/display "42"}}
 
   {:id :host/wasm32-promise
-   :source "(do (defn ^:async delayed [] (std.foundation.coroutine/await (Host/call \"timer\" \"sleep\" [1]))) (delayed))"
+   :source "(do (defn ^:async delayed [] (std.native.Coroutine/await (Host/call \"timer\" \"sleep\" [1]))) (delayed))"
    :setup {:target :wasm32
            :host/broker-return {:promise/state :pending}}
    :drive [{:op :javascript/resolve-guest-promise :value 42}
