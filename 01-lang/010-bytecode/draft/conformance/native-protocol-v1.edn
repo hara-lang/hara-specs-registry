@@ -72,7 +72,8 @@
     :methods ["list" "vector" "vec" "set" "hash-map" "hash-set" "map-entry" "bytes" "atom"
               "pointer" "symbol" "keyword" "uuid" "reduced" "unreduced" "hash"
               "apply" "resolve" "namespace" "current-namespace" "select-namespace" "def"
-              "struct" "mutable" "protocol" "extend" "field" "number?" "long?" "satisfies?"
+              "struct" "mutable" "protocol" "with-declaration" "extend" "multimethod" "method"
+              "field" "number?" "long?" "satisfies?"
               "special-symbol?" "type" "instance?"]}
    {:type "std.native.Algo"
     :methods ["deque" "ordered-map" "ordered-set" "priority-map" "queue" "sorted-map" "sorted-set"
@@ -205,6 +206,42 @@
                     (std.native.Obj/get object "answer")
                     (std.native.Obj/has? object "answer")
                     (std.native.Obj/has? object-copy "answer")]))
+     :expect {:display "true"}}
+    {:id :native/mutable-reader-tags-and-lookup
+     :program (let [array #arr[1 (+ 1 1)]
+                    object #obj{"answer" (+ 40 2)}
+                    lookup (std.protocol.ideref.IDeref/deref
+                            (std.native.Base/resolve 'std.protocol.ilookup.ILookup))
+                    array-value (std.protocol.ilookup.ILookup/lookup array 1)
+                    array-missing (std.protocol.ilookup.ILookup/lookup array 9 :missing)
+                    object-value (std.protocol.ilookup.ILookup/lookup object "answer")
+                    object-missing (std.protocol.ilookup.ILookup/lookup object "missing" :missing)
+                    _ (std.native.Arr/set array 0 7)
+                    _ (std.native.Obj/set object "answer" 43)]
+                (= [true true 2 :missing 42 :missing 7 43]
+                   [(std.native.Base/satisfies? lookup array)
+                    (std.native.Base/satisfies? lookup object)
+                    array-value
+                    array-missing
+                    object-value
+                    object-missing
+                    (std.protocol.ilookup.ILookup/lookup array 0)
+                    (std.protocol.ilookup.ILookup/lookup object "answer")]))
+     :expect {:display "true"}}
+    {:id :native/mutable-reader-tag-display
+     :program (= "[#arr[1 2] #obj{\"answer\" 42} #obj{}]"
+                 (std.native.Printer/capture
+                   (fn []
+                     (std.native.Printer/p
+                       [#arr[1 (+ 1 1)] #obj {"answer" (+ 40 2)} #obj {}]))))
+     :expect {:display "true"}}
+    {:id :native/uuid-reader-tag
+     :program (let [value #uuid "00000000-0000-0000-0000-000000000000"]
+                (= [true :std.native.UUID "#uuid \"00000000-0000-0000-0000-000000000000\""]
+                   [(= value (std.native.Base/uuid "00000000-0000-0000-0000-000000000000"))
+                    (std.native.Base/type value)
+                    (std.native.Printer/capture
+                      (fn [] (std.native.Printer/p value)))]))
      :expect {:display "true"}}
     {:id :native/runtime-and-codecs
      :program (= [42 {:a 1} "{:a 1}" {"a" 1} "{\"a\":1}"]
@@ -463,8 +500,15 @@
                     user ((std.protocol.ideref.IDeref/deref
                            (std.native.Base/resolve target '->User)) "Ada")
                     session ((std.protocol.ideref.IDeref/deref
-                              (std.native.Base/resolve target '->Session)) "session-token")]
-                (= [42 "hello Ada" "session-token" true]
+                              (std.native.Base/resolve target '->Session)) "session-token")
+                    dispatch (std.native.Base/with-declaration
+                              target
+                              (fn []
+                                (std.native.Base/multimethod target 'classify (fn [value] value))
+                                (std.native.Base/method target 'classify :answer (fn [value] 42))
+                                ((std.protocol.ideref.IDeref/deref
+                                  (std.native.Base/resolve target 'classify)) :answer)))]
+                (= [42 "hello Ada" "session-token" true 42]
                    [((std.protocol.ideref.IDeref/deref
                       (std.native.Base/resolve target 'answer)))
                     ((std.protocol.ideref.IDeref/deref
@@ -472,7 +516,8 @@
                     (std.native.Base/field session :token)
                     (do (std.native.Base/protocol
                           target 'IGreeting {'welcome 1} (std.native.Base/vector))
-                        (= nil (std.native.Base/resolve target 'greet)))]))
+                        (= nil (std.native.Base/resolve target 'greet)))
+                    dispatch]))
      :expect {:display "true"}}
     {:id :native/vector-type
      :program (= :std.native.Vector (std.native.Base/type [1]))
