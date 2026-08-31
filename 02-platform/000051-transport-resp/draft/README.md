@@ -80,7 +80,7 @@ All operations are uppercase words in the first array element.
 
 | Operation                | Arguments (legacy)      | Arguments (v4)         | Effect |
 |--------------------------|-------------------------|------------------------|--------|
-| `EVAL`                   | `<session> <source>`    | `<id> <source>`        | Evaluate source; legacy targets an explicit session, v4 evaluates in the attached session |
+| `EVAL`                   | `<session> <source>`    | `<id> <source> [FILE <file> LINE <line> COLUMN <column>]` | Evaluate source; legacy targets an explicit session, v4 evaluates in the attached session |
 | `COMPLETE`               | `<prefix>`              | `<id> <prefix>`        | Newline-joined completion candidates for the attached session |
 | `SESSION NEW`            | `<name>`                | `<id> <name>`          | Create a session |
 | `SESSION LIST`           | —                       | `<id>`                 | Newline-joined session names |
@@ -118,6 +118,31 @@ failure:  ["ERROR",  <id>, <CODE>, <message>]
 ```
 
 A missing id is reported as `?`.
+
+### Evaluation diagnostics
+
+For a protocol-4 `EVAL` failure, a server may append one fifth value to the
+`ERROR` envelope. Older clients continue to use the first four fields; legacy
+protocol-3 replies never include this value.
+
+```text
+["ERROR", <id>, "EVAL_ERROR", <message>,
+ ["VERSION", 1,
+  "MESSAGE", <message>,
+  "EXCEPTION", ["MESSAGE", <message>, "CLASS", <class-or-null>,
+                "CODE", <code-or-null>, "DATA", <bounded-readable-data>,
+                "CAUSE", <nested-exception-or-null>, "THROWS", <locations>],
+  "PRIMARY", ["FILE", <file-or-null>, "LINE", <line-or-null>, "COLUMN", <column-or-null>],
+  "EXCERPT", ["START-LINE", <line>, "TEXT", <source-with-two-lines-of-context>],
+  "FRAMES", [["FUNCTION", <function>, "NAMESPACE", <namespace-or-null>,
+              "FILE", <file-or-null>, "LINE", <line-or-null>, "COLUMN", <column-or-null>], ...]]
+```
+
+`DATA` is a readable display limited to 16 KiB; diagnostics do not include
+environment or process dumps. Editor clients should send `FILE`, `LINE`, and
+`COLUMN` after the submitted source so the server can map the primary location
+and source excerpt. Frames are ordered innermost first and should be rendered
+as navigable locations when the editor can resolve the file or namespace.
 
 ## Error codes
 

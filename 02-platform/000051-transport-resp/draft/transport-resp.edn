@@ -16,6 +16,7 @@
    :resp/legacy-dialect
    :resp/streaming-dialect
    :resp/errors
+   :resp/diagnostics
    :resp/client]
   :scope/excludes
   [:resp/authentication
@@ -99,7 +100,9 @@
  :resp/operations
  [{:operation/name "EVAL"
    :operation/legacy-arguments [:session/name :hara/source]
-   :operation/v4-arguments [:request/id :hara/source]
+   :operation/v4-arguments [:request/id :hara/source :source/origin?]
+   :operation/source-origin
+   ["FILE" :source/file "LINE" :source/line "COLUMN" :source/column]
    :operation/effect :broker/evaluate}
   {:operation/name "COMPLETE"
    :operation/legacy-arguments [:completion/prefix]
@@ -158,7 +161,7 @@
    [["RESULT" :request/id :result/display]
     ["DONE" :request/id "OK"]]
    :dialect/error-envelope
-   [["ERROR" :request/id :error/code :error/message]
+   [["ERROR" :request/id :error/code :error/message :error/diagnostic?]
     ["DONE" :request/id "ERROR"]]
    :dialect/eval-session :connection/attached}]
 
@@ -173,6 +176,39 @@
    :error/meaning "The requested operation is unknown."}
   {:error/code "INTERNAL_ERROR"
    :error/meaning "The broker failed independently of request evaluation."}]
+
+ :resp/diagnostics
+ {:diagnostic/version 1
+  :diagnostic/transport :optional-v4-error-trailing-field
+  :diagnostic/legacy :absent
+  :diagnostic/shape
+  ["VERSION" :diagnostic/version
+   "MESSAGE" :error/message
+   "EXCEPTION" :exception?
+   "PRIMARY" :diagnostic/location?
+   "EXCERPT" :diagnostic/excerpt?
+   "FRAMES" :diagnostic/frames]
+  :diagnostic/exception-shape
+  ["MESSAGE" :exception/message
+   "CLASS" :exception/class?
+   "CODE" :exception/code?
+   "DATA" :exception/data-display
+   "CAUSE" :exception/cause?
+   "THROWS" :exception/throw-locations]
+  :diagnostic/frame-shape
+  ["FUNCTION" :frame/function
+   "NAMESPACE" :frame/namespace?
+   "FILE" :frame/file?
+   "LINE" :frame/line?
+   "COLUMN" :frame/column?]
+  :diagnostic/location-shape
+  ["FILE" :location/file?
+   "LINE" :location/line?
+   "COLUMN" :location/column?]
+  :diagnostic/excerpt-shape ["START-LINE" :excerpt/start-line "TEXT" :excerpt/text]
+  :diagnostic/data-max-bytes 16384
+  :diagnostic/excerpt-context-lines 2
+  :diagnostic/no-environment-disclosure true}
 
  :resp/client
  {:client/namespace std.resp.client
@@ -200,6 +236,15 @@
   {:requirement/id :hara.resp.streaming/two-reply
    :requirement/level :must
    :requirement/text "A streaming request produces a result or error envelope followed by its DONE envelope."}
+  {:requirement/id :hara.resp.streaming/error-diagnostic-compatibility
+   :requirement/level :must
+   :requirement/text "Protocol 4 clients must accept a four-field ERROR envelope; a server may append one versioned diagnostic value as a fifth field for evaluation errors."}
+  {:requirement/id :hara.resp.diagnostic/bounded-readable-data
+   :requirement/level :must
+   :requirement/text "Diagnostic exception data is a bounded readable display, at most 16384 UTF-8 bytes, and must not include environment or process dumps."}
+  {:requirement/id :hara.resp.diagnostic/source-origin
+   :requirement/level :should
+   :requirement/text "Editor clients should send FILE, LINE, and COLUMN after EVAL source so a primary diagnostic location and a two-line-context excerpt can be returned."}
   {:requirement/id :hara.resp.quit/close
    :requirement/level :must
    :requirement/text "QUIT returns +OK and then closes the connection."}]

@@ -30,6 +30,7 @@
    [:resp.case/hello-v4
     :resp.case/eval-v4
     :resp.case/error-v4
+    :resp.case/eval-error-diagnostic-v4
     :resp.case/session-sharing
     :resp.case/session-lifecycle
     :resp.case/completion
@@ -113,6 +114,26 @@
    :case/expect
    [["ERROR" "BAD-1" "UNKNOWN_OP" :error/message]
     ["DONE" "BAD-1" "ERROR"]]}
+  {:case/id :resp.case/eval-error-diagnostic-v4
+   :case/level :must
+   :case/method :client-transcript
+   :case/input
+   ["EVAL" "ERROR-1" "(throw (ex :test/failed {:value 41}))"
+    "FILE" "/tmp/request.hal" "LINE" "10" "COLUMN" "5"]
+   :case/expect
+   [["ERROR" "ERROR-1" "EVAL_ERROR" :error/message
+     ["VERSION" 1
+      "MESSAGE" :error/message
+      "EXCEPTION" ["MESSAGE" :exception/message
+                   "CLASS" :exception/class?
+                   "CODE" ":test/failed"
+                   "DATA" :bounded-readable-data
+                   "CAUSE" :exception/cause?
+                   "THROWS" :exception/throw-locations]
+      "PRIMARY" ["FILE" "/tmp/request.hal" "LINE" 10 "COLUMN" :location/column]
+      "EXCERPT" ["START-LINE" 10 "TEXT" :source/excerpt]
+      "FRAMES" [:frame/inner-to-outer]]]
+    ["DONE" "ERROR-1" "ERROR"]]}
   {:case/id :resp.case/session-sharing
    :case/level :must
    :case/method :two-connections
