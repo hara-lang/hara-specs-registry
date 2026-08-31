@@ -223,6 +223,34 @@
    :file/outside-root :file/denied :file/not-directory :file/is-directory
    :file/directory-not-empty :file/permission-denied :file/unsupported :file/io]}
 
+ :work
+ {:status :accepted
+  :type Work
+  :source-surface :direct-native
+  :facade-namespaces :forbidden
+  :plan
+  {:representation :canonical-portable-map
+   :version 1
+   :closure-free true
+   :codec :hta
+   :operations [pure step chain all each filter fold choose graph batch bind ensure await]}
+  :opaque-values
+  {:WorkHost :std.native.WorkHost
+   :WorkRun :std.native.WorkRun
+   :WorkRegistry :std.native.WorkRegistry
+   :WorkRuntime :std.native.WorkRuntime}
+  :registry
+  {:targets :process-local
+   :target-key :stable-name
+   :reset :idempotent}
+  :runtime
+  {:evaluation :promise
+   :suspension :optional
+   :reset :idempotent}
+  :host
+  {:submit-plan :IWorkRun
+   :context :existing-Work-current-run}}
+
  :types
  [{:name Maths
    :availability :implemented
@@ -461,7 +489,10 @@
   {:name Work
    :availability :capability-gated
    :methods [default-host current-run cancelled? check-cancelled deadline-nanos emit
-             submit-child on-close]
+             submit-child on-close
+             plan? configured pure step chain all each filter fold choose graph batch bind ensure await encode-hta decode-hta
+             new-registry bind-target unbind-target target target-names reset-registry
+             new-runtime runtime-registry evaluate reset-runtime submit-plan]
    :method-classification {:native-only :all}
   }]
 

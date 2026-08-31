@@ -46,7 +46,97 @@
     :classification :implementation-calibration
     :expectation :return-same-persistent-set-family
     :portable-observation :not-observable
-    :reason "Reference identity and concrete persistent-set families are host representations; each host must preserve its native identity fast path."}})
+   :reason "Reference identity and concrete persistent-set families are host representations; each host must preserve its native identity fast path."}})
+
+;; Work plans are ordinary portable maps. WorkRegistry, WorkRuntime, WorkHost,
+;; and WorkRun are opaque native values; this exercise is intentionally written
+;; only through the direct Work/* boundary so Rust and JVM share it unchanged.
+(defn work-native-conformance
+  []
+  (let [registry (Work/new-registry)
+        bind-inc (Work/bind-target registry "fixture/inc" (fn [input] (+ input 1)))
+        bind-double (Work/bind-target registry "fixture/double" (fn [input] (* input 2)))
+        bind-even (Work/bind-target registry "fixture/even?" (fn [input] (= input 2)))
+        bind-select (Work/bind-target registry "fixture/select" (fn [input] :selected))
+        bind-fold (Work/bind-target registry "fixture/fold" (fn [input] (+ (get input :acc) (get input :item))))
+        bind-cleanup (Work/bind-target registry "fixture/cleanup" (fn [input] nil))
+        bind-plan (Work/bind-target registry "fixture/to-double" (fn [input] (Work/step "fixture/double")))
+        bind-context (Work/bind-target registry "fixture/context"
+                       (fn [input]
+                         (let [run (Work/current-run)
+                               child (Work/submit-child (fn [work child-input options id] child-input) input {})]
+                           [(= :std.native.WorkRun (type run))
+                            (= false (Work/cancelled?))
+                            (nil? (Work/check-cancelled))
+                            (nil? (Work/deadline-nanos))
+                            (Work/emit :fixture/seen input)
+                            (= :std.native.WorkRun (type child))
+                            (Work/on-close (fn [closed-run] nil))])))
+        runtime (Work/new-runtime registry)
+        pure (Work/pure "fixture/inc")
+        step (Work/step "fixture/double")
+        chain (Work/chain [pure step])
+        all (Work/all [pure step])
+        each (Work/each pure)
+        filter (Work/filter (Work/step "fixture/even?"))
+        fold (Work/fold 0 (Work/step "fixture/fold"))
+        choose (Work/choose (Work/pure "fixture/select") {:selected pure})
+        graph (Work/graph {:inc pure :double step} [:inc :double])
+        batch (Work/batch pure)
+        bind (Work/bind pure "fixture/to-double")
+        ensure (Work/ensure pure (Work/pure "fixture/cleanup"))
+        await-runtime (Work/new-runtime registry (fn [wait] wait))
+        host (Work/default-host)
+        run (Work/submit-plan host runtime chain 4 {})
+        context-run (Work/submit-plan host runtime (Work/pure "fixture/context") 7 {})
+        reset-registry (Work/new-registry)
+        reset-runtime (Work/new-runtime reset-registry)]
+    (and
+      (= :std.native.WorkHost (type host))
+      (= :std.native.WorkRegistry (type registry))
+      (= :std.native.WorkRuntime (type runtime))
+      (Work/plan? pure)
+      (Work/plan? (Work/configured :pure {:work/target "fixture/inc"}))
+      (= :pure (get pure :work/op))
+      (= :step (get step :work/op))
+      (= :chain (get chain :work/op))
+      (= :all (get all :work/op))
+      (= :each (get each :work/op))
+      (= :filter (get filter :work/op))
+      (= :fold (get fold :work/op))
+      (= :choose (get choose :work/op))
+      (= :graph (get graph :work/op))
+      (= :batch (get batch :work/op))
+      (= :bind (get bind :work/op))
+      (= :ensure (get ensure :work/op))
+      (= :await (get (Work/await :fixture/wait) :work/op))
+      (bytes? (Work/encode-hta chain))
+      (= chain (Work/decode-hta (Work/encode-hta chain)))
+      (function? (Work/target registry "fixture/inc"))
+      (= ["fixture/cleanup" "fixture/context" "fixture/double" "fixture/even?" "fixture/fold" "fixture/inc" "fixture/select" "fixture/to-double"]
+         (Work/target-names registry))
+      (= registry (Work/runtime-registry runtime))
+      (= 10 (IPromise/value (Work/evaluate runtime chain 4)))
+      (= [2 2] (IPromise/value (Work/evaluate runtime all 1)))
+      (= [2 3] (IPromise/value (Work/evaluate runtime each [1 2])))
+      (= [2] (IPromise/value (Work/evaluate runtime filter [1 2 3])))
+      (= 6 (IPromise/value (Work/evaluate runtime fold [1 2 3])))
+      (= 2 (IPromise/value (Work/evaluate runtime choose 1)))
+      (= {:inc 2 :double 2} (IPromise/value (Work/evaluate runtime graph 1)))
+      (= [2 3] (IPromise/value (Work/evaluate runtime batch [1 2])))
+      (= 4 (IPromise/value (Work/evaluate runtime bind 1)))
+      (= 2 (IPromise/value (Work/evaluate runtime ensure 1)))
+      (= 7 (IPromise/value (Work/evaluate await-runtime (Work/await 7) nil)))
+      (= :std.native.WorkRun (type run))
+      (= 10 (IPromise/value (IWorkRun/work-result run)))
+      (= [true true true true true true true]
+         (IPromise/value (IWorkRun/work-result context-run)))
+      (Work/unbind-target registry "fixture/even?")
+      (nil? (Work/target registry "fixture/even?"))
+      (= reset-registry (Work/reset-registry reset-registry))
+      (= [] (Work/target-names reset-registry))
+      (= reset-runtime (Work/reset-runtime reset-runtime))
+      (= [] (Work/target-names reset-registry)))))
 
 ;; Source-owned behavioral classification for the live native surface.
 ;; Every method is declared exactly once across the three data sets below.
@@ -61,6 +151,7 @@
    :inventory/no-constructor "The native surface exposes no portable constructor for a valid receiver."
    :inventory/schema-shape "Schema AST or origin values need a normalized public representation before promotion."
    :inventory/foundation-boundary "A stable value or identity assertion remains owned by the dedicated Foundation boundary suite."
+   :inventory/native-surface "The native declaration is inventoried, but a stable normalized cross-runtime observation has not yet been specified."
    :inventory/namespace-introspection "Namespace and reader classification helpers remain owned by the Foundation boundary suite until their normalized observations are promoted."
    :inventory/lazy-observation "The lazy iterator operation needs a bounded deterministic observation before promotion."
    :inventory/unclassified-shape "A stable normalized cross-runtime observation is not yet specified; promotion requires review."
@@ -208,7 +299,7 @@
    'Base/long? [true (fn [] (Base/long? 1))]
    'Base/type [:std.native.Vector (fn [] (Base/type (Base/vector 1)))]
    'Base/instance? [true (fn [] (Base/instance? Promise (Promise/from 1)))]
-   'Iter/seq [[1 2] (fn [] (vec (Iter/seq [1 2])))]
+   'Iter/seq [[1 2] (fn [] (Base/vec (Iter/seq [1 2])))]
    'Iter/iter [1 (fn [] (Iter/iter-next (Iter/iter [1 2])))]
    'Iter/iter-finite? [true (fn [] (Iter/iter-finite? [1]))]
    'Iter/iter-materialize [[1 2] (fn [] (Iter/iter-materialize [1 2]))]
@@ -250,11 +341,39 @@
    :printer/output ['Printer/p 'Printer/println 'Printer/capture]
    :host/interop ['Host/call 'Host/describe 'Host/capabilities 'Host/capability?]
    :test/runtime ['Test/catalog 'Test/config 'Test/context 'Test/events 'Test/compare 'Test/run 'Test/result 'Test/passed? 'Test/actual 'Test/expected 'Test/failures 'Test/failure-seq 'Test/failure-count 'Test/failure 'Test/failure?]
-   :work/runtime ['Work/default-host 'Work/current-run 'Work/cancelled? 'Work/check-cancelled 'Work/deadline-nanos 'Work/emit 'Work/submit-child 'Work/on-close]
+   :work/runtime ['Work/default-host 'Work/current-run 'Work/cancelled? 'Work/check-cancelled 'Work/deadline-nanos 'Work/emit 'Work/submit-child 'Work/on-close
+                  'Work/plan? 'Work/configured 'Work/pure 'Work/step 'Work/chain 'Work/all 'Work/each 'Work/filter 'Work/fold 'Work/choose 'Work/graph 'Work/batch 'Work/bind 'Work/ensure 'Work/await 'Work/encode-hta 'Work/decode-hta
+                  'Work/new-registry 'Work/bind-target 'Work/unbind-target 'Work/target 'Work/target-names 'Work/reset-registry
+                  'Work/new-runtime 'Work/runtime-registry 'Work/evaluate 'Work/reset-runtime 'Work/submit-plan]
   })
 
 (def inventory-method-groups
   {
+   :inventory/native-surface
+   ['Base/current-namespace 'Base/def 'Base/extend 'Base/field 'Base/map-entry 'Base/method
+    'Base/multimethod 'Base/mutable 'Base/namespace 'Base/protocol 'Base/select-namespace
+    'Base/struct 'Base/with-declaration
+    'Book/create 'Book/data 'BookEntry/create 'BookEntry/data 'BookMeta/create 'BookMeta/data
+    'BookModule/create 'BookModule/data
+    'Command/close 'Command/closed? 'Command/config 'Command/create 'Command/dispatch
+    'Command/install 'Command/parse 'Command/reset 'Command/restore 'Command/routes
+    'Command/run 'Command/snapshot 'Command/uninstall
+    'Compilation/create 'Compilation/data 'Compiler/config 'Compiler/create
+    'HBX/inspect 'HBX/pack 'HBX/provider 'HBX/unpack 'HBX/validate
+    'Harness/close 'Harness/closed? 'Harness/config 'Harness/create 'Harness/library
+    'Harness/reset 'Harness/restore 'Harness/runtime 'Harness/snapshot 'Harness/state
+    'Instrument/disassemble 'Instrument/execute 'Instrument/inspect 'Instrument/provider
+    'Instrument/transform 'Instrument/validate
+    'Kernel/package-check
+    'Library/books 'Library/config 'Library/create 'Library/install 'Library/remove 'Library/reset
+    'Library/resolve 'Library/restore 'Library/snapshot 'Library/state
+    'Package/build 'Package/distribute 'Package/inspect 'Package/inspect-seal 'Package/read
+    'Package/seal 'Package/verify-seal
+    'Runtime/close 'Runtime/closed? 'Runtime/config 'Runtime/create 'Runtime/reset 'Runtime/state
+    'Snapshot/data
+    'Test/check 'Test/facts 'Test/get 'Test/purge 'Test/register 'Test/remove 'Test/reset
+    'Test/run-fact 'Test/summary
+    'Work/reset-host]
    :inventory/unclassified-shape ['Crypto/hmac-sha256 'Crypto/hmac-sha512 'Algo/deque 'Algo/ordered-map 'Algo/ordered-set 'Algo/priority-map 'Algo/queue 'Algo/sorted-map 'Algo/sorted-set 'Algo/trie 'Algo/deque? 'Algo/ordered-map? 'Algo/ordered-set? 'Algo/priority-map? 'Algo/queue? 'Algo/sorted-map? 'Algo/sorted-set? 'Algo/trie?]
    :inventory/mutable-array ['Arr/push-first 'Arr/push-last 'Arr/pop-first 'Arr/pop-last 'Arr/insert 'Arr/remove 'Arr/slice 'Arr/map 'Arr/filter 'Arr/fold-left 'Arr/fold-right]
    :inventory/mutable-object ['Obj/assign 'Obj/keys 'Obj/vals 'Obj/pairs]
@@ -321,7 +440,7 @@
 (def declared-native-methods
   (append-group-methods
     (append-group-methods
-      (vec (keys portable-fixtures))
+      (Base/vec (keys portable-fixtures))
       capability-method-groups)
     inventory-method-groups))
 
@@ -358,12 +477,12 @@
 
 (defn native-method-keys
   []
-  (vec (keys native-method-corpus)))
+  (Base/vec (keys native-method-corpus)))
 
 (defn native-method-results
   []
-  (vec (map (fn [method] (native-method-result method nil))
-        (native-method-keys))))
+  (Base/vec (map (fn [method] (native-method-result method nil))
+                 (native-method-keys))))
 
 (defn native-classification-summary
   []
@@ -392,15 +511,15 @@
   [thunk]
   (try
     [:value (thunk)]
-    (catch Throwable error
+    (catch error
       [:error (normalized-error-class error)])))
 
 (defn native-closure-report
   [live-methods]
   (let [live (set live-methods)
         classified (set (native-method-keys))
-        missing (vec (filter (fn [method] (not (has? classified method))) live-methods))
-        extra (vec (filter (fn [method] (not (has? live method))) (native-method-keys)))]
+        missing (Base/vec (filter (fn [method] (not (has? classified method))) live-methods))
+        extra (Base/vec (filter (fn [method] (not (has? live method))) (native-method-keys)))]
     {:pass (and (empty? missing) (empty? extra))
      :live (count live)
      :classified (count classified)
@@ -423,7 +542,7 @@
                 actual ((second fixture))]
             {:method method :classification classification :pass (= expected actual)
              :expected expected :actual actual})
-          (catch Throwable error
+          (catch error
             {:method method :classification classification :pass false
              :error-class (normalized-error-class error)
              :error-message (ex-message error)})))
@@ -530,6 +649,9 @@
     :actual [(nil? (resolve 'std.native.Builtins))
              (nil? (resolve 'decimal?))
              (nil? (resolve 'contains?))]}
+   {:id :work-direct-native-surface
+    :points [:canonical-invocation :valid-value :normalized-result :lifecycle :cleanup :result-dereference]
+    :expected true :actual (work-native-conformance)}
    {:id :native-function-versus-hal-fn
     :points [:valid-value :normalized-result]
     :expected [true true false true]
@@ -540,10 +662,10 @@
 
 (defn native-boundary-results
   []
-  (vec (map
-    (fn [case]
-      (assoc case :pass (= (get case :expected) (get case :actual))))
-    (native-boundary-cases))))
+  (Base/vec (map
+             (fn [case]
+               (assoc case :pass (= (get case :expected) (get case :actual))))
+             (native-boundary-cases))))
 
 (defn native-profile-report
   []
