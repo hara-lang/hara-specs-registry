@@ -106,7 +106,7 @@
    :requirement/text "Publication reads all release, package, build, extension and remote-artifact intent from project.edn at the selected commit."}
   {:requirement/id :hara.publishing/exact-source
    :requirement/level :must
-   :requirement/text "The signed source tag resolves to the declared commit, defaults to the bare project version unless project.edn declares a release-tag override, the canonical repository identity and exact project.edn digest are signed or portal-attested."}
+   :requirement/text "Source proof is either a signed source tag resolving to the declared commit, defaulting to the bare project version unless project.edn declares a release-tag override, or an untagged:<default-branch> reference whose declared commit exactly equals the remote default-branch head when the publisher signs the intent; the canonical repository identity and exact project.edn digest are signed or portal-attested."}
   {:requirement/id :hara.publishing/credential-separation
    :requirement/level :must
    :requirement/text "Untrusted intake and build jobs cannot access registry mutation, object-store write or finalizer signing credentials."}
