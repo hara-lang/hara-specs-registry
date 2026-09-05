@@ -378,7 +378,7 @@
    :inventory/mutable-array ['Arr/push-first 'Arr/push-last 'Arr/pop-first 'Arr/pop-last 'Arr/insert 'Arr/remove 'Arr/slice 'Arr/map 'Arr/filter 'Arr/fold-left 'Arr/fold-right]
    :inventory/mutable-object ['Obj/assign 'Obj/keys 'Obj/vals 'Obj/pairs]
    :inventory/document-shape ['Document/element 'Document/text 'Document/fragment 'Document/annotate 'Document/pass 'Document/escaped 'Document/group 'Document/line 'Document/break 'Document/nest 'Document/align 'Document/normalize 'Document/valid? 'Document/render]
-   :inventory/codec-format ['Edn/pretty 'Json/pretty]
+   :inventory/codec-format ['Edn/pretty 'Edn/read-forms-spanned 'Json/pretty]
    :inventory/schema-shape ['Schema/of 'Schema/kind 'Schema/form 'Schema/ast 'Schema/origin]
    :inventory/foundation-boundary ['Base/satisfies?]
    :inventory/namespace-introspection ['Runtime/ns-publics 'Runtime/ns-aliases 'Runtime/ns-find 'Runtime/ns-create 'Runtime/ns-name

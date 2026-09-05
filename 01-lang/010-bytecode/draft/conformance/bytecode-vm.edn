@@ -84,9 +84,9 @@
   {:id :error/divide-by-zero :source "(/ 1 0)" :expect {:error-category "division by zero"}}
   {:id :error/remainder-by-zero :source "(mod 1 0)" :expect {:error-category "division by zero"}}
   {:id :error/mod-by-zero :source "(mod 1 0)" :expect {:error-category "division by zero"}}
-  {:id :error/overflow-add :source "(+ 9223372036854775807 1)" :expect {:error-category "integer overflow"}}
-  {:id :error/overflow-multiply :source "(* 4611686018427387904 2)" :expect {:error-category "integer overflow"}}
-  {:id :error/overflow-subtract :source "(- -9223372036854775808 1)" :expect {:error-category "integer overflow"}}
+  {:id :arithmetic/bigint-add :source "(+ 9223372036854775807 1)" :expect {:display "9223372036854775808"}}
+  {:id :arithmetic/bigint-multiply :source "(* 4611686018427387904 2)" :expect {:display "9223372036854775808"}}
+  {:id :arithmetic/bigint-subtract :source "(- -9223372036854775808 1)" :expect {:display "-9223372036854775809"}}
   {:id :arithmetic/mixed-numeric :source "(+ 1 1.5)" :expect {:display "(double 2.5)"}}
   {:id :error/string-arithmetic :source "(+ \"a\" 1)" :expect {:error-category "expects numbers"}}
   {:id :error/string-comparison :source "(< 1 \"a\")" :expect {:error-category "expects numbers"}}
@@ -153,14 +153,14 @@
 
   ;; ---- shared benchmark workloads (verbatim from lib/bench/runtime/workloads.json) ----
   {:id :workload/function-call :source "(loop [i 0 acc 0] (if (< i 2500) (recur (+ i 1) ((fn [x] (+ x 1)) acc)) acc))" :expect {:display "2500"}}
-  {:id :workload/persistent-vector :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (nth [1 2 3 4 5 6 7 8] (mod i 8)))) acc))" :expect {:display "2242"}}
-  {:id :workload/persistent-map :source "(loop [i 0 value {}] (if (< i 500) (recur (+ i 1) (IAssoc/assoc value i (+ i 1))) (ILookup/lookup value 499)))" :expect {:display "500"}}
-  {:id :workload/sequence-navigation :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (IPeekFirst/peek-first (IPopFirst/pop-first (quote (1 2)))))) acc))" :expect {:display "1000"}}
+  {:id :workload/persistent-vector :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (std.protocol.inth.INth/nth [1 2 3 4 5 6 7 8] (mod i 8)))) acc))" :expect {:display "2242"}}
+  {:id :workload/persistent-map :source "(loop [i 0 value {}] (if (< i 500) (recur (+ i 1) (std.protocol.iassoc.IAssoc/assoc value i (+ i 1))) (std.protocol.ilookup.ILookup/lookup value 499)))" :expect {:display "500"}}
+  {:id :workload/sequence-navigation :source "(loop [i 0 acc 0] (if (< i 500) (recur (+ i 1) (+ acc (std.protocol.ipeekfirst.IPeekFirst/peek-first (std.protocol.ipopfirst.IPopFirst/pop-first (quote (1 2)))))) acc))" :expect {:display "1000"}}
   {:id :native/vector-protocols
-   :source "(let [updated (IAssoc/assoc [1 2 3] 1 42)] [(ILookup/lookup updated 1) (INth/nth updated 1) (IPeekFirst/peek-first updated)])"
+   :source "(let [updated (std.protocol.iassoc.IAssoc/assoc [1 2 3] 1 42)] [(std.protocol.ilookup.ILookup/lookup updated 1) (std.protocol.inth.INth/nth updated 1) (std.protocol.ipeekfirst.IPeekFirst/peek-first updated)])"
    :expect {:display "[42 42 1]"}}
   {:id :native/map-entry-protocols
-   :source "(let [entry (IFind/find {:key 42} :key)] [(IPair/key entry) (IPair/value entry)])"
+   :source "(let [entry (std.protocol.ifind.IFind/find {:key 42} :key)] [(std.protocol.ipair.IPair/key entry) (std.protocol.ipair.IPair/value entry)])"
    :expect {:display "[:key 42]"}}
 
   ;; ---- function errors: both paths must fail in the same category ----
@@ -176,7 +176,7 @@
   {:id :fn/variadic-rest-value :source "((fn [left & more] more) 42 1 2)" :expect {:display "(1 2)"}}
   {:id :fn/variadic-empty-rest :source "((fn [left & more] more) 42)" :expect {:display "()"}}
   {:id :error/fn-variadic-min-arity :source "((fn [left right & more] left) 1)" :expect {:error-category "primitive arity"}}
-  {:id :compile/fn-multi-arity :source "(fn ([x] x) ([x y] x))" :expect {:compile-error "fn multi-arity is not supported"}}
+  {:id :fn/multi-arity :source "((fn ([x] x) ([x y] (+ x y))) 19 23)" :expect {:display "42"}}
   ;; defn multi-arity and variadic defn (issue #223).
   {:id :defn/multi-arity :source "(do (defn choose ([value] value) ([left right] (+ left right))) (+ (choose 19) (choose 20 3)))" :expect {:display "42"}}
   {:id :defn/multi-arity-variadic :source "(do (defn sum3 ([a b] (+ a b)) ([a b c & more] (+ a b c))) (sum3 19 20 3))" :expect {:display "42"}}
@@ -188,7 +188,7 @@
   ;; defn interns a real var and evaluates to it (issue #223); display
   ;; is namespace-qualified, matching the JVM runtime.
   {:id :defn/result-is-var :source "(defn f [x] x)" :expect {:display "#'user/f"}}
-  {:id :compile/defn-nested :source "(let [x 1] (defn f [y] y) x)" :expect {:compile-error "defn is only supported as a top-level statement"}}
+  {:id :defn/nested :source "(let [x 1] (defn f [y] y) (f x))" :expect {:display "1"}}
   ;; Value-position self-reference reads the var (late binding).
   {:id :defn/value-self-reference :source "(do (defn f [] f) (= f (f)))" :expect {:display "true"}}
   {:id :var/form :source "(do (defn f [x] x) #'f)" :expect {:display "#'user/f"}}
@@ -197,54 +197,54 @@
   {:id :set/result :source "(do (def cleaned 0) (set! cleaned 42))" :expect {:display "42"}}
 
   ;; ---- referred Var ownership: omission or :exclude is required ----
-  {:id :compile/defn-replaces-foundation :source "(do (defn count [n] 42) (count 5))" :expect {:compile-error "Cannot replace referred Var without ns omission: count"}}
-  {:id :compile/defn-replaces-primitive :source "(do (defn mod [a b] 100) 1)" :expect {:compile-error "Cannot replace referred Var without ns omission: mod"}}
+  {:id :defn/standalone-name :source "(do (defn count [n] 42) (count 5))" :expect {:display "42"}}
+  {:id :defn/replaces-primitive :source "(do (defn mod [a b] 100) (mod 1 2))" :expect {:display "100"}}
   {:id :compile/declare-nested :source "(let [x 1] (declare y) x)" :expect {:compile-error "declare is only supported as a top-level statement"}}
   {:id :compile/declare-non-symbol :source "(declare 1)" :expect {:compile-error "declare expects name symbols"}}
 
   ;; ---- persistent and mutable named values ----
-  {:id :named-value/defstruct-constructors
-   :source "(do (defstruct Point [x y]) (+ (ILookup/lookup (Point 1 2) :x) (ILookup/lookup (->Point 3 4) :x) (ILookup/lookup (map->Point {:x 5}) :x)))"
+  {:id :named-value/native-struct-constructors
+   :source "(let [Point (std.native.Base/struct (std.native.Base/current-namespace) (std.native.Base/symbol \"Point\") (std.native.Base/vector (std.native.Base/symbol \"x\") (std.native.Base/symbol \"y\"))) map->Point (std.protocol.ideref.IDeref/deref (std.native.Base/resolve (std.native.Base/symbol \"map->Point\")))] (+ (std.protocol.ilookup.ILookup/lookup (Point 1 2) :x) (std.protocol.ilookup.ILookup/lookup (Point 3 4) :x) (std.protocol.ilookup.ILookup/lookup (map->Point {:x 5}) :x)))"
    :expect {:display "9"}}
-  {:id :named-value/defstruct-keyword-lookup
-   :source "(do (defstruct Point [x y]) (let [point (map->Point {:x 1 :extra 9})] [(:x point) (:missing point 7) (:extra point) (ILookup/lookup point :x) (type point)]))"
+  {:id :named-value/native-struct-keyword-lookup
+   :source "(let [Point (std.native.Base/struct (std.native.Base/current-namespace) (std.native.Base/symbol \"Point\") (std.native.Base/vector (std.native.Base/symbol \"x\") (std.native.Base/symbol \"y\"))) map->Point (std.protocol.ideref.IDeref/deref (std.native.Base/resolve (std.native.Base/symbol \"map->Point\")))] (let [point (map->Point {:x 1 :extra 9})] [(:x point) (:missing point 7) (:extra point) (std.protocol.ilookup.ILookup/lookup point :x) (std.native.Base/type point)]))"
    :expect {:display "[1 7 nil 1 :user.Point]"}}
-  {:id :named-value/defstruct-map-destructuring
-   :source "(do (defstruct Point [x y]) [(let [{:keys [x y missing] :or {missing 7} :as point} (Point 1 2)] [x y missing (type point)]) ((fn [{:keys [x y]}] [x y]) (Point 3 4))])"
+  {:id :named-value/native-struct-map-destructuring
+   :source "(let [Point (std.native.Base/struct (std.native.Base/current-namespace) (std.native.Base/symbol \"Point\") (std.native.Base/vector (std.native.Base/symbol \"x\") (std.native.Base/symbol \"y\")))] [(let [{:keys [x y missing] :or {missing 7} :as point} (Point 1 2)] [x y missing (std.native.Base/type point)]) ((fn [{:keys [x y]}] [x y]) (Point 3 4))])"
    :expect {:display "[[1 2 7 :user.Point] [3 4]]"}}
-  {:id :named-value/defmutable-constructors
-   :source "(do (defmutable Cursor [x y]) (+ (field (Cursor 1 2) :x) (field (->Cursor 3 4) :x) (field (map->Cursor {:x 5}) :x)))"
+  {:id :named-value/native-mutable-constructors
+   :source "(let [Cursor (std.native.Base/mutable (std.native.Base/current-namespace) (std.native.Base/symbol \"Cursor\") (std.native.Base/vector (std.native.Base/symbol \"x\") (std.native.Base/symbol \"y\"))) map->Cursor (std.protocol.ideref.IDeref/deref (std.native.Base/resolve (std.native.Base/symbol \"map->Cursor\")))] (+ (std.native.Base/field (Cursor 1 2) :x) (std.native.Base/field (Cursor 3 4) :x) (std.native.Base/field (map->Cursor {:x 5}) :x)))"
    :expect {:display "9"}}
   {:id :named-value/mutable-alias-set-result
-   :source "(do (defmutable Cursor [x y]) (let [cursor (Cursor 1 2) alias cursor result (set! (field cursor :x) 42)] (+ result (field alias :x))))"
+   :source "(let [Cursor (std.native.Base/mutable (std.native.Base/current-namespace) (std.native.Base/symbol \"Cursor\") (std.native.Base/vector (std.native.Base/symbol \"x\") (std.native.Base/symbol \"y\")))] (let [cursor (Cursor 1 2) alias cursor result (set! (field cursor :x) 42)] (+ result (std.native.Base/field alias :x))))"
    :expect {:display "84"}}
   {:id :named-value/mutable-identity
-   :source "(do (defmutable Cursor [x y]) (let [cursor (Cursor 1 2) alias cursor] (if (= cursor alias) (if (= cursor (Cursor 1 2)) 0 42) 0)))"
+   :source "(let [Cursor (std.native.Base/mutable (std.native.Base/current-namespace) (std.native.Base/symbol \"Cursor\") (std.native.Base/vector (std.native.Base/symbol \"x\") (std.native.Base/symbol \"y\")))] (let [cursor (Cursor 1 2) alias cursor] (if (= cursor alias) (if (= cursor (Cursor 1 2)) 0 42) 0)))"
    :expect {:display "42"}}
   {:id :named-value/mutable-evaluation-order
-   :source "(do (defmutable Cursor [x]) (def named-value-order 0) (let [cursor (Cursor 1)] (set! (field (do (set! named-value-order (+ (* named-value-order 10) 1)) cursor) :x) (do (set! named-value-order (+ (* named-value-order 10) 2)) 42)) named-value-order))"
+   :source "(let [Cursor (std.native.Base/mutable (std.native.Base/current-namespace) (std.native.Base/symbol \"Cursor\") (std.native.Base/vector (std.native.Base/symbol \"x\")))] (do (def named-value-order 0) (let [cursor (Cursor 1)] (set! (field (do (set! named-value-order (+ (* named-value-order 10) 1)) cursor) :x) (do (set! named-value-order (+ (* named-value-order 10) 2)) 42)) named-value-order)))"
    :expect {:display "12"}}
 
   ;; ---- exceptions: try/catch/finally and guest throw ----
-  {:id :error/catch-guest-value :source "(try (throw 41) (catch Exception error (+ error 1)))" :expect {:display "42"}}
-  {:id :error/catch-first-match :source "(try (throw 1) (catch Exception a 41) (catch Exception b 42))" :expect {:display "41"}}
-  {:id :error/catch-implicit-form :source "(try (throw :failed) (catch error error))" :expect {:display ":failed"}}
-  {:id :error/catch-binds-runtime-string :source "(try (/ 1 0) (catch Exception error error))" :expect {:display "\"division by zero\""}}
-  {:id :error/unmatched-class :source "(try (throw 41) (catch Problem error 0))" :expect {:error-category "thrown"}}
-  {:id :error/uncaught-throw :source "(throw :failed)" :expect {:error-category "thrown"}}
+  {:id :error/catch-guest-value :source "(try (throw (ex :test/guest {})) (catch error 42))" :expect {:display "42"}}
+  {:id :error/catch-first-match :source "(try (throw (ex :test/first {})) (catch a 41) (catch b 42))" :expect {:display "41"}}
+  {:id :error/catch-implicit-form :source "(try (throw (ex :test/implicit {})) (catch error 42))" :expect {:display "42"}}
+  {:id :error/catch-binds-runtime-error :source "(try (/ 1 0) (catch error 42))" :expect {:display "42"}}
+  {:id :compile/catch-typed-class :source "(try (throw (ex :test/unmatched {})) (catch Problem error 0))" :expect {:compile-error "catch expects a binding symbol and one handler form"}}
+  {:id :error/uncaught-throw :source "(throw (ex :test/failed {}))" :expect {:error-category "thrown"}}
   {:id :error/finally-value-discarded :source "(try 42 (finally 0))" :expect {:display "42"}}
-  {:id :error/finally-after-catch :source "(try (throw 41) (catch Exception error (+ error 1)) (finally 0))" :expect {:display "42"}}
-  {:id :error/finally-unmatched-rethrow :source "(try (try (throw 41) (catch Problem error 0) (finally 0)) (catch Exception error (+ error 1)))" :expect {:display "42"}}
-  {:id :error/finally-error-replaces :source "(try 1 (finally (throw 2)))" :expect {:error-category "thrown"}}
+  {:id :error/finally-after-catch :source "(try (throw (ex :test/finally {})) (catch error 42) (finally 0))" :expect {:display "42"}}
+  {:id :error/finally-unmatched-rethrow :source "(try (try (throw (ex :test/rethrow {})) (finally 0)) (catch error 42))" :expect {:display "42"}}
+  {:id :error/finally-error-replaces :source "(try 1 (finally (throw (ex :test/replaced {}))))" :expect {:error-category "thrown"}}
   {:id :error/throw-arity :source "(throw)" :expect {:error-category "throw arity"}}
 
   ;; ---- recur through try: catch-only supported, finally crossing rejected ----
-  {:id :error/recur-through-try :source "(loop [i 0] (try (if (< i 3) (recur (+ i 1)) i) (catch Exception e -1)))" :expect {:display "3"}}
-  {:id :error/recur-through-catch :source "(loop [i 0] (try (throw 1) (catch Exception e (if (< i 3) (recur (+ i 1)) i))))" :expect {:display "3"}}
+  {:id :error/recur-through-try :source "(loop [i 0] (try (if (< i 3) (recur (+ i 1)) i) (catch e -1)))" :expect {:display "3"}}
+  {:id :error/recur-through-catch :source "(loop [i 0] (try (throw (ex :test/recur {})) (catch e (if (< i 3) (recur (+ i 1)) i))))" :expect {:display "3"}}
 
   ;; ---- exception compile errors: VM-only canonical behavior ----
   {:id :compile/try-clause-order :source "(try (catch Exception e 0) 1)" :expect {:compile-error "try clauses must follow body"}}
-  {:id :compile/catch-class-not-symbol :source "(try 1 (catch 42 e 0))" :expect {:compile-error "catch class must be symbol"}}
-  {:id :compile/catch-name-not-symbol :source "(try 1 (catch Exception 42 0))" :expect {:compile-error "catch name must be symbol"}}
-  {:id :compile/catch-shape :source "(try 1 (catch e))" :expect {:compile-error "catch expects class, name, and body"}}
+  {:id :compile/catch-typed-class-not-supported :source "(try 1 (catch 42 e 0))" :expect {:compile-error "catch expects a binding symbol and one handler form"}}
+  {:id :compile/catch-typed-binding-not-supported :source "(try 1 (catch Exception 42 0))" :expect {:compile-error "catch expects a binding symbol and one handler form"}}
+  {:id :compile/catch-shape :source "(try 1 (catch e))" :expect {:compile-error "catch expects a binding symbol and one handler form"}}
   {:id :compile/recur-crosses-finally :source "(loop [i 0] (try (if (< i 3) (recur (+ i 1)) i) (finally 0)))" :expect {:compile-error "recur cannot cross a finally boundary"}}]}
